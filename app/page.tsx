@@ -89,40 +89,55 @@ export default function LandingPage() {
       <main>
         <section
           id="inicio"
-          className="mx-auto max-w-6xl scroll-mt-24 px-4 py-16 md:flex md:items-center md:justify-between md:py-24 md:px-6"
+          className="relative scroll-mt-24 overflow-hidden border-b border-margify-border/80"
         >
-          <div className="max-w-2xl">
-            <Badge type="neutral" label="+ 1.200 tiendas ya usan Margify" className="mb-6" />
-            <h1 className="text-4xl font-bold leading-tight tracking-tight text-white md:text-5xl lg:text-6xl">
-              Sabé exactamente si tu tienda gana o pierde plata
-            </h1>
-            <p className="mt-6 text-lg text-margify-muted md:text-xl">
-              Margify conecta todas tus ventas, suma todos tus costos ocultos y te muestra tu
-              ganancia real en tiempo real. Sin Excel. Sin adivinar.
-            </p>
-            <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-              <Link
-                href="/auth/register"
-                className={buttonClassName("primary", "w-full px-8 py-3 sm:w-auto")}
-              >
-                Empezar gratis
-              </Link>
-              <Link
-                href="/dashboard"
-                className={buttonClassName("secondary", "w-full px-8 py-3 sm:w-auto")}
-              >
-                Ver demo
-              </Link>
-            </div>
-            <div className="mt-12 flex flex-wrap gap-3">
-              {integrations.map((n) => (
-                <span
-                  key={n}
-                  className="rounded-full border border-margify-border bg-margify-card px-3 py-1 text-xs font-medium text-margify-muted"
+          <div className="pointer-events-none absolute inset-0 bg-margify-bg" aria-hidden />
+          <div
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_85%_70%_at_50%_-35%,rgba(100,223,223,0.14),transparent_55%)]"
+            aria-hidden
+          />
+          <div
+            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_45%_at_100%_20%,rgba(100,223,223,0.08),transparent_60%)]"
+            aria-hidden
+          />
+          <div
+            className="pointer-events-none absolute inset-0 bg-gradient-to-b from-margify-cyan/10 via-transparent to-margify-bg"
+            aria-hidden
+          />
+          <div className="relative mx-auto max-w-6xl px-4 py-16 md:flex md:items-center md:justify-between md:px-6 md:py-24">
+            <div className="max-w-2xl">
+              <Badge type="neutral" label="+ 1.200 tiendas ya usan Margify" className="mb-6" />
+              <h1 className="text-4xl font-bold leading-tight tracking-tight text-white md:text-5xl lg:text-6xl">
+                Sabé exactamente si tu tienda gana o pierde plata
+              </h1>
+              <p className="mt-6 text-lg text-margify-muted md:text-xl">
+                Margify conecta todas tus ventas, suma todos tus costos ocultos y te muestra tu
+                ganancia real en tiempo real. Sin Excel. Sin adivinar.
+              </p>
+              <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+                <Link
+                  href="/auth/register"
+                  className={buttonClassName("primary", "w-full px-8 py-3 sm:w-auto")}
                 >
-                  {n}
-                </span>
-              ))}
+                  Empezar gratis
+                </Link>
+                <Link
+                  href="/dashboard"
+                  className={buttonClassName("secondary", "w-full px-8 py-3 sm:w-auto")}
+                >
+                  Ver demo
+                </Link>
+              </div>
+              <div className="mt-12 flex flex-wrap gap-3">
+                {integrations.map((n) => (
+                  <span
+                    key={n}
+                    className="rounded-full border border-margify-border bg-margify-card px-3 py-1 text-xs font-medium text-margify-muted"
+                  >
+                    {n}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         </section>
