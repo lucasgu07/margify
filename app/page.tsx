@@ -206,9 +206,9 @@ export default function LandingPage() {
                   "Te propone prioridades concretas: qué revisar, qué pausar o qué escalar, sin perderte en tablas interminables.",
               },
               {
-                title: "Alertas por WhatsApp cuando algo falla",
+                title: "Alertas por WhatsApp si algo falla o si algo va muy bien",
                 description:
-                  "Avisos cuando el margen cae, un canal se desvía o aparece algo raro en las órdenes, para reaccionar al toque.",
+                  "Te avisamos si el margen cae, un canal se desvía o hay algo raro en las órdenes, y también cuando rindió mejor de lo esperado para que lo aproveches o lo escales.",
               },
               {
                 title: "Rentabilidad real por producto/SKU",
