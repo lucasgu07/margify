@@ -45,13 +45,31 @@ const integrations = [
   "TikTok",
 ];
 
+const navLinkClassName =
+  "text-sm font-medium text-margify-muted transition-colors duration-margify hover:text-white";
+
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-margify-bg text-margify-text">
-      <header className="border-b border-margify-border bg-margify-black/80 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 md:px-6">
-          <Logo />
-          <div className="flex items-center gap-3">
+      <header className="sticky top-0 z-50 border-b border-margify-border bg-margify-black/80 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-3 px-4 py-4 md:px-6">
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-8 gap-y-2">
+            <Link href="/" className="shrink-0">
+              <Logo />
+            </Link>
+            <nav className="flex flex-wrap items-center gap-x-5 gap-y-1" aria-label="Secciones de la página">
+              <a href="#como-funciona" className={navLinkClassName}>
+                Cómo funciona
+              </a>
+              <a href="#funciones" className={navLinkClassName}>
+                Funciones
+              </a>
+              <a href="#precios" className={navLinkClassName}>
+                Precios
+              </a>
+            </nav>
+          </div>
+          <div className="flex shrink-0 items-center gap-3">
             <Link
               href="/auth/login"
               className="text-sm font-medium text-margify-muted transition-colors duration-margify hover:text-white"
@@ -69,7 +87,10 @@ export default function LandingPage() {
       </header>
 
       <main>
-        <section className="mx-auto max-w-6xl px-4 py-16 md:flex md:items-center md:justify-between md:py-24 md:px-6">
+        <section
+          id="inicio"
+          className="mx-auto max-w-6xl scroll-mt-24 px-4 py-16 md:flex md:items-center md:justify-between md:py-24 md:px-6"
+        >
           <div className="max-w-2xl">
             <Badge type="neutral" label="+ 1.200 tiendas ya usan Margify" className="mb-6" />
             <h1 className="text-4xl font-bold leading-tight tracking-tight text-white md:text-5xl lg:text-6xl">
@@ -108,7 +129,7 @@ export default function LandingPage() {
 
         <section
           id="como-funciona"
-          className="border-b border-margify-border bg-margify-bg py-14 md:py-20"
+          className="scroll-mt-24 border-b border-margify-border bg-margify-bg py-14 md:py-20"
           aria-labelledby="how-it-works-heading"
         >
           <div className="mx-auto max-w-6xl px-4 md:px-6">
@@ -189,7 +210,10 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-6xl px-4 py-16 md:py-24 md:px-6">
+        <section
+          id="funciones"
+          className="mx-auto max-w-6xl scroll-mt-24 px-4 py-16 md:px-6 md:py-24"
+        >
           <h2 className="text-center text-3xl font-bold text-white md:text-4xl">
             Todo lo que necesitás para decidir con plata de verdad
           </h2>
@@ -234,7 +258,10 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="border-y border-margify-border bg-margify-card py-16 md:py-24">
+        <section
+          id="precios"
+          className="scroll-mt-24 border-y border-margify-border bg-margify-card py-16 md:py-24"
+        >
           <div className="mx-auto max-w-6xl px-4 md:px-6">
             <h2 className="text-center text-3xl font-bold text-white md:text-4xl">Precios claros</h2>
             <div className="mt-12 grid gap-6 lg:grid-cols-4">
