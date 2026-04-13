@@ -192,19 +192,51 @@ export default function LandingPage() {
                 </Card>
               ))}
             </div>
-            <div className="mx-auto mt-12 max-w-3xl rounded-card border border-margify-border bg-margify-black p-6">
-              <p className="text-center text-sm text-margify-muted">
-                Visual: el margen se destruye con costos ocultos
+            <div className="mx-auto mt-12 max-w-md rounded-card border border-margify-border bg-margify-black p-6 md:p-8">
+              <p className="text-center text-base font-semibold text-white">
+                Por cada <span className="text-margify-cyan">$100</span> que vendés
               </p>
-              <div className="mt-6 flex h-4 overflow-hidden rounded-full bg-margify-border">
-                <div className="w-[55%] bg-margify-cyan" title="Ganancia real" />
-                <div className="w-[25%] bg-white/30" title="Costos operativos" />
-                <div className="w-[20%] bg-margify-negative/80" title="Pérdida oculta" />
+              <p className="mt-2 text-center text-sm leading-snug text-margify-muted">
+                No es “ganancia = venta”. Parte se va en costos que ya ves y otra en los que casi nadie suma al día a día.
+              </p>
+              <div className="mt-8 space-y-3 border-t border-margify-border pt-6">
+                <div className="flex items-center justify-between gap-4 text-sm">
+                  <span className="text-margify-muted">Entra por la venta</span>
+                  <span className="shrink-0 tabular-nums font-medium text-white">$100</span>
+                </div>
+                <div className="flex items-center justify-between gap-4 text-sm">
+                  <span className="text-margify-muted">Costos que ya controlás</span>
+                  <span className="shrink-0 tabular-nums text-white/85">−$35</span>
+                </div>
+                <div className="flex items-center justify-between gap-4 text-sm">
+                  <span className="text-margify-negative/90">Costos que suelen quedar afuera</span>
+                  <span className="shrink-0 tabular-nums text-margify-negative/90">−$22</span>
+                </div>
+                <div className="flex items-end justify-between gap-4 border-t border-margify-border pt-4">
+                  <span className="text-sm font-semibold text-white">Te queda en el bolsillo</span>
+                  <span className="shrink-0 text-3xl font-bold tabular-nums tracking-tight text-margify-cyan">
+                    $43
+                  </span>
+                </div>
               </div>
-              <div className="mt-3 flex justify-between text-xs text-margify-muted">
-                <span>Ganancia real</span>
-                <span>Costos visibles</span>
-                <span>Costos ocultos</span>
+              <div className="mt-8">
+                <p className="mb-2 text-center text-xs font-medium uppercase tracking-wide text-margify-muted">
+                  En una mirada
+                </p>
+                <div className="flex h-4 overflow-hidden rounded-full bg-margify-border">
+                  <div
+                    className="flex w-[43%] items-center justify-center bg-margify-cyan"
+                    title="Margen que queda"
+                  />
+                  <div
+                    className="flex flex-1 items-center justify-center bg-gradient-to-r from-white/25 to-margify-negative/70"
+                    title="Todo lo que se fue en costos"
+                  />
+                </div>
+                <div className="mt-2 flex justify-between text-xs text-margify-muted">
+                  <span className="text-margify-cyan">43% para vos</span>
+                  <span>57% en costos</span>
+                </div>
               </div>
             </div>
           </div>
