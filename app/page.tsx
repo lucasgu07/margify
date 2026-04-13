@@ -4,6 +4,7 @@ import { buttonClassName } from "@/components/ui/Button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
 import { Logo } from "@/components/ui/Logo";
 import { Badge } from "@/components/ui/Badge";
+import { LandingPricing } from "@/components/landing/LandingPricing";
 
 const howItWorksSteps = [
   {
@@ -64,8 +65,8 @@ export default function LandingPage() {
               <a href="#funciones" className={navLinkClassName}>
                 Funciones
               </a>
-              <a href="#precios" className={navLinkClassName}>
-                Precios
+              <a href="#planes" className={navLinkClassName}>
+                Planes
               </a>
             </nav>
           </div>
@@ -306,70 +307,10 @@ export default function LandingPage() {
         </section>
 
         <section
-          id="precios"
+          id="planes"
           className="scroll-mt-24 border-y border-margify-border bg-margify-card py-16 md:py-24"
         >
-          <div className="mx-auto max-w-6xl px-4 md:px-6">
-            <h2 className="text-center text-3xl font-bold text-white md:text-4xl">Precios claros</h2>
-            <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
-              <Card>
-                <CardTitle>Starter</CardTitle>
-                <p className="mt-2 text-3xl font-bold text-white">Gratis</p>
-                <CardDescription>Hasta 75 órdenes / mes.</CardDescription>
-                <Link
-                  href="/auth/register"
-                  className={buttonClassName("secondary", "mt-6 block w-full")}
-                >
-                  Empezar
-                </Link>
-              </Card>
-              <Card>
-                <CardTitle>Growth</CardTitle>
-                <p className="mt-2 text-3xl font-bold text-white">USD 22</p>
-                <CardDescription>/ mes · hasta 500 órdenes.</CardDescription>
-                <Link
-                  href="/auth/register"
-                  className={buttonClassName("secondary", "mt-6 block w-full")}
-                >
-                  Elegir Growth
-                </Link>
-              </Card>
-              <Card className="border-margify-cyan shadow-[0_0_0_1px_rgba(100,223,223,0.35)]">
-                <Badge type="success" label="Más popular" className="mb-2" />
-                <CardTitle>Pro</CardTitle>
-                <p className="mt-2 text-3xl font-bold text-margify-cyan">USD 45</p>
-                <CardDescription>/ mes · hasta 1500 órdenes.</CardDescription>
-                <Link
-                  href="/auth/register"
-                  className={buttonClassName("primary", "mt-6 block w-full")}
-                >
-                  Elegir Pro
-                </Link>
-              </Card>
-              <Card>
-                <CardTitle>Scale</CardTitle>
-                <p className="mt-2 text-3xl font-bold text-white">USD 69</p>
-                <CardDescription>/ mes · 3000+ órdenes.</CardDescription>
-                <Link
-                  href="/auth/register"
-                  className={buttonClassName("secondary", "mt-6 block w-full")}
-                >
-                  Elegir Scale
-                </Link>
-              </Card>
-              <Card>
-                <CardTitle>Plan Agencias</CardTitle>
-                <p className="mt-2 text-3xl font-bold text-white">USD 149</p>
-                <CardDescription>/ mes · hasta 15 clientes.</CardDescription>
-                <Link
-                  href="/auth/register"
-                  className={buttonClassName("secondary", "mt-6 block w-full")}
-                >
-                  Hablar con ventas
-                </Link>
-              </Card>
-            </div>
-          </div>
+          <LandingPricing />
         </section>
       </main>
 
