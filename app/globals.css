@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply min-h-screen bg-margify-bg font-sans text-margify-text antialiased;
+}
+
+::selection {
+  background: rgba(100, 223, 223, 0.25);
+  color: #fff;
+}
