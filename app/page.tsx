@@ -311,7 +311,7 @@ export default function LandingPage() {
         >
           <div className="mx-auto max-w-6xl px-4 md:px-6">
             <h2 className="text-center text-3xl font-bold text-white md:text-4xl">Precios claros</h2>
-            <div className="mt-12 grid gap-6 lg:grid-cols-4">
+            <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
               <Card>
                 <CardTitle>Starter</CardTitle>
                 <p className="mt-2 text-3xl font-bold text-white">Gratis</p>
@@ -323,22 +323,33 @@ export default function LandingPage() {
                   Empezar
                 </Link>
               </Card>
-              <Card className="border-margify-cyan shadow-[0_0_0_1px_rgba(100,223,223,0.35)]">
-                <Badge type="success" label="Más elegido" className="mb-2" />
+              <Card>
                 <CardTitle>Growth</CardTitle>
-                <p className="mt-2 text-3xl font-bold text-margify-cyan">USD 22</p>
+                <p className="mt-2 text-3xl font-bold text-white">USD 22</p>
                 <CardDescription>/ mes · hasta 500 órdenes.</CardDescription>
+                <Link
+                  href="/auth/register"
+                  className={buttonClassName("secondary", "mt-6 block w-full")}
+                >
+                  Elegir Growth
+                </Link>
+              </Card>
+              <Card className="border-margify-cyan shadow-[0_0_0_1px_rgba(100,223,223,0.35)]">
+                <Badge type="success" label="Más popular" className="mb-2" />
+                <CardTitle>Pro</CardTitle>
+                <p className="mt-2 text-3xl font-bold text-margify-cyan">USD 45</p>
+                <CardDescription>/ mes · hasta 1500 órdenes.</CardDescription>
                 <Link
                   href="/auth/register"
                   className={buttonClassName("primary", "mt-6 block w-full")}
                 >
-                  Elegir Growth
+                  Elegir Pro
                 </Link>
               </Card>
               <Card>
                 <CardTitle>Scale</CardTitle>
                 <p className="mt-2 text-3xl font-bold text-white">USD 69</p>
-                <CardDescription>/ mes · hasta 3000 órdenes.</CardDescription>
+                <CardDescription>/ mes · 3000+ órdenes.</CardDescription>
                 <Link
                   href="/auth/register"
                   className={buttonClassName("secondary", "mt-6 block w-full")}
