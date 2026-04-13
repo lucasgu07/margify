@@ -124,7 +124,7 @@ export default function LandingPage() {
                 Sin complicaciones: conectás, cargás costos, mirás el panel y reaccionás cuando hace falta.
               </p>
             </div>
-            <ol className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+            <ol className="mt-12 grid list-none gap-6 p-0 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
               {howItWorksSteps.map(({ step, title, description, Icon }) => (
                 <li key={step}>
                   <Card className="relative h-full border-margify-border bg-margify-card pt-8">

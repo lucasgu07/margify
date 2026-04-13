@@ -8,6 +8,8 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import type { TooltipProps } from "recharts";
+import type { NameType, ValueType } from "recharts/types/component/DefaultTooltipContent";
 import { cn } from "@/lib/utils";
 
 const axisProps = {
@@ -20,22 +22,14 @@ export const chartGrid = (
   <CartesianGrid stroke="#222222" strokeDasharray="3 6" vertical={false} />
 );
 
-function ChartTooltipContent({
-  active,
-  payload,
-  label,
-}: {
-  active?: boolean;
-  payload?: { name?: string; value?: number; dataKey?: string | number }[];
-  label?: string;
-}) {
+function ChartTooltipContent({ active, payload, label }: TooltipProps<ValueType, NameType>) {
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-control border border-margify-border bg-margify-card px-3 py-2 text-xs shadow-lg">
-      <p className="mb-1 font-medium text-margify-text">{label}</p>
+      <p className="mb-1 font-medium text-margify-text">{label != null ? String(label) : null}</p>
       {payload.map((p) => (
         <p key={String(p.dataKey)} className="text-margify-muted">
-          <span className="text-margify-text">{p.name}:</span>{" "}
+          <span className="text-margify-text">{p.name != null ? String(p.name) : "—"}:</span>{" "}
           {typeof p.value === "number" ? p.value.toLocaleString("es-AR") : p.value}
         </p>
       ))}
