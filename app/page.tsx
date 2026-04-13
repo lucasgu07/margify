@@ -195,18 +195,40 @@ export default function LandingPage() {
           </h2>
           <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {[
-              "Dashboard de rentabilidad en tiempo real",
-              "IA Advisor que te dice exactamente qué hacer",
-              "Alertas por WhatsApp cuando algo falla",
-              "Rentabilidad real por producto/SKU",
-              "Predictor de cashflow",
-              "Portal para agencias",
-            ].map((title) => (
+              {
+                title: "Dashboard de rentabilidad en tiempo real",
+                description:
+                  "Ingresos, costos y margen en un solo lugar, actualizados para que decidas con números de hoy, no con exportaciones viejas.",
+              },
+              {
+                title: "IA Advisor que te dice exactamente qué hacer",
+                description:
+                  "Te propone prioridades concretas: qué revisar, qué pausar o qué escalar, sin perderte en tablas interminables.",
+              },
+              {
+                title: "Alertas por WhatsApp cuando algo falla",
+                description:
+                  "Avisos cuando el margen cae, un canal se desvía o aparece algo raro en las órdenes, para reaccionar al toque.",
+              },
+              {
+                title: "Rentabilidad real por producto/SKU",
+                description:
+                  "Ves qué productos te dejan ganancia de verdad y cuáles te la comen, por SKU o categoría, con todos los costos metidos.",
+              },
+              {
+                title: "Predictor de cashflow",
+                description:
+                  "Proyectá entradas y salidas con lo que ya pasó y lo que tenés comprometido, para no quedarte corto entre campañas y reposición.",
+              },
+              {
+                title: "Portal para agencias",
+                description:
+                  "Tu equipo o agencia entra a los mismos números que vos, con accesos acotados y sin mezclar datos entre clientes.",
+              },
+            ].map(({ title, description }) => (
               <Card key={title}>
                 <CardTitle className="text-base">{title}</CardTitle>
-                <CardDescription>
-                  Diseñado para founders y equipos de e-commerce en LATAM.
-                </CardDescription>
+                <CardDescription>{description}</CardDescription>
               </Card>
             ))}
           </div>
