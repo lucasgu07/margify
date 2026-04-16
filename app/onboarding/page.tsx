@@ -42,7 +42,7 @@ export default function OnboardingPage() {
     <div className="min-h-screen bg-margify-bg px-4 py-8">
       <div className="mx-auto max-w-3xl">
         <Link href="/" className="inline-block">
-          <Logo />
+          <Logo priority />
         </Link>
         <div className="mt-6 flex gap-2">
           {[1, 2, 3, 4].map((n) => (

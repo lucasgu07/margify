@@ -1,18 +1,47 @@
 import type {
+  AdsPlatformScope,
   AlertHistory,
   Campaign,
   CashflowEntry,
+  CashflowTableRow,
   ChannelProfitRow,
   CostsConfig,
+  DateRangeKey,
   Order,
   OrderChannel,
   ProductProfit,
+  RevenueChartRow,
   Store,
+  StorePlatform,
   User,
 } from "@/types";
 import { addBusinessDays, orderProfit } from "@/lib/calculations";
+import {
+  getDateRangeBounds,
+  isoDateLocal,
+  type CustomDateBounds,
+} from "@/lib/dashboard-filters";
 
 const USER_ID = "demo-user-1";
+
+const PLATFORM_LABEL: Record<StorePlatform, string> = {
+  tiendanube: "Tienda Nube",
+  mercadolibre: "Mercado Libre",
+  shopify: "Shopify",
+};
+
+export function storePlatformLabel(platform: StorePlatform): string {
+  return PLATFORM_LABEL[platform];
+}
+
+export function storeShortLabel(store: Store): string {
+  try {
+    const host = new URL(store.store_url).hostname.replace(/^www\./, "");
+    return `${storePlatformLabel(store.platform)} (${host})`;
+  } catch {
+    return storePlatformLabel(store.platform);
+  }
+}
 
 export const mockUser: User = {
   id: USER_ID,
@@ -90,11 +119,23 @@ function isoDate(d: Date) {
   return d.toISOString().slice(0, 10);
 }
 
+function formatSpanishDayTooltip(isoDateStr: string): string {
+  return new Intl.DateTimeFormat("es-AR", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(new Date(isoDateStr + "T12:00:00"));
+}
+
 function buildRawOrders(): Order[] {
   const orders: Order[] = [];
   const now = new Date();
-  for (let i = 0; i < 150; i++) {
-    const dayOffset = Math.floor(i / 5) % 30;
+  /** Ventana de fechas con actividad: ~14 meses para que 6m / 1 año / este año llenen el gráfico */
+  const SPAN_DAYS = 420;
+  const ORDER_COUNT = 480;
+  for (let i = 0; i < ORDER_COUNT; i++) {
+    const dayOffset = (i * 83) % SPAN_DAYS;
     const d = new Date(now);
     d.setDate(d.getDate() - dayOffset);
     const revenue = 120 + (i * 37) % 520 + Math.sin(i) * 40;
@@ -107,7 +148,7 @@ function buildRawOrders(): Order[] {
       id: `ord-${i + 1}`,
       store_id: mockStores[i % mockStores.length].id,
       external_id: `EXT-${10000 + i}`,
-      date: isoDate(d),
+      date: isoDateLocal(d),
       revenue: Math.round(revenue * 100) / 100,
       product_name: productNames[i % productNames.length],
       product_cost: Math.round(product_cost * 100) / 100,
@@ -279,7 +320,97 @@ export const mockCampaigns: Campaign[] = [
     date: isoDate(new Date()),
     conversions: 29,
   },
+  {
+    id: "camp-tk-1",
+    store_id: mockStores[0].id,
+    platform: "tiktok",
+    campaign_name: "Spark Ads — Conversión",
+    spend: 1850,
+    attributed_revenue: 5920,
+    roas_platform: 3.5,
+    roas_real: 3.2,
+    status: "active",
+    date: isoDate(new Date()),
+    conversions: 71,
+  },
+  {
+    id: "camp-tk-2",
+    store_id: mockStores[0].id,
+    platform: "tiktok",
+    campaign_name: "Catálogo dinámico TikTok",
+    spend: 1420,
+    attributed_revenue: 3550,
+    roas_platform: 2.8,
+    roas_real: 2.5,
+    status: "active",
+    date: isoDate(new Date()),
+    conversions: 44,
+  },
+  {
+    id: "camp-tk-3",
+    store_id: mockStores[1].id,
+    platform: "tiktok",
+    campaign_name: "Video retargeting",
+    spend: 980,
+    attributed_revenue: 1860,
+    roas_platform: 2.1,
+    roas_real: 1.9,
+    status: "paused",
+    date: isoDate(new Date()),
+    conversions: 22,
+  },
+  {
+    id: "camp-g-1",
+    store_id: mockStores[0].id,
+    platform: "google",
+    campaign_name: "Search — marca",
+    spend: 3100,
+    attributed_revenue: 10230,
+    roas_platform: 3.6,
+    roas_real: 3.3,
+    status: "active",
+    date: isoDate(new Date()),
+    conversions: 94,
+  },
+  {
+    id: "camp-g-2",
+    store_id: mockStores[1].id,
+    platform: "google",
+    campaign_name: "Performance Max — general",
+    spend: 5200,
+    attributed_revenue: 14560,
+    roas_platform: 3.1,
+    roas_real: 2.8,
+    status: "active",
+    date: isoDate(new Date()),
+    conversions: 128,
+  },
+  {
+    id: "camp-g-3",
+    store_id: mockStores[2].id,
+    platform: "google",
+    campaign_name: "Display remarketing",
+    spend: 1650,
+    attributed_revenue: 2970,
+    roas_platform: 2.0,
+    roas_real: 1.8,
+    status: "paused",
+    date: isoDate(new Date()),
+    conversions: 31,
+  },
 ];
+
+/** Campañas filtradas por tienda (alcance dashboard) y plataforma de ads. */
+export function filterCampaignsByStoreAndAds(
+  campaigns: Campaign[],
+  storeScope: "all" | string,
+  adsPlatform: AdsPlatformScope
+): Campaign[] {
+  return campaigns.filter(
+    (c) =>
+      c.platform === adsPlatform && (storeScope === "all" || c.store_id === storeScope)
+  );
+}
 
 export const mockAlertsHistory: AlertHistory[] = [
   {
@@ -326,7 +457,7 @@ export const mockAlertsHistory: AlertHistory[] = [
   },
 ];
 
-export function aggregateFromOrders(orders: Order[]) {
+export function aggregateFromOrders(orders: Order[], roasStoreScope: string | null = null) {
   const totalSales = orders.reduce((a, o) => a + o.revenue, 0);
   const netProfit = orders.reduce(
     (a, o) =>
@@ -341,24 +472,48 @@ export function aggregateFromOrders(orders: Order[]) {
     0
   );
   const marginPercent = totalSales > 0 ? (netProfit / totalSales) * 100 : 0;
-  const totalSpend = mockCampaigns.reduce((a, c) => a + c.spend, 0);
-  const totalAttr = mockCampaigns.reduce((a, c) => a + c.attributed_revenue, 0);
+  const campaignsForRoas =
+    roasStoreScope === null
+      ? mockCampaigns
+      : mockCampaigns.filter((c) => c.store_id === roasStoreScope);
+  const totalSpend = campaignsForRoas.reduce((a, c) => a + c.spend, 0);
+  const totalAttr = campaignsForRoas.reduce((a, c) => a + c.attributed_revenue, 0);
   const trueRoas = totalSpend > 0 ? totalAttr / totalSpend : 0;
-  return { totalSales, netProfit, marginPercent, trueRoas, totalSpend, totalAttr };
+  const orderCount = orders.length;
+  const adSpendAttributed = orders.reduce((a, o) => a + (o.ads_spend_attributed ?? 0), 0);
+  const aov = orderCount > 0 ? totalSales / orderCount : 0;
+  const mer = adSpendAttributed > 0 ? totalSales / adSpendAttributed : 0;
+  return {
+    totalSales,
+    netProfit,
+    marginPercent,
+    trueRoas,
+    totalSpend,
+    totalAttr,
+    orderCount,
+    adSpendAttributed,
+    aov,
+    mer,
+  };
 }
 
-export function getDashboardMetrics(orders: Order[] = mockOrders) {
-  const cur = aggregateFromOrders(orders);
+export function getDashboardMetrics(
+  orders: Order[] = mockOrders,
+  roasStoreScope: string | null = null
+) {
+  const cur = aggregateFromOrders(orders, roasStoreScope);
   const prevOrders = orders.map((o) => ({
     ...o,
     revenue: o.revenue * 0.92,
     product_cost: o.product_cost * 0.95,
+    ads_spend_attributed: (o.ads_spend_attributed ?? 0) * 0.97,
   }));
-  const prev = aggregateFromOrders(prevOrders.length ? prevOrders : orders);
+  const prev = aggregateFromOrders(prevOrders.length ? prevOrders : orders, roasStoreScope);
   const pct = (a: number, b: number) => {
     if (!Number.isFinite(a) || !Number.isFinite(b) || b === 0) return 0;
     return ((a - b) / Math.abs(b)) * 100;
   };
+  const prevOrderCountBaseline = Math.max(1, Math.round(orders.length * 0.94));
   return {
     totalSales: cur.totalSales,
     salesChangePercent: pct(cur.totalSales, prev.totalSales),
@@ -368,47 +523,132 @@ export function getDashboardMetrics(orders: Order[] = mockOrders) {
     roasChangePercent: pct(cur.trueRoas, prev.trueRoas * 0.94),
     marginPercent: cur.marginPercent,
     marginChangePercent: pct(cur.marginPercent, prev.marginPercent * 0.97),
+    orderCount: cur.orderCount,
+    orderCountChangePercent: pct(cur.orderCount, prevOrderCountBaseline),
+    aov: cur.aov,
+    aovChangePercent: pct(cur.aov, prev.aov),
+    adSpendAttributed: cur.adSpendAttributed,
+    adSpendChangePercent: pct(cur.adSpendAttributed, prev.adSpendAttributed),
+    mer: cur.mer,
+    merChangePercent: pct(cur.mer, prev.mer),
   };
 }
 
-export function ordersLast30DaysSeries() {
-  const now = new Date();
-  const days: { date: string; ventas: number; ganancia: number; ads: number }[] = [];
-  for (let i = 29; i >= 0; i--) {
-    const d = new Date(now);
-    d.setDate(d.getDate() - i);
-    const key = isoDate(d);
-    const dayOrders = mockOrders.filter((o) => o.date === key);
-    const ventas = dayOrders.reduce((a, o) => a + o.revenue, 0);
-    const ganancia = dayOrders.reduce(
-      (a, o) =>
-        a +
-        orderProfit({
-          revenue: o.revenue,
-          product_cost: o.product_cost,
-          shipping_cost: o.shipping_cost,
-          payment_commission: o.payment_commission,
-          ads_spend_attributed: o.ads_spend_attributed,
-        }),
-      0
-    );
-    const ads = dayOrders.reduce((a, o) => a + (o.ads_spend_attributed ?? 0), 0);
-    days.push({
-      date: key.slice(5),
-      ventas: Math.round(ventas),
-      ganancia: Math.round(ganancia),
-      ads: Math.round(ads),
-    });
-  }
-  return days;
+function dailyRevenueRow(isoDateStr: string, storeId: string | null): RevenueChartRow {
+  const dayOrders = mockOrders.filter(
+    (o) => o.date === isoDateStr && (storeId === null || o.store_id === storeId)
+  );
+  const ventas = dayOrders.reduce((a, o) => a + o.revenue, 0);
+  const ganancia = dayOrders.reduce(
+    (a, o) =>
+      a +
+      orderProfit({
+        revenue: o.revenue,
+        product_cost: o.product_cost,
+        shipping_cost: o.shipping_cost,
+        payment_commission: o.payment_commission,
+        ads_spend_attributed: o.ads_spend_attributed,
+      }),
+    0
+  );
+  const ads = dayOrders.reduce((a, o) => a + (o.ads_spend_attributed ?? 0), 0);
+  return {
+    isoDate: isoDateStr,
+    date: isoDateStr.slice(5),
+    labelTooltip: formatSpanishDayTooltip(isoDateStr),
+    ventas: Math.round(ventas),
+    ganancia: Math.round(ganancia),
+    ads: Math.round(ads),
+  };
 }
 
-export function channelProfitRows(): ChannelProfitRow[] {
+export function ordersDailySeriesBetweenInclusive(
+  fromStr: string,
+  toStr: string,
+  storeId: string | null
+): RevenueChartRow[] {
+  const rows: RevenueChartRow[] = [];
+  const [y1, m1, d1] = fromStr.split("-").map(Number);
+  const [y2, m2, d2] = toStr.split("-").map(Number);
+  const cursor = new Date(y1, m1 - 1, d1);
+  const end = new Date(y2, m2 - 1, d2);
+  while (cursor <= end) {
+    rows.push(dailyRevenueRow(isoDateLocal(cursor), storeId));
+    cursor.setDate(cursor.getDate() + 1);
+  }
+  return rows;
+}
+
+/** Serie por hora (hoy) para el gráfico principal; reparte el total del día con curva tipo actividad comercial */
+export function ordersTodayHourlySeries(storeId: string | null = null): RevenueChartRow[] {
+  const todayStr = isoDateLocal(new Date());
+  const dayOrders = mockOrders.filter(
+    (o) => o.date === todayStr && (storeId === null || o.store_id === storeId)
+  );
+  const totalVentas = dayOrders.reduce((a, o) => a + o.revenue, 0);
+  const totalGanancia = dayOrders.reduce(
+    (a, o) =>
+      a +
+      orderProfit({
+        revenue: o.revenue,
+        product_cost: o.product_cost,
+        shipping_cost: o.shipping_cost,
+        payment_commission: o.payment_commission,
+        ads_spend_attributed: o.ads_spend_attributed,
+      }),
+    0
+  );
+  const totalAds = dayOrders.reduce((a, o) => a + (o.ads_spend_attributed ?? 0), 0);
+
+  const weights = Array.from({ length: 24 }, (_, h) => {
+    const peak = Math.exp(-((h - 15) * (h - 15)) / (2 * 5 * 5));
+    const base = h >= 8 && h <= 23 ? 1 : 0.28;
+    return base * (0.2 + 0.8 * peak);
+  });
+  const sumW = weights.reduce((a, b) => a + b, 0);
+
+  return weights.map((w, h) => {
+    const frac = sumW > 0 ? w / sumW : 1 / 24;
+    const at = new Date();
+    at.setHours(h, 0, 0, 0);
+    const labelTooltip = new Intl.DateTimeFormat("es-AR", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(at);
+
+    return {
+      isoDate: todayStr,
+      hour: h,
+      date: `${String(h).padStart(2, "0")}:00`,
+      labelTooltip,
+      ventas: Math.round(totalVentas * frac),
+      ganancia: Math.round(totalGanancia * frac),
+      ads: Math.round(totalAds * frac),
+    };
+  });
+}
+
+export function buildRevenueChartSeries(
+  range: DateRangeKey,
+  storeId: string | null,
+  customRange?: CustomDateBounds | null
+): RevenueChartRow[] {
+  if (range === "today") {
+    return ordersTodayHourlySeries(storeId);
+  }
+  const { fromStr, toStr } = getDateRangeBounds(range, customRange);
+  return ordersDailySeriesBetweenInclusive(fromStr, toStr, storeId);
+}
+
+export function channelProfitRows(orders: Order[] = mockOrders): ChannelProfitRow[] {
   const map = new Map<OrderChannel, { sales: number; costs: number; profit: number }>();
   for (const ch of channels) {
     map.set(ch, { sales: 0, costs: 0, profit: 0 });
   }
-  for (const o of mockOrders) {
+  for (const o of orders) {
     const row = map.get(o.channel)!;
     row.sales += o.revenue;
     const costs =
@@ -428,9 +668,9 @@ export function channelProfitRows(): ChannelProfitRow[] {
   });
 }
 
-export function buildProductProfits(): ProductProfit[] {
+export function buildProductProfits(orders: Order[] = mockOrders): ProductProfit[] {
   const byName = new Map<string, ProductProfit>();
-  for (const o of mockOrders) {
+  for (const o of orders) {
     const p =
       orderProfit({
         revenue: o.revenue,
@@ -464,34 +704,62 @@ export function buildProductProfits(): ProductProfit[] {
   return Array.from(byName.values()).sort((a, b) => b.profit - a.profit);
 }
 
-export function buildCashflowEntries(): CashflowEntry[] {
-  const methods: CashflowEntry["payment_method"][] = [
-    "Mercado Pago",
-    "Tarjeta",
-    "Efectivo",
-  ];
-  return mockOrders.slice(0, 40).map((o, i) => {
-    const payment_method = methods[i % methods.length];
-    const saleDate = new Date(o.date);
+const CASHFLOW_METHODS: CashflowEntry["payment_method"][] = [
+  "Mercado Pago",
+  "Tarjeta",
+  "Efectivo",
+];
+
+function cashflowGatewayLabel(pm: CashflowEntry["payment_method"], channel: OrderChannel): string {
+  if (pm === "Mercado Pago") return "Mercado Pago";
+  if (channel === "MercadoLibre") return "Mercado Libre";
+  return "Tarjeta";
+}
+
+/** Hasta N filas para mantener la tabla ágil en demo. */
+const CASHFLOW_MAX_ROWS = 100;
+
+export function buildCashflowTableRows(orders: Order[]): CashflowTableRow[] {
+  return orders.slice(0, CASHFLOW_MAX_ROWS).map((o, i) => {
+    const payment_method = CASHFLOW_METHODS[i % CASHFLOW_METHODS.length];
+    const saleDate = new Date(o.date + "T12:00:00");
     const estimated = addBusinessDays(
       saleDate,
       payment_method === "Mercado Pago" ? 14 : payment_method === "Tarjeta" ? 2 : 0
     );
     const status: CashflowEntry["status"] =
       i % 7 === 0 ? "Cobrado" : i % 5 === 0 ? "En proceso" : "Pendiente";
+    const comision = o.payment_commission;
+    const liquidable = Math.max(0, Math.round((o.revenue - comision) * 100) / 100);
     return {
       id: `cf-${o.id}`,
+      order_external_id: o.external_id,
       sale_date: o.date,
-      amount: o.revenue,
-      payment_method,
-      estimated_payout_date: isoDate(estimated),
+      payout_date: isoDate(estimated),
       status,
+      total_order: o.revenue,
+      liquidable,
+      comision,
+      origin: o.channel,
+      gateway: cashflowGatewayLabel(payment_method, o.channel),
+      payment_method,
+      cuotas: 1 + (i % 12),
     };
   });
 }
 
-export function cashflowSummary() {
-  const entries = buildCashflowEntries();
+export function buildCashflowEntries(orders: Order[] = mockOrders): CashflowEntry[] {
+  return buildCashflowTableRows(orders).map((r) => ({
+    id: r.id,
+    sale_date: r.sale_date,
+    amount: r.total_order,
+    payment_method: r.payment_method,
+    estimated_payout_date: r.payout_date,
+    status: r.status,
+  }));
+}
+
+export function cashflowSummary(entries: CashflowEntry[] = buildCashflowEntries()) {
   const now = new Date();
   const startOfWeek = (d: Date) => {
     const x = new Date(d);

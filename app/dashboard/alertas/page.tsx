@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import { useDashboard } from "@/components/dashboard/DashboardContext";
+import { useMemo, useState } from "react";
+import { buildAlertasAdvisorInsights } from "@/lib/ai-advisor-insights";
+import { AIAdvisor } from "@/components/dashboard/AIAdvisor";
 import { Button } from "@/components/ui/Button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
 import { DataTable, type Column } from "@/components/ui/Table";
@@ -72,7 +73,7 @@ const defaults: AlertRow[] = [
 ];
 
 export default function AlertasPage() {
-  const { dateRange, setDateRange } = useDashboard();
+  const advisorInsights = useMemo(() => buildAlertasAdvisorInsights(), []);
   const [rows, setRows] = useState(defaults);
   const [wa, setWa] = useState("+5491122334455");
   const [waConnected, setWaConnected] = useState(false);
@@ -96,18 +97,17 @@ export default function AlertasPage() {
 
   return (
     <>
-      <Header
-        userName={mockUser.full_name}
-        dateRange={dateRange}
-        onDateRangeChange={setDateRange}
-      />
+      <Header userName={mockUser.full_name} showDateRange={false} />
       <h1 className="mb-6 text-2xl font-bold text-white">Alertas</h1>
 
-      <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-1 md:gap-4">
         {rows.map((r) => (
-          <Card key={r.id} className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex flex-1 flex-col gap-3 md:flex-row md:items-center">
-              <label className="inline-flex cursor-pointer items-center gap-3">
+          <Card
+            key={r.id}
+            className="flex flex-col gap-4 max-md:gap-2 max-md:p-3 md:flex-row md:items-center md:justify-between"
+          >
+            <div className="flex flex-1 flex-col gap-3 max-md:gap-2 md:flex-row md:items-center">
+              <label className="inline-flex cursor-pointer items-start gap-2 max-md:flex-col max-md:gap-2 md:items-center md:gap-3">
                 <input
                   type="checkbox"
                   checked={r.active}
@@ -116,18 +116,20 @@ export default function AlertasPage() {
                       x.map((row) => (row.id === r.id ? { ...row, active: e.target.checked } : row))
                     )
                   }
-                  className="h-5 w-5 rounded border-margify-border bg-margify-cardAlt accent-margify-cyan"
+                  className="mt-0.5 h-5 w-5 shrink-0 rounded border-margify-border bg-margify-cardAlt accent-margify-cyan"
                 />
-                <div>
-                  <p className="font-semibold text-white">{r.title}</p>
-                  <p className="text-sm text-margify-muted">{r.description}</p>
+                <div className="min-w-0">
+                  <p className="font-semibold leading-snug text-white max-md:text-sm">{r.title}</p>
+                  <p className="text-sm leading-snug text-margify-muted max-md:line-clamp-3 max-md:text-[0.7rem]">
+                    {r.description}
+                  </p>
                 </div>
               </label>
-              <div className="flex flex-wrap gap-3 md:ml-auto">
-                <div>
+              <div className="flex flex-wrap gap-3 max-md:w-full max-md:flex-col max-md:gap-2 md:ml-auto">
+                <div className="max-md:w-full">
                   <Label className="text-xs">Umbral</Label>
                   <Input
-                    className="w-28"
+                    className="w-28 max-md:w-full"
                     type="number"
                     step={0.1}
                     value={r.threshold}
@@ -140,10 +142,10 @@ export default function AlertasPage() {
                     }
                   />
                 </div>
-                <div>
+                <div className="max-md:w-full">
                   <Label className="text-xs">Canal</Label>
                   <select
-                    className="mt-1.5 w-40 rounded-control border border-margify-border bg-margify-cardAlt px-2 py-2 text-sm text-white"
+                    className="mt-1.5 w-40 max-md:w-full rounded-control border border-margify-border bg-margify-cardAlt px-2 py-2 text-sm text-white"
                     value={r.channel}
                     onChange={(e) =>
                       setRows((x) =>
@@ -189,6 +191,10 @@ export default function AlertasPage() {
       <div className="mt-10">
         <h2 className="mb-4 text-lg font-semibold text-white">Historial reciente</h2>
         <DataTable columns={historyCols} data={mockAlertsHistory} pageSize={5} />
+      </div>
+
+      <div className="mt-10">
+        <AIAdvisor insights={advisorInsights} />
       </div>
     </>
   );

@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import type { Order } from "@/types";
 import type { Column } from "@/components/ui/Table";
 import { DataTable } from "@/components/ui/Table";
+import { IntegrationBrandIcon, orderChannelToBrandId } from "@/components/ui/IntegrationBrandIcon";
+import type { OrderChannel } from "@/types";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import { marginPercent, orderProfit } from "@/lib/calculations";
 
@@ -49,7 +51,17 @@ export function OrdersTable({ orders }: { orders: Order[] }) {
       render: (r) => formatDate(r.fecha, "short"),
     },
     { key: "producto", header: "Producto", sortable: true },
-    { key: "canal", header: "Canal", sortable: true },
+    {
+      key: "canal",
+      header: "Canal",
+      sortable: true,
+      render: (r) => (
+        <span className="inline-flex items-center gap-2">
+          <IntegrationBrandIcon brand={orderChannelToBrandId(r.canal as OrderChannel)} size="xs" />
+          <span>{r.canal}</span>
+        </span>
+      ),
+    },
     {
       key: "venta",
       header: "Venta",

@@ -1,18 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { useDashboard } from "@/components/dashboard/DashboardContext";
 import { Button } from "@/components/ui/Button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
 import { Header } from "@/components/ui/Header";
 import { Input, Label } from "@/components/ui/Input";
+import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
+import type { IntegrationBrandId } from "@/lib/integration-brands";
 import { mockCostsConfig, mockUser } from "@/lib/mock-data";
 
 function IntegrationCard({
+  brand,
   name,
   status,
   soon,
 }: {
+  brand: IntegrationBrandId;
   name: string;
   status: "Conectada" | "Desconectada";
   soon?: boolean;
@@ -20,7 +23,10 @@ function IntegrationCard({
   return (
     <Card className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div>
-        <p className="text-lg font-semibold text-white">{name}</p>
+        <p className="flex items-center gap-2 text-lg font-semibold text-white">
+          <IntegrationBrandIcon brand={brand} size="sm" />
+          {name}
+        </p>
         <p className="text-sm text-margify-muted">
           Estado:{" "}
           <span className={status === "Conectada" ? "text-margify-cyan" : "text-margify-muted"}>
@@ -36,7 +42,6 @@ function IntegrationCard({
 }
 
 export default function ConfiguracionPage() {
-  const { dateRange, setDateRange } = useDashboard();
   const [name, setName] = useState(mockUser.full_name);
   const [email, setEmail] = useState(mockUser.email);
   const [costs, setCosts] = useState({
@@ -48,11 +53,7 @@ export default function ConfiguracionPage() {
 
   return (
     <>
-      <Header
-        userName={mockUser.full_name}
-        dateRange={dateRange}
-        onDateRangeChange={setDateRange}
-      />
+      <Header userName={mockUser.full_name} showDateRange={false} />
       <h1 className="mb-8 text-2xl font-bold text-white">Configuración</h1>
 
       <section className="space-y-4">
@@ -78,12 +79,12 @@ export default function ConfiguracionPage() {
 
       <section className="mt-10 space-y-4">
         <h2 className="text-lg font-semibold text-margify-cyan">Integraciones conectadas</h2>
-        <IntegrationCard name="TiendaNube" status="Conectada" />
-        <IntegrationCard name="MercadoLibre" status="Conectada" />
-        <IntegrationCard name="Shopify" status="Conectada" />
-        <IntegrationCard name="Meta Ads" status="Conectada" />
-        <IntegrationCard name="Google Ads" status="Desconectada" soon />
-        <IntegrationCard name="TikTok Ads" status="Desconectada" soon />
+        <IntegrationCard brand="tiendanube" name="TiendaNube" status="Conectada" />
+        <IntegrationCard brand="mercadolibre" name="MercadoLibre" status="Conectada" />
+        <IntegrationCard brand="shopify" name="Shopify" status="Conectada" />
+        <IntegrationCard brand="meta" name="Meta Ads" status="Conectada" />
+        <IntegrationCard brand="googleAds" name="Google Ads" status="Desconectada" soon />
+        <IntegrationCard brand="tiktok" name="TikTok Ads" status="Desconectada" soon />
       </section>
 
       <section className="mt-10 space-y-4">
@@ -130,8 +131,8 @@ export default function ConfiguracionPage() {
       <section className="mt-10 space-y-4">
         <h2 className="text-lg font-semibold text-margify-cyan">Plan actual</h2>
         <Card>
-          <CardTitle>Growth — USD 22 / mes</CardTitle>
-          <CardDescription>Renovación estimada: 12/05/2026 · Hasta 500 órdenes / mes.</CardDescription>
+          <CardTitle>Pro — USD 26 / mes</CardTitle>
+          <CardDescription>Renovación estimada: 12/05/2026.</CardDescription>
           <Button type="button" className="mt-4" variant="secondary">
             Cambiar plan
           </Button>

@@ -51,7 +51,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <AuthShell quote="En minutos vas a ver qué productos te dejan plata de verdad y cuáles te la comen en silencio.">
+    <AuthShell quote="En minutos vas a ver qué productos te dejan dinero de verdad y cuáles te la comen en silencio.">
       <div className="rounded-card border border-margify-border bg-margify-card p-6 md:p-8">
         <h1 className="text-2xl font-bold text-white">Creá tu cuenta gratis</h1>
         <p className="mt-1 text-sm text-margify-muted">Sin tarjeta. Cancelás cuando quieras.</p>

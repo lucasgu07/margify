@@ -17,6 +17,21 @@ export function formatCurrency(
   }).format(value);
 }
 
+/** Moneda en notación compacta (ej. US$ 83,2 M) para KPIs y ejes densos. */
+export function formatCurrencyCompact(
+  value: number,
+  locale = "es-AR",
+  currency = "USD"
+) {
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
+    notation: "compact",
+    compactDisplay: "short",
+    maximumFractionDigits: 1,
+  }).format(value);
+}
+
 export function formatNumber(value: number, decimals = 1) {
   return new Intl.NumberFormat("es-AR", {
     maximumFractionDigits: decimals,

@@ -1,10 +1,47 @@
+import Image from "next/image";
 import Link from "next/link";
+import type { SimpleIcon } from "simple-icons";
+import { siGmail, siInstagram, siX } from "simple-icons";
 import { LayoutDashboard, Link2, Receipt, Sparkles } from "lucide-react";
 import { buttonClassName } from "@/components/ui/Button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
 import { Logo } from "@/components/ui/Logo";
 import { Badge } from "@/components/ui/Badge";
 import { LandingPricing } from "@/components/landing/LandingPricing";
+import { LandingMainAmbient } from "@/components/landing/LandingMainAmbient";
+import { LandingFaq } from "@/components/landing/LandingFaq";
+import { LandingTestimonials } from "@/components/landing/LandingTestimonials";
+import { IntegrationBrandGrid } from "@/components/landing/IntegrationBrandGrid";
+import { LandingHeader } from "@/components/landing/LandingHeader";
+
+/** Reemplazá por tu perfil de Instagram, X y el correo de contacto cuando estén listos. */
+const LANDING_FOOTER_INSTAGRAM = "https://www.instagram.com/";
+const LANDING_FOOTER_X = "https://x.com/";
+const LANDING_FOOTER_MAIL = "mailto:hola@margify.com";
+
+function FooterSocialLink({
+  href,
+  icon,
+  label,
+}: {
+  href: string;
+  icon: SimpleIcon;
+  label: string;
+}) {
+  const isHttp = href.startsWith("http");
+  return (
+    <a
+      href={href}
+      {...(isHttp ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+      className="inline-flex rounded-md p-1.5 text-margify-muted transition-colors duration-margify hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-margify-accent"
+      aria-label={label}
+    >
+      <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0" fill="currentColor" aria-hidden>
+        <path d={icon.path} />
+      </svg>
+    </a>
+  );
+}
 
 const howItWorksSteps = [
   {
@@ -37,107 +74,73 @@ const howItWorksSteps = [
   },
 ] as const;
 
-const integrations = [
-  "TiendaNube",
-  "Shopify",
-  "MercadoLibre",
-  "Meta",
-  "Google",
-  "TikTok",
-];
-
-const navLinkClassName =
-  "text-sm font-medium text-margify-muted transition-colors duration-margify hover:text-white";
-
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-margify-bg text-margify-text">
-      <header className="sticky top-0 z-50 border-b border-margify-border bg-margify-black/80 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-3 px-4 py-4 md:px-6">
-          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-8 gap-y-2">
-            <Link href="/" className="shrink-0">
-              <Logo />
-            </Link>
-            <nav className="flex flex-wrap items-center gap-x-5 gap-y-1" aria-label="Secciones de la página">
-              <a href="#como-funciona" className={navLinkClassName}>
-                Cómo funciona
-              </a>
-              <a href="#funciones" className={navLinkClassName}>
-                Funciones
-              </a>
-              <a href="#planes" className={navLinkClassName}>
-                Planes
-              </a>
-            </nav>
-          </div>
-          <div className="flex shrink-0 items-center gap-3">
-            <Link
-              href="/auth/login"
-              className="text-sm font-medium text-margify-muted transition-colors duration-margify hover:text-white"
-            >
-              Ingresar
-            </Link>
-            <Link
-              href="/auth/register"
-              className={buttonClassName("primary", "px-4 py-2 text-sm")}
-            >
-              Empezar gratis
-            </Link>
-          </div>
-        </div>
-      </header>
+    <div className="relative min-h-screen bg-margify-bg text-margify-text">
+      <div
+        className="pointer-events-none fixed inset-0 z-0 opacity-[0.28] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[length:22px_22px]"
+        aria-hidden
+      />
+      <div className="relative">
+        <LandingMainAmbient />
+        <LandingHeader />
 
-      <main>
-        <section
-          id="inicio"
-          className="relative scroll-mt-24 overflow-hidden border-b border-margify-border/80"
-        >
-          <div className="pointer-events-none absolute inset-0 bg-margify-bg" aria-hidden />
-          <div
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_85%_70%_at_50%_-35%,rgba(100,223,223,0.14),transparent_55%)]"
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_45%_at_100%_20%,rgba(100,223,223,0.08),transparent_60%)]"
-            aria-hidden
-          />
-          <div
-            className="pointer-events-none absolute inset-0 bg-gradient-to-b from-margify-cyan/10 via-transparent to-margify-bg"
-            aria-hidden
-          />
-          <div className="relative mx-auto max-w-6xl px-4 py-16 md:flex md:items-center md:justify-between md:px-6 md:py-24">
-            <div className="max-w-2xl">
-              <Badge type="neutral" label="+ 1.200 tiendas ya usan Margify" className="mb-6" />
-              <h1 className="text-4xl font-bold leading-tight tracking-tight text-white md:text-5xl lg:text-6xl">
-                Sabé exactamente si tu tienda gana o pierde plata
-              </h1>
-              <p className="mt-6 text-lg text-margify-muted md:text-xl">
-                Margify conecta todas tus ventas, suma todos tus costos ocultos y te muestra tu
-                ganancia real en tiempo real. Sin Excel. Sin adivinar.
-              </p>
-              <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-                <Link
-                  href="/auth/register"
-                  className={buttonClassName("primary", "w-full px-8 py-3 sm:w-auto")}
-                >
-                  Empezar gratis
-                </Link>
-                <Link
-                  href="/dashboard"
-                  className={buttonClassName("secondary", "w-full px-8 py-3 sm:w-auto")}
-                >
-                  Ver demo
-                </Link>
-              </div>
-              <div className="mt-12 flex flex-wrap gap-3">
-                {integrations.map((n) => (
-                  <span
-                    key={n}
-                    className="rounded-full border border-margify-border bg-margify-card px-3 py-1 text-xs font-medium text-margify-muted"
+        <main className="relative z-10 overflow-x-hidden bg-transparent">
+        <section id="inicio" className="relative z-10 scroll-mt-32">
+          <div className="mx-auto max-w-6xl px-4 py-14 md:px-6 md:py-20 lg:py-24">
+            <div className="grid gap-8 lg:grid-cols-2 lg:items-start lg:gap-x-10 lg:gap-y-6 xl:gap-x-12">
+              <div className="flex min-w-0 flex-col gap-5 lg:max-w-xl xl:max-w-lg">
+                <div className="mb-1 flex flex-wrap gap-2">
+                  <Badge type="neutral" label="Rentabilidad real + campañas + IA" className="w-fit" />
+                  <Badge
+                    type="neutral"
+                    label="+704 tiendas ya mejoraron su margen con Margify"
+                    className="w-fit"
+                  />
+                </div>
+                <h1 className="text-3xl font-bold leading-[1.15] tracking-tight text-white sm:text-4xl lg:text-[2.35rem] lg:leading-tight xl:text-5xl">
+                  Sabé si ganás o perdés: ventas, ads, costos e IA en un solo panel
+                </h1>
+                <p className="text-base leading-relaxed text-margify-muted md:text-lg">
+                  Margify integra TiendaNube, Shopify o Mercado Libre con Meta, TikTok y Google Ads:
+                  ganancia neta y margen por producto, ROAS real, tablas de campañas con Margify AI,
+                  alertas por WhatsApp y cashflow proyectado. Todo al día, sin Excel ni datos sueltos.
+                </p>
+                <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
+                  <Link
+                    href="/auth/register"
+                    className={buttonClassName("primary", "w-full px-7 py-3 sm:w-auto")}
                   >
-                    {n}
-                  </span>
-                ))}
+                    Empezar gratis
+                  </Link>
+                  <Link
+                    href="/dashboard"
+                    className={buttonClassName("secondary", "w-full px-7 py-3 sm:w-auto")}
+                  >
+                    Ver demo
+                  </Link>
+                </div>
+              </div>
+
+              <div className="relative flex min-h-0 min-w-0 flex-col justify-center lg:row-span-2 lg:min-h-full lg:pt-7">
+                <div
+                  className="relative w-full overflow-hidden rounded-2xl border border-margify-border/70 bg-margify-black/50 shadow-[0_28px_100px_rgba(0,0,0,0.55),0_0_0_1px_rgba(255,255,255,0.04)_inset] ring-1 ring-white/[0.05]"
+                  style={{ aspectRatio: "16 / 10" }}
+                >
+                  <Image
+                    src="/landing-dashboard-hero.png"
+                    alt="Vista del dashboard Margify: métricas de rentabilidad, gráfico y resumen de los últimos 30 días"
+                    fill
+                    priority
+                    quality={100}
+                    sizes="(min-width: 1536px) 600px, (min-width: 1024px) min(560px, 48vw), 100vw"
+                    className="object-cover object-left-top"
+                  />
+                </div>
+              </div>
+
+              <div className="min-w-0 lg:col-start-1 lg:row-start-2">
+                <IntegrationBrandGrid />
               </div>
             </div>
           </div>
@@ -145,7 +148,7 @@ export default function LandingPage() {
 
         <section
           id="como-funciona"
-          className="scroll-mt-24 border-b border-margify-border bg-margify-bg py-14 md:py-20"
+          className="relative z-10 scroll-mt-32 py-14 md:py-20"
           aria-labelledby="how-it-works-heading"
         >
           <div className="mx-auto max-w-6xl px-4 md:px-6">
@@ -161,18 +164,18 @@ export default function LandingPage() {
                 Sin complicaciones: conectás, cargás costos, mirás el panel y reaccionás cuando hace falta.
               </p>
             </div>
-            <ol className="mt-12 grid list-none gap-6 p-0 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+            <ol className="mt-12 grid list-none grid-cols-2 gap-4 p-0 sm:gap-6 lg:grid-cols-4 lg:gap-8">
               {howItWorksSteps.map(({ step, title, description, Icon }) => (
                 <li key={step}>
-                  <Card className="relative h-full border-margify-border bg-margify-card pt-8">
-                    <div className="absolute left-6 top-0 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-margify-border bg-margify-black text-sm font-bold text-margify-cyan">
+                  <Card className="relative h-full border-margify-border bg-margify-card pt-8 max-md:p-4 max-md:pt-7">
+                    <div className="absolute left-4 top-0 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-margify-border bg-margify-black text-xs font-bold text-margify-cyan sm:left-6 sm:h-10 sm:w-10 sm:text-sm">
                       {step}
                     </div>
-                    <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-control border border-margify-border bg-margify-cardAlt text-margify-cyan">
-                      <Icon className="h-5 w-5" aria-hidden />
+                    <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-control border border-margify-border bg-margify-cardAlt text-margify-cyan sm:mb-4 sm:h-11 sm:w-11">
+                      <Icon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
                     </div>
-                    <CardTitle className="text-lg">{title}</CardTitle>
-                    <CardDescription className="mt-2 text-sm leading-relaxed text-margify-muted">
+                    <CardTitle className="text-base sm:text-lg">{title}</CardTitle>
+                    <CardDescription className="mt-2 text-xs leading-relaxed text-margify-muted sm:text-sm">
                       {description}
                     </CardDescription>
                   </Card>
@@ -182,158 +185,143 @@ export default function LandingPage() {
           </div>
         </section>
 
-        <section className="border-y border-margify-border bg-margify-card py-16 md:py-20">
+        <section
+          id="dentro-de-margify"
+          className="relative z-10 scroll-mt-32 py-16 md:py-24"
+          aria-labelledby="campaigns-ai-heading"
+        >
+          <div className="mx-auto max-w-6xl px-4 md:px-6">
+            <div className="mx-auto max-w-3xl text-center">
+              <h2
+                id="campaigns-ai-heading"
+                className="text-3xl font-bold tracking-tight text-white md:text-4xl"
+              >
+                Campañas y Margify AI en el mismo lugar
+              </h2>
+              <p className="mt-4 text-pretty text-margify-muted md:text-lg">
+                Armá la vista con{" "}
+                <span className="font-medium text-margify-text">las métricas y columnas que quieras seguir</span>: vos
+                elegís qué mirar en cada campaña y canal. Debajo,{" "}
+                <span className="font-medium text-margify-text">Margify AI</span> no solo te marca riesgos y cosas a
+                revisar: también te dice cuando algo va bien, para que puedas potenciarlo o escalar con criterio.
+              </p>
+            </div>
+            <div className="mx-auto mt-10 max-w-5xl lg:mt-14">
+              <div className="overflow-hidden rounded-3xl border border-margify-border/70 bg-margify-black/40 shadow-[0_28px_90px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.05)_inset] ring-1 ring-white/[0.06]">
+                <Image
+                  src="/landing-campaigns-ai.png"
+                  alt="Tabla de campañas de publicidad en Margify y panel Margify AI con recomendaciones"
+                  width={1024}
+                  height={515}
+                  quality={100}
+                  sizes="(min-width: 1280px) 1024px, (min-width: 1024px) 90vw, 100vw"
+                  unoptimized
+                  className="h-auto w-full rounded-3xl"
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="funciones" className="relative z-10 scroll-mt-32 py-16 md:py-24">
           <div className="mx-auto max-w-6xl px-4 md:px-6">
             <h2 className="text-center text-3xl font-bold text-white md:text-4xl">
-              Basta de manejar tu negocio a ciegas
+              Todo lo que necesitás para decidir con dinero de verdad
             </h2>
-            <div className="mt-12 grid gap-6 md:grid-cols-3">
+            <div className="mt-12 grid grid-cols-2 gap-4 md:gap-6 lg:grid-cols-3">
               {[
                 {
-                  t: "Meta dice ROAS 4x",
-                  d: "El panel te muestra un número optimista que no incluye toda la realidad post iOS 14.",
+                  title: "Dashboard de rentabilidad en tiempo real",
+                  description:
+                    "Ingresos, costos y margen en un solo lugar, actualizados para que decidas con números de hoy, no con exportaciones viejas.",
                 },
                 {
-                  t: "Pero sumás costos reales",
-                  d: "Comisiones, envío, producto, agencia y errores de atribución comen el margen.",
+                  title: "IA Advisor que te dice exactamente qué hacer",
+                  description:
+                    "Te propone prioridades concretas: qué revisar, qué pausar o qué escalar, sin perderte en tablas interminables.",
                 },
                 {
-                  t: "Resultado: estás perdiendo plata",
-                  d: "Sin verlo en un solo lugar, ajustás campañas y precios a ciegas.",
+                  title: "Alertas por WhatsApp si algo falla o si algo va muy bien",
+                  description:
+                    "Te avisamos si el margen cae, un canal se desvía o hay algo raro en las órdenes, y también cuando rindió mejor de lo esperado para que lo aproveches o lo escales.",
                 },
-              ].map((c) => (
-                <Card key={c.t} className="bg-margify-cardAlt">
-                  <CardTitle className="text-xl">{c.t}</CardTitle>
-                  <CardDescription className="text-margify-muted">{c.d}</CardDescription>
+                {
+                  title: "Rentabilidad real por producto/SKU",
+                  description:
+                    "Ves qué productos te dejan ganancia de verdad y cuáles te la comen, por SKU o categoría, con todos los costos metidos.",
+                },
+                {
+                  title: "Predictor de cashflow",
+                  description:
+                    "Proyectá entradas y salidas con lo que ya pasó y lo que tenés comprometido, para no quedarte corto entre campañas y reposición.",
+                },
+                {
+                  title: "Portal para agencias",
+                  description:
+                    "Tu equipo o agencia entra a los mismos números que vos, con accesos acotados y sin mezclar datos entre clientes.",
+                },
+              ].map(({ title, description }) => (
+                <Card key={title} className="max-md:p-4">
+                  <CardTitle className="text-sm md:text-base">{title}</CardTitle>
+                  <CardDescription className="max-md:text-xs">{description}</CardDescription>
                 </Card>
               ))}
             </div>
-            <div className="mx-auto mt-12 max-w-md rounded-card border border-margify-border bg-margify-black p-6 md:p-8">
-              <p className="text-center text-base font-semibold text-white">
-                Por cada <span className="text-margify-cyan">$100</span> que vendés
-              </p>
-              <p className="mt-2 text-center text-sm leading-snug text-margify-muted">
-                No es “ganancia = venta”. Parte se va en costos que ya ves y otra en los que casi nadie suma al día a día.
-              </p>
-              <div className="mt-8 space-y-3 border-t border-margify-border pt-6">
-                <div className="flex items-center justify-between gap-4 text-sm">
-                  <span className="text-margify-muted">Entra por la venta</span>
-                  <span className="shrink-0 tabular-nums font-medium text-white">$100</span>
-                </div>
-                <div className="flex items-center justify-between gap-4 text-sm">
-                  <span className="text-margify-muted">Costos que ya controlás</span>
-                  <span className="shrink-0 tabular-nums text-white/85">−$35</span>
-                </div>
-                <div className="flex items-center justify-between gap-4 text-sm">
-                  <span className="text-margify-negative/90">Costos que suelen quedar afuera</span>
-                  <span className="shrink-0 tabular-nums text-margify-negative/90">−$22</span>
-                </div>
-                <div className="flex items-end justify-between gap-4 border-t border-margify-border pt-4">
-                  <span className="text-sm font-semibold text-white">Te queda en el bolsillo</span>
-                  <span className="shrink-0 text-3xl font-bold tabular-nums tracking-tight text-margify-cyan">
-                    $43
-                  </span>
-                </div>
-              </div>
-              <div className="mt-8">
-                <p className="mb-2 text-center text-xs font-medium uppercase tracking-wide text-margify-muted">
-                  En una mirada
-                </p>
-                <div className="flex h-4 overflow-hidden rounded-full bg-margify-border">
-                  <div
-                    className="flex w-[43%] items-center justify-center bg-margify-cyan"
-                    title="Margen que queda"
-                  />
-                  <div
-                    className="flex flex-1 items-center justify-center bg-gradient-to-r from-white/25 to-margify-negative/70"
-                    title="Todo lo que se fue en costos"
-                  />
-                </div>
-                <div className="mt-2 flex justify-between text-xs text-margify-muted">
-                  <span className="text-margify-cyan">43% para vos</span>
-                  <span>57% en costos</span>
-                </div>
-              </div>
-            </div>
           </div>
         </section>
 
-        <section
-          id="funciones"
-          className="mx-auto max-w-6xl scroll-mt-24 px-4 py-16 md:px-6 md:py-24"
-        >
-          <h2 className="text-center text-3xl font-bold text-white md:text-4xl">
-            Todo lo que necesitás para decidir con plata de verdad
-          </h2>
-          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {[
-              {
-                title: "Dashboard de rentabilidad en tiempo real",
-                description:
-                  "Ingresos, costos y margen en un solo lugar, actualizados para que decidas con números de hoy, no con exportaciones viejas.",
-              },
-              {
-                title: "IA Advisor que te dice exactamente qué hacer",
-                description:
-                  "Te propone prioridades concretas: qué revisar, qué pausar o qué escalar, sin perderte en tablas interminables.",
-              },
-              {
-                title: "Alertas por WhatsApp si algo falla o si algo va muy bien",
-                description:
-                  "Te avisamos si el margen cae, un canal se desvía o hay algo raro en las órdenes, y también cuando rindió mejor de lo esperado para que lo aproveches o lo escales.",
-              },
-              {
-                title: "Rentabilidad real por producto/SKU",
-                description:
-                  "Ves qué productos te dejan ganancia de verdad y cuáles te la comen, por SKU o categoría, con todos los costos metidos.",
-              },
-              {
-                title: "Predictor de cashflow",
-                description:
-                  "Proyectá entradas y salidas con lo que ya pasó y lo que tenés comprometido, para no quedarte corto entre campañas y reposición.",
-              },
-              {
-                title: "Portal para agencias",
-                description:
-                  "Tu equipo o agencia entra a los mismos números que vos, con accesos acotados y sin mezclar datos entre clientes.",
-              },
-            ].map(({ title, description }) => (
-              <Card key={title}>
-                <CardTitle className="text-base">{title}</CardTitle>
-                <CardDescription>{description}</CardDescription>
-              </Card>
-            ))}
-          </div>
-        </section>
+        <LandingTestimonials />
 
-        <section
-          id="planes"
-          className="scroll-mt-24 border-y border-margify-border bg-margify-card py-16 md:py-24"
-        >
+        <section id="planes" className="relative z-10 scroll-mt-32 py-16 md:py-24">
           <LandingPricing />
         </section>
-      </main>
 
-      <footer className="border-t border-margify-border bg-margify-black py-10">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-4 text-sm text-margify-muted md:flex-row md:px-6">
-          <Logo size="sm" />
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link href="/dashboard" className="transition-colors duration-margify hover:text-white">
-              Producto
-            </Link>
-            <Link href="/auth/login" className="transition-colors duration-margify hover:text-white">
-              Ingresar
-            </Link>
-            <Link
-              href="/auth/register"
-              className="transition-colors duration-margify hover:text-white"
+        <section
+          id="faq"
+          className="relative z-10 scroll-mt-32 py-16 md:py-24"
+          aria-labelledby="faq-heading"
+        >
+          <LandingFaq />
+        </section>
+        </main>
+
+        <footer className="relative z-10 bg-transparent pb-10 pt-6 md:pb-12 md:pt-8">
+          <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-4 text-sm text-margify-muted md:flex-row md:px-6">
+            <Logo size="sm" />
+            <div className="flex flex-wrap justify-center gap-4">
+              <Link href="/dashboard" className="transition-colors duration-margify hover:text-white">
+                Producto
+              </Link>
+              <Link href="/auth/login" className="transition-colors duration-margify hover:text-white">
+                Ingresar
+              </Link>
+              <Link
+                href="/auth/register"
+                className="transition-colors duration-margify hover:text-white"
+              >
+                Registro
+              </Link>
+            </div>
+            <nav
+              className="flex items-center justify-center gap-1 sm:gap-2"
+              aria-label="Redes sociales y contacto"
             >
-              Registro
-            </Link>
+              <FooterSocialLink
+                href={LANDING_FOOTER_INSTAGRAM}
+                icon={siInstagram}
+                label="Instagram de Margify"
+              />
+              <FooterSocialLink href={LANDING_FOOTER_X} icon={siX} label="X de Margify" />
+              <FooterSocialLink
+                href={LANDING_FOOTER_MAIL}
+                icon={siGmail}
+                label="Correo electrónico"
+              />
+            </nav>
+            <p>© Margify 2026</p>
           </div>
-          <p>© Margify 2026</p>
-        </div>
-      </footer>
+        </footer>
+      </div>
     </div>
   );
 }

@@ -1,189 +1,209 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+import { buildCampanasAdvisorInsights } from "@/lib/ai-advisor-insights";
+
 import { Megaphone, MousePointerClick, Target, Wallet } from "lucide-react";
+
+import { AIAdvisor } from "@/components/dashboard/AIAdvisor";
+
+import { CampaignsDataTable } from "@/components/dashboard/CampaignsDataTable";
+
 import { useDashboard } from "@/components/dashboard/DashboardContext";
-import { Badge } from "@/components/ui/Badge";
+
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
-import { DataTable, type Column } from "@/components/ui/Table";
+import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
+
 import { Header } from "@/components/ui/Header";
+
 import { MetricCard } from "@/components/ui/MetricCard";
-import { mockCampaigns, mockUser } from "@/lib/mock-data";
-import type { Campaign } from "@/types";
-import { formatCurrency } from "@/lib/utils";
-import { cn } from "@/lib/utils";
+
+import { adsPlatformToBrandId } from "@/lib/integration-brands";
+import { filterCampaignsByStoreAndAds, mockCampaigns, mockUser } from "@/lib/mock-data";
+
+import type { AdsPlatformScope, Campaign } from "@/types";
+
+function pctChange(cur: number, prev: number) {
+  if (!Number.isFinite(cur) || !Number.isFinite(prev) || prev === 0) return 0;
+
+  return ((cur - prev) / Math.abs(prev)) * 100;
+}
+
+function aggregateCampaignTotals(c: Campaign[]) {
+  const spend = c.reduce((a, x) => a + x.spend, 0);
+
+  const attr = c.reduce((a, x) => a + x.attributed_revenue, 0);
+
+  const conv = c.reduce((a, x) => a + (x.conversions ?? 0), 0);
+
+  const roas = spend > 0 ? attr / spend : 0;
+
+  const cpa = conv > 0 ? spend / conv : 0;
+
+  return { spend, attr, conv, roas, cpa };
+}
+
+function campaignKpiChangesVsPrevious(rows: Campaign[]) {
+  const prevRows = rows.map((row) => ({
+    ...row,
+
+    spend: row.spend * 0.97,
+
+    attributed_revenue: row.attributed_revenue * 0.98,
+
+    conversions: Math.max(1, Math.round((row.conversions ?? 1) * 0.95)),
+  }));
+
+  const cur = aggregateCampaignTotals(rows);
+
+  const prev = aggregateCampaignTotals(prevRows);
+
+  return {
+    spendChange: pctChange(cur.spend, prev.spend),
+
+    roasChange: pctChange(cur.roas, prev.roas),
+
+    cpaChange: pctChange(cur.cpa, prev.cpa),
+
+    convChange: pctChange(cur.conv, prev.conv),
+  };
+}
+
+function importantNote(adsPlatform: AdsPlatformScope) {
+  if (adsPlatform === "meta") {
+    return (
+      <>
+        Meta pierde entre 30% y 50% de tus conversiones desde iOS 14. El ROAS real de Margify incluye
+        todas las ventas verificadas contra tu backoffice y medios de pago.
+      </>
+    );
+  }
+  if (adsPlatform === "tiktok") {
+    return (
+      <>
+        TikTok Ads puede atribuir distinto a tus ventas reales. El ROAS real de Margify cruza gasto y
+        ingresos verificados para ver el retorno con el mismo criterio que el resto de tu cuenta.
+      </>
+    );
+  }
+  return (
+    <>
+      Google Ads reporta conversiones con su ventana y modelo. El ROAS real de Margify contrasta con
+      ventas verificadas para que compares con un solo estándar.
+    </>
+  );
+}
 
 export default function CampanasPage() {
-  const { dateRange, setDateRange } = useDashboard();
-  const [rows, setRows] = useState<Campaign[]>(() => [...mockCampaigns]);
+  const { storeScope, adsPlatform } = useDashboard();
+
+  const baseCampaigns = useMemo(
+    () => filterCampaignsByStoreAndAds(mockCampaigns, storeScope, adsPlatform),
+    [storeScope, adsPlatform]
+  );
+
+  const [rows, setRows] = useState<Campaign[]>(() =>
+    filterCampaignsByStoreAndAds(mockCampaigns, "all", "meta")
+  );
+
+  useEffect(() => {
+    setRows([...baseCampaigns]);
+  }, [baseCampaigns]);
+
+  const adsBrand = adsPlatformToBrandId(adsPlatform);
 
   const totals = useMemo(() => {
     const spend = rows.reduce((a, c) => a + c.spend, 0);
+
     const attr = rows.reduce((a, c) => a + c.attributed_revenue, 0);
+
     const conv = rows.reduce((a, c) => a + (c.conversions ?? 0), 0);
+
     const roas = spend > 0 ? attr / spend : 0;
+
     const cpa = conv > 0 ? spend / conv : 0;
+
     return { spend, roas, cpa, conv };
   }, [rows]);
 
-  function toggleStatus(id: string) {
+  const kpiDelta = useMemo(() => campaignKpiChangesVsPrevious(rows), [rows]);
+
+  const toggleStatus = useCallback((id: string) => {
     setRows((r) =>
       r.map((c) =>
-        c.id === id
-          ? { ...c, status: c.status === "active" ? "paused" : "active" }
-          : c
+        c.id === id ? { ...c, status: c.status === "active" ? "paused" : "active" } : c
       )
     );
-  }
+  }, []);
 
-  const tableData = useMemo(
-    () =>
-      rows.map((c) => {
-        const diff =
-          c.roas_platform > 0 ? ((c.roas_real - c.roas_platform) / c.roas_platform) * 100 : 0;
-        const conv = c.conversions ?? 1;
-        const cpa = c.spend / conv;
-        return {
-          id: c.id,
-          nombre: c.campaign_name,
-          gasto: c.spend,
-          ventas: c.attributed_revenue,
-          roasMeta: c.roas_platform,
-          roasReal: c.roas_real,
-          diff,
-          estado: c.status,
-          cpa,
-        };
-      }),
-    [rows]
+  const advisorInsights = useMemo(
+    () => buildCampanasAdvisorInsights(storeScope, adsPlatform),
+    [storeScope, adsPlatform]
   );
-
-  const columns: Column<(typeof tableData)[number]>[] = [
-    { key: "nombre", header: "Campaña", sortable: true },
-    {
-      key: "gasto",
-      header: "Gasto",
-      sortable: true,
-      accessor: (r) => r.gasto,
-      render: (r) => formatCurrency(r.gasto),
-    },
-    {
-      key: "ventas",
-      header: "Ventas atribuidas",
-      sortable: true,
-      accessor: (r) => r.ventas,
-      render: (r) => formatCurrency(r.ventas),
-    },
-    {
-      key: "roasMeta",
-      header: "ROAS Meta",
-      sortable: true,
-      accessor: (r) => r.roasMeta,
-      render: (r) => `${r.roasMeta.toFixed(2)}x`,
-    },
-    {
-      key: "roasReal",
-      header: "ROAS real",
-      sortable: true,
-      accessor: (r) => r.roasReal,
-      render: (r) => `${r.roasReal.toFixed(2)}x`,
-    },
-    {
-      key: "diff",
-      header: "Diferencia %",
-      sortable: true,
-      accessor: (r) => r.diff,
-      render: (r) => `${r.diff > 0 ? "+" : ""}${r.diff.toFixed(1)}%`,
-    },
-    {
-      key: "estado",
-      header: "Estado",
-      render: (r) => (
-        <Badge
-          type={r.estado === "active" ? "success" : "neutral"}
-          label={r.estado === "active" ? "Activa" : "Pausada"}
-        />
-      ),
-    },
-    {
-      key: "toggle",
-      header: "",
-      sortable: false,
-      render: (r) => (
-        <button
-          type="button"
-          onClick={() => toggleStatus(r.id)}
-          className="rounded-control border border-margify-border px-2 py-1 text-xs text-margify-muted transition-colors duration-margify hover:border-margify-cyan hover:text-margify-cyan"
-        >
-          {r.estado === "active" ? "Pausar" : "Activar"}
-        </button>
-      ),
-    },
-  ];
 
   return (
     <>
-      <Header
-        userName={mockUser.full_name}
-        dateRange={dateRange}
-        onDateRangeChange={setDateRange}
-      />
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <Header userName={mockUser.full_name} />
+
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           title="Gasto total en ads"
           value={totals.spend}
           icon={Wallet}
-          change={4.2}
-          changeType="negative"
+          integrationBrand={adsBrand}
+          change={kpiDelta.spendChange}
         />
+
         <MetricCard
           title="ROAS real promedio"
           value={totals.roas}
           valueIsCurrency={false}
           suffix="x"
           icon={Target}
-          change={2.1}
-          changeType="positive"
+          integrationBrand={adsBrand}
+          change={kpiDelta.roasChange}
         />
+
         <MetricCard
           title="CPA real"
           value={totals.cpa}
           icon={MousePointerClick}
-          change={-3.0}
-          changeType="positive"
+          integrationBrand={adsBrand}
+          change={kpiDelta.cpaChange}
         />
+
         <MetricCard
           title="Conversiones"
           value={totals.conv}
           valueIsCurrency={false}
           icon={Megaphone}
-          change={6.4}
-          changeType="positive"
+          integrationBrand={adsBrand}
+          change={kpiDelta.convChange}
         />
       </div>
 
       <Card className="mt-8 border-margify-cyan/25 bg-margify-cyan/5">
         <CardTitle className="text-margify-cyan">Importante</CardTitle>
+
         <CardDescription className="text-margify-text/90">
-          Meta pierde entre 30% y 50% de tus conversiones desde iOS 14. El ROAS real de Margify
-          incluye todas las ventas verificadas contra tu backoffice y medios de pago.
+          <span className="inline-flex items-start gap-2">
+            <IntegrationBrandIcon brand={adsBrand} size="sm" className="mt-0.5 shrink-0" />
+            <span>{importantNote(adsPlatform)}</span>
+          </span>
         </CardDescription>
       </Card>
 
       <div className="mt-8">
-        <h2 className="mb-4 text-lg font-semibold text-white">Campañas de Meta Ads</h2>
-        <DataTable
-          columns={columns}
-          data={tableData}
-          pageSize={6}
-          rowClassName={(r) =>
-            cn(
-              r.roasReal >= 2 && "bg-margify-cyan/5",
-              r.roasReal >= 1 && r.roasReal < 2 && "bg-amber-500/5",
-              r.roasReal < 1 && "bg-margify-negative/5"
-            )
-          }
+        <CampaignsDataTable
+          campaigns={rows}
+          onToggleStatus={toggleStatus}
+          adsPlatform={adsPlatform}
         />
+      </div>
+
+      <div className="mt-10">
+        <AIAdvisor insights={advisorInsights} />
       </div>
     </>
   );

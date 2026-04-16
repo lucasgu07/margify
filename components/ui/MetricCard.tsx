@@ -1,6 +1,8 @@
 import type { LucideIcon } from "lucide-react";
 import { Card } from "@/components/ui/Card";
-import { cn, formatCurrency, formatNumber } from "@/lib/utils";
+import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
+import type { IntegrationBrandId } from "@/lib/integration-brands";
+import { cn, formatCurrency, formatCurrencyCompact, formatNumber } from "@/lib/utils";
 
 export function MetricCard({
   title,
@@ -8,41 +10,52 @@ export function MetricCard({
   valueIsCurrency = true,
   suffix,
   change,
-  changeType,
   icon: Icon,
+  integrationBrand,
   className,
   valueClassName,
   progress,
+  decimals,
+  compact,
 }: {
   title: string;
   value: number;
   valueIsCurrency?: boolean;
   suffix?: string;
   change?: number;
-  changeType?: "positive" | "negative" | "neutral";
   icon?: LucideIcon;
+  /** Logo de plataforma junto al título (p. ej. Meta para gasto en ads). */
+  integrationBrand?: IntegrationBrandId;
   className?: string;
   valueClassName?: string;
   /** 0–100 para barra visual opcional */
   progress?: number;
+  /** Decimales del valor (por defecto: 1 si suffix es %, si no 2) */
+  decimals?: number;
+  /** Usa notación compacta para montos grandes (K / M). */
+  compact?: boolean;
 }) {
+  const valueDecimals = decimals ?? (suffix === "%" ? 1 : 2);
   const formatted = valueIsCurrency
-    ? formatCurrency(value)
-    : `${formatNumber(value, suffix === "%" ? 1 : 2)}${suffix ?? ""}`;
+    ? compact
+      ? formatCurrencyCompact(value)
+      : formatCurrency(value)
+    : `${formatNumber(value, valueDecimals)}${suffix ?? ""}`;
 
-  const changeColor =
-    changeType === "positive"
-      ? "text-margify-cyan"
-      : changeType === "negative"
-        ? "text-margify-negative"
-        : "text-margify-muted";
+  const showChangeFooter = change !== undefined;
+  const secondaryClass = "text-margify-muted";
 
   return (
     <Card className={cn("flex flex-col gap-3", className)}>
       <div className="flex items-start justify-between gap-2">
-        <p className="text-sm font-medium text-margify-muted">{title}</p>
+        <p className="flex min-w-0 items-center gap-1.5 text-sm font-medium text-margify-muted">
+          {integrationBrand ? (
+            <IntegrationBrandIcon brand={integrationBrand} size="xs" />
+          ) : null}
+          <span>{title}</span>
+        </p>
         {Icon ? (
-          <Icon className="h-5 w-5 shrink-0 text-margify-cyan/80" aria-hidden />
+          <Icon className={cn("h-5 w-5 shrink-0", secondaryClass)} aria-hidden />
         ) : null}
       </div>
       <p
@@ -53,8 +66,8 @@ export function MetricCard({
       >
         {formatted}
       </p>
-      {change !== undefined && changeType ? (
-        <p className={cn("text-xs font-medium", changeColor)}>
+      {showChangeFooter ? (
+        <p className={cn("text-xs font-medium", secondaryClass)}>
           {change > 0 ? "+" : ""}
           {formatNumber(change, 1)}% vs. período anterior
         </p>
@@ -62,7 +75,7 @@ export function MetricCard({
       {progress !== undefined ? (
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-margify-border">
           <div
-            className="h-full rounded-full bg-margify-cyan transition-all duration-margify"
+            className="h-full rounded-full bg-margify-muted/60 transition-all duration-margify"
             style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
           />
         </div>

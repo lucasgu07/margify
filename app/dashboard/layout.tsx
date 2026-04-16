@@ -13,7 +13,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           userEmail={mockUser.email}
           alertCount={alertCount}
         />
-        <main className="min-h-screen flex-1 px-4 pb-12 pt-[4.5rem] md:px-8 md:pt-8">
+        <main className="min-h-screen min-w-0 flex-1 px-4 pb-12 pt-[4.5rem] md:px-8 md:pt-8">
           {children}
         </main>
       </div>

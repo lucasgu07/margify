@@ -1,12 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import type { ReactNode } from "react";
 import { ChevronDown, ChevronUp, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export type Column<T> = {
   key: string;
-  header: string;
+  header: ReactNode;
   sortable?: boolean;
   className?: string;
   render?: (row: T) => React.ReactNode;
@@ -75,7 +76,7 @@ export function DataTable<T extends { id: string }>({
   }
 
   return (
-    <div className="space-y-3">
+    <div className="min-w-0 space-y-3">
       {(searchable || filterSlot) && (
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           {searchable ? (
@@ -94,8 +95,8 @@ export function DataTable<T extends { id: string }>({
           {filterSlot}
         </div>
       )}
-      <div className="overflow-x-auto rounded-card border border-margify-border">
-        <table className="min-w-full border-collapse text-left text-sm">
+      <div className="max-w-full min-w-0 overflow-x-auto overscroll-x-contain rounded-card border border-margify-border">
+        <table className="w-max min-w-full border-collapse text-left text-sm">
           <thead className="bg-margify-black text-margify-muted">
             <tr>
               {columns.map((col) => (

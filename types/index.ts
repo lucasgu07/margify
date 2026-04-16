@@ -41,10 +41,13 @@ export interface Order {
   status: OrderStatus;
 }
 
+/** Plataforma de anuncios (selector en Campañas). */
+export type AdsPlatformScope = "meta" | "tiktok" | "google";
+
 export interface Campaign {
   id: string;
   store_id: string;
-  platform: string;
+  platform: AdsPlatformScope;
   campaign_name: string;
   spend: number;
   attributed_revenue: number;
@@ -113,6 +116,22 @@ export interface CashflowEntry {
   status: "Cobrado" | "Pendiente" | "En proceso";
 }
 
+/** Fila enriquecida para la tabla de Cashflow (demo con órdenes importadas). */
+export interface CashflowTableRow {
+  id: string;
+  order_external_id: string;
+  sale_date: string;
+  payout_date: string;
+  status: CashflowEntry["status"];
+  total_order: number;
+  liquidable: number;
+  comision: number;
+  origin: OrderChannel;
+  gateway: string;
+  payment_method: CashflowEntry["payment_method"];
+  cuotas: number;
+}
+
 export interface ChannelProfitRow {
   channel: OrderChannel;
   sales: number;
@@ -121,7 +140,28 @@ export interface ChannelProfitRow {
   margin_percent: number;
 }
 
-export type DateRangeKey = "today" | "week" | "month" | "30d";
+export type DateRangeKey =
+  | "today"
+  | "week"
+  | "month"
+  | "30d"
+  | "6m"
+  | "1y"
+  | "year"
+  | "custom";
+
+/** Punto del gráfico de ingresos del dashboard (día u hora) */
+export interface RevenueChartRow {
+  /** Etiqueta corta en el eje X (MM-DD o HH:00) */
+  date: string;
+  /** Texto para tooltip (día u hora legible) */
+  labelTooltip: string;
+  ventas: number;
+  ganancia: number;
+  ads: number;
+  isoDate?: string;
+  hour?: number;
+}
 
 export interface DashboardMetrics {
   totalSales: number;
@@ -132,4 +172,16 @@ export interface DashboardMetrics {
   roasChangePercent: number;
   marginPercent: number;
   marginChangePercent: number;
+  /** Pedidos en el período (órdenes concretadas) */
+  orderCount: number;
+  orderCountChangePercent: number;
+  /** Ticket promedio (AOV) */
+  aov: number;
+  aovChangePercent: number;
+  /** Suma de gasto en ads atribuido a órdenes (modelo Margify) */
+  adSpendAttributed: number;
+  adSpendChangePercent: number;
+  /** MER: ventas totales / gasto en ads (por cada USD invertido, cuánto vuelve en ventas) */
+  mer: number;
+  merChangePercent: number;
 }

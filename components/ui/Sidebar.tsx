@@ -12,6 +12,7 @@ import {
   Megaphone,
   Menu,
   Settings,
+  Sparkles,
   X,
 } from "lucide-react";
 import { useState } from "react";
@@ -26,6 +27,7 @@ const nav = [
   { href: "/dashboard/productos", label: "Productos", icon: Box },
   { href: "/dashboard/cashflow", label: "Cashflow", icon: Wallet },
   { href: "/dashboard/alertas", label: "Alertas", icon: Bell },
+  { href: "/dashboard/margify-ai", label: "Margify AI", icon: Sparkles },
   { href: "/dashboard/configuracion", label: "Configuración", icon: Settings },
 ];
 
@@ -50,8 +52,8 @@ export function Sidebar({
   const inner = (
     <>
       <div className="flex items-center justify-between border-b border-margify-border px-5 py-5">
-        <Link href="/dashboard" onClick={() => setOpen(false)}>
-          <Logo />
+        <Link href="/dashboard" onClick={() => setOpen(false)} className="min-w-0">
+          <Logo className="max-w-full" align="start" />
         </Link>
         <button
           type="button"
@@ -118,7 +120,7 @@ export function Sidebar({
   return (
     <>
       <div className="fixed left-0 top-0 z-40 flex h-14 w-full items-center justify-between border-b border-margify-border bg-margify-black px-4 md:hidden">
-        <Link href="/dashboard">
+        <Link href="/dashboard" className="min-w-0 shrink-0">
           <Logo size="sm" />
         </Link>
         <button
