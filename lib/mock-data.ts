@@ -43,14 +43,25 @@ export function storeShortLabel(store: Store): string {
   }
 }
 
+/** Límite de órdenes / mes del plan Gratis (Starter). */
+export const STARTER_PLAN_MONTHLY_ORDER_LIMIT = 30;
+
 export const mockUser: User = {
   id: USER_ID,
   email: "lucas@margify.app",
   full_name: "Lucas",
   created_at: "2025-01-10T12:00:00.000Z",
-  plan: "growth",
+  /** `starter` = plan Gratis (hasta 30 órdenes / mes en la demo). */
+  plan: "starter",
   whatsapp_number: "+5491122334455",
 };
+
+/** Órdenes concretadas en el mes calendario actual (para uso del cupo Free). */
+export function countCompletedOrdersInCurrentMonth(orders: Order[]): number {
+  const now = new Date();
+  const prefix = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  return orders.filter((o) => o.status === "completed" && o.date.startsWith(prefix)).length;
+}
 
 export const mockStores: Store[] = [
   {
