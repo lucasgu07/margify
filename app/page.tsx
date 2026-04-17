@@ -212,8 +212,7 @@ export default function LandingPage() {
                   src="/landing-campaigns-ai.png"
                   alt="Tabla de campañas de publicidad en Margify y panel Margify AI con recomendaciones"
                   width={1024}
-                  height={515}
-                  quality={100}
+                  height={436}
                   sizes="(min-width: 1280px) 1024px, (min-width: 1024px) 90vw, 100vw"
                   unoptimized
                   className="h-auto w-full rounded-3xl"
