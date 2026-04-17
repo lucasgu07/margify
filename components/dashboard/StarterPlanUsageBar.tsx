@@ -37,7 +37,13 @@ export function StarterPlanUsageBar({ ordersUsed, limit = STARTER_PLAN_MONTHLY_O
             </span>
           </div>
           {over ? (
-            <p className="text-[11px] text-margify-negative sm:ml-auto">Superaste el cupo del plan Gratis.</p>
+            <div className="text-right sm:ml-auto">
+              <p className="text-[11px] text-margify-negative">Superaste el cupo del plan Gratis.</p>
+              <p className="mt-0.5 max-w-md text-[11px] leading-snug text-margify-muted sm:max-w-xs">
+                El panel solo muestra métricas de las primeras {limit} ventas del mes; el resto no se incluye hasta
+                que actualices el plan.
+              </p>
+            </div>
           ) : null}
         </div>
       </div>

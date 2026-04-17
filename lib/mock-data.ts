@@ -9,6 +9,7 @@ import type {
   DateRangeKey,
   Order,
   OrderChannel,
+  Plan,
   ProductProfit,
   RevenueChartRow,
   Store,
@@ -61,6 +62,32 @@ export function countCompletedOrdersInCurrentMonth(orders: Order[]): number {
   const now = new Date();
   const prefix = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
   return orders.filter((o) => o.status === "completed" && o.date.startsWith(prefix)).length;
+}
+
+/**
+ * Plan Gratis (starter): por cada mes calendario solo se consideran las primeras
+ * {@link STARTER_PLAN_MONTHLY_ORDER_LIMIT} órdenes concretadas (por fecha, luego id).
+ * El resto no entra en métricas, tablas ni gráficos.
+ */
+export function applyStarterMonthlyOrderCap(orders: Order[], plan: Plan): Order[] {
+  if (plan !== "starter") return orders;
+
+  const completed = orders.filter((o) => o.status === "completed");
+  const byMonth = new Map<string, Order[]>();
+  for (const o of completed) {
+    const ym = o.date.slice(0, 7);
+    if (!byMonth.has(ym)) byMonth.set(ym, []);
+    byMonth.get(ym)!.push(o);
+  }
+  const out: Order[] = [];
+  byMonth.forEach((monthOrders) => {
+    const sorted = [...monthOrders].sort((a, b) => {
+      if (a.date !== b.date) return a.date.localeCompare(b.date);
+      return a.id.localeCompare(b.id);
+    });
+    out.push(...sorted.slice(0, STARTER_PLAN_MONTHLY_ORDER_LIMIT));
+  });
+  return out;
 }
 
 export const mockStores: Store[] = [
@@ -545,8 +572,12 @@ export function getDashboardMetrics(
   };
 }
 
-function dailyRevenueRow(isoDateStr: string, storeId: string | null): RevenueChartRow {
-  const dayOrders = mockOrders.filter(
+function dailyRevenueRow(
+  isoDateStr: string,
+  storeId: string | null,
+  pool: Order[] = mockOrders
+): RevenueChartRow {
+  const dayOrders = pool.filter(
     (o) => o.date === isoDateStr && (storeId === null || o.store_id === storeId)
   );
   const ventas = dayOrders.reduce((a, o) => a + o.revenue, 0);
@@ -576,7 +607,8 @@ function dailyRevenueRow(isoDateStr: string, storeId: string | null): RevenueCha
 export function ordersDailySeriesBetweenInclusive(
   fromStr: string,
   toStr: string,
-  storeId: string | null
+  storeId: string | null,
+  pool: Order[] = mockOrders
 ): RevenueChartRow[] {
   const rows: RevenueChartRow[] = [];
   const [y1, m1, d1] = fromStr.split("-").map(Number);
@@ -584,16 +616,19 @@ export function ordersDailySeriesBetweenInclusive(
   const cursor = new Date(y1, m1 - 1, d1);
   const end = new Date(y2, m2 - 1, d2);
   while (cursor <= end) {
-    rows.push(dailyRevenueRow(isoDateLocal(cursor), storeId));
+    rows.push(dailyRevenueRow(isoDateLocal(cursor), storeId, pool));
     cursor.setDate(cursor.getDate() + 1);
   }
   return rows;
 }
 
 /** Serie por hora (hoy) para el gráfico principal; reparte el total del día con curva tipo actividad comercial */
-export function ordersTodayHourlySeries(storeId: string | null = null): RevenueChartRow[] {
+export function ordersTodayHourlySeries(
+  storeId: string | null = null,
+  pool: Order[] = mockOrders
+): RevenueChartRow[] {
   const todayStr = isoDateLocal(new Date());
-  const dayOrders = mockOrders.filter(
+  const dayOrders = pool.filter(
     (o) => o.date === todayStr && (storeId === null || o.store_id === storeId)
   );
   const totalVentas = dayOrders.reduce((a, o) => a + o.revenue, 0);
@@ -642,16 +677,21 @@ export function ordersTodayHourlySeries(storeId: string | null = null): RevenueC
   });
 }
 
+/**
+ * @param orderPool Órdenes ya filtradas (rango, tienda, tope plan Gratis si aplica).
+ *                  Si no se pasa, se usa el catálogo demo completo.
+ */
 export function buildRevenueChartSeries(
   range: DateRangeKey,
   storeId: string | null,
-  customRange?: CustomDateBounds | null
+  customRange?: CustomDateBounds | null,
+  orderPool: Order[] = mockOrders
 ): RevenueChartRow[] {
   if (range === "today") {
-    return ordersTodayHourlySeries(storeId);
+    return ordersTodayHourlySeries(storeId, orderPool);
   }
   const { fromStr, toStr } = getDateRangeBounds(range, customRange);
-  return ordersDailySeriesBetweenInclusive(fromStr, toStr, storeId);
+  return ordersDailySeriesBetweenInclusive(fromStr, toStr, storeId, orderPool);
 }
 
 export function channelProfitRows(orders: Order[] = mockOrders): ChannelProfitRow[] {

@@ -10,7 +10,14 @@ import {
   getDateRangeBounds,
   type CustomDateBounds,
 } from "@/lib/dashboard-filters";
-import { buildRevenueChartSeries, mockOrders, mockStores, storeShortLabel } from "@/lib/mock-data";
+import {
+  applyStarterMonthlyOrderCap,
+  buildRevenueChartSeries,
+  mockOrders,
+  mockStores,
+  mockUser,
+  storeShortLabel,
+} from "@/lib/mock-data";
 import type { RevenueChartRow } from "@/types";
 
 export type StoreScope = "all" | string;
@@ -58,10 +65,19 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
 
   const value = useMemo(() => {
     const customArg = dateRange === "custom" ? customRange : undefined;
-    const byDate = filterOrdersByRange(mockOrders, dateRange, customArg);
-    const filteredOrders = filterOrdersByStore(byDate, storeScope === "all" ? null : storeScope);
+    const storeFiltered = filterOrdersByStore(
+      mockOrders,
+      storeScope === "all" ? null : storeScope
+    );
+    const cappedForPlan = applyStarterMonthlyOrderCap(storeFiltered, mockUser.plan);
+    const filteredOrders = filterOrdersByRange(cappedForPlan, dateRange, customArg);
     const seriesStoreId = storeScope === "all" ? null : storeScope;
-    const chartSeries = buildRevenueChartSeries(dateRange, seriesStoreId, customArg);
+    const chartSeries = buildRevenueChartSeries(
+      dateRange,
+      seriesStoreId,
+      customArg,
+      filteredOrders
+    );
     return {
       dateRange,
       setDateRange,
