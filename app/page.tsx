@@ -132,7 +132,7 @@ export default function LandingPage() {
                     alt="Vista del dashboard Margify: métricas de rentabilidad, gráfico y resumen de los últimos 30 días"
                     fill
                     priority
-                    quality={100}
+                    unoptimized
                     sizes="(min-width: 1536px) 600px, (min-width: 1024px) min(560px, 48vw), 100vw"
                     className="object-cover object-left-top"
                   />
