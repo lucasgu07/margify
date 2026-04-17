@@ -134,7 +134,7 @@ export function Sidebar({
       </div>
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex w-[min(100%,280px)] max-w-[280px] -translate-x-full flex-col border-r border-margify-border bg-margify-black transition-transform duration-margify md:static md:z-0 md:h-screen md:w-60 md:max-w-none md:translate-x-0",
+          "fixed inset-y-0 left-0 z-50 flex w-[min(100%,280px)] max-w-[280px] -translate-x-full flex-col border-r border-margify-border bg-margify-black transition-transform duration-margify md:z-30 md:h-screen md:w-60 md:max-w-none md:translate-x-0",
           open && "translate-x-0"
         )}
       >
