@@ -10,6 +10,7 @@ import { AIAdvisor } from "@/components/dashboard/AIAdvisor";
 
 import { CampaignsDataTable } from "@/components/dashboard/CampaignsDataTable";
 
+import { useDashboardIdentity } from "@/components/dashboard/DemoModeContext";
 import { useDashboard } from "@/components/dashboard/DashboardContext";
 
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
@@ -20,7 +21,7 @@ import { Header } from "@/components/ui/Header";
 import { MetricCard } from "@/components/ui/MetricCard";
 
 import { adsPlatformToBrandId } from "@/lib/integration-brands";
-import { filterCampaignsByStoreAndAds, mockCampaigns, mockUser } from "@/lib/mock-data";
+import { filterCampaignsByStoreAndAds, mockCampaigns } from "@/lib/mock-data";
 
 import type { AdsPlatformScope, Campaign } from "@/types";
 
@@ -96,6 +97,7 @@ function importantNote(adsPlatform: AdsPlatformScope) {
 }
 
 export default function CampanasPage() {
+  const { full_name } = useDashboardIdentity();
   const { storeScope, adsPlatform } = useDashboard();
 
   const baseCampaigns = useMemo(
@@ -144,7 +146,7 @@ export default function CampanasPage() {
 
   return (
     <>
-      <Header userName={mockUser.full_name} />
+      <Header userName={full_name} />
 
       <div className="grid grid-cols-2 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard

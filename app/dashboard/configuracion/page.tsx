@@ -1,13 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useDashboardIdentity } from "@/components/dashboard/DemoModeContext";
 import { Button } from "@/components/ui/Button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
 import { Header } from "@/components/ui/Header";
 import { Input, Label } from "@/components/ui/Input";
+import { MercadoLibreIntegrationCard } from "@/components/dashboard/MercadoLibreIntegrationCard";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
 import type { IntegrationBrandId } from "@/lib/integration-brands";
-import { mockCostsConfig, mockUser } from "@/lib/mock-data";
+import { mockCostsConfig } from "@/lib/mock-data";
 
 function IntegrationCard({
   brand,
@@ -42,8 +44,9 @@ function IntegrationCard({
 }
 
 export default function ConfiguracionPage() {
-  const [name, setName] = useState(mockUser.full_name);
-  const [email, setEmail] = useState(mockUser.email);
+  const identity = useDashboardIdentity();
+  const [name, setName] = useState(identity.full_name);
+  const [email, setEmail] = useState(identity.email);
   const [costs, setCosts] = useState({
     product: mockCostsConfig.product_cost_percent,
     pay: mockCostsConfig.payment_commission_percent,
@@ -53,7 +56,7 @@ export default function ConfiguracionPage() {
 
   return (
     <>
-      <Header userName={mockUser.full_name} showDateRange={false} />
+      <Header userName={identity.full_name} showDateRange={false} />
       <h1 className="mb-8 text-2xl font-bold text-white">Configuración</h1>
 
       <section className="space-y-4">
@@ -80,7 +83,15 @@ export default function ConfiguracionPage() {
       <section className="mt-10 space-y-4">
         <h2 className="text-lg font-semibold text-margify-cyan">Integraciones conectadas</h2>
         <IntegrationCard brand="tiendanube" name="TiendaNube" status="Conectada" />
-        <IntegrationCard brand="mercadolibre" name="MercadoLibre" status="Conectada" />
+        <Suspense
+          fallback={
+            <Card className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-margify-muted">Cargando Mercado Libre…</p>
+            </Card>
+          }
+        >
+          <MercadoLibreIntegrationCard />
+        </Suspense>
         <IntegrationCard brand="shopify" name="Shopify" status="Conectada" />
         <IntegrationCard brand="meta" name="Meta Ads" status="Conectada" />
         <IntegrationCard brand="googleAds" name="Google Ads" status="Desconectada" soon />

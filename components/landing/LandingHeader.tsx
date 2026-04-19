@@ -35,7 +35,6 @@ export function LandingHeader() {
 
   return (
     <header className="sticky top-2 z-50 bg-transparent px-3 pt-2 md:top-4 md:px-6 md:pt-4">
-      {/* Desktop: mismo layout que antes (md+) */}
       <div className={cn(shellClassName, "hidden md:block")}>
         <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-4 py-3 md:px-6 md:py-3.5">
           <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-6 gap-y-2 md:gap-x-8">
@@ -74,7 +73,6 @@ export function LandingHeader() {
         </div>
       </div>
 
-      {/* Mobile: logo + Ingresar / Registrarse en la barra; menú solo para secciones */}
       <div className={cn(shellClassName, "md:hidden")}>
         <div className="flex items-center justify-between gap-2 px-2 py-2 sm:gap-3 sm:px-3">
           <Link href="/" className="min-w-0 shrink" onClick={() => setMenuOpen(false)}>

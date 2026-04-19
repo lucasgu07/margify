@@ -14,16 +14,13 @@ import { buildCashflowAdvisorInsights } from "@/lib/ai-advisor-insights";
 import { AIAdvisor } from "@/components/dashboard/AIAdvisor";
 import { CashflowPendingDonutSection } from "@/components/dashboard/CashflowDashboardCharts";
 import { CashflowPredictor } from "@/components/dashboard/CashflowPredictor";
+import { useDashboardIdentity } from "@/components/dashboard/DemoModeContext";
 import { useDashboard } from "@/components/dashboard/DashboardContext";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
 import { DataTable, type Column } from "@/components/ui/Table";
 import { Header } from "@/components/ui/Header";
 import { MetricCard } from "@/components/ui/MetricCard";
-import {
-  buildCashflowTableRows,
-  cashflowSummary,
-  mockUser,
-} from "@/lib/mock-data";
+import { buildCashflowTableRows, cashflowSummary } from "@/lib/mock-data";
 import type { CashflowTableRow } from "@/types";
 import { IntegrationBrandIcon, orderChannelToBrandId } from "@/components/ui/IntegrationBrandIcon";
 import type { OrderChannel } from "@/types";
@@ -92,6 +89,7 @@ function StatusBadge({ status }: { status: CashflowTableRow["status"] }) {
 }
 
 export default function CashflowPage() {
+  const { full_name } = useDashboardIdentity();
   const { filteredOrders, rangeDisplayLabel, storeScope, connectedStores } = useDashboard();
   const [filterOrderId, setFilterOrderId] = useState("");
   const [filterOrigin, setFilterOrigin] = useState("");
@@ -303,7 +301,7 @@ export default function CashflowPage() {
 
   return (
     <>
-      <Header userName={mockUser.full_name} />
+      <Header userName={full_name} />
       <div className="mb-6 space-y-1">
         <h1 className="text-2xl font-bold text-white">Cashflow</h1>
         <p className="text-sm text-margify-muted">

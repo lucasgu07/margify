@@ -110,14 +110,12 @@ export function LandingTestimonials() {
           </>
         ) : (
           <>
-            {/* Celular: una columna vertical centrada */}
             <div className="mx-auto mt-12 flex w-full max-w-full flex-col items-center justify-center md:hidden">
               <div className="flex max-h-[min(740px,70vh)] w-full justify-center overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,black_12%,black_88%,transparent)]">
                 <TestimonialsColumn testimonials={testimonials} duration={22} />
               </div>
             </div>
 
-            {/* Tablet y desktop: dos filas horizontales en movimiento contrario */}
             <div className="mx-auto mt-12 hidden w-full max-w-full flex-col gap-3 md:flex md:gap-4">
               <TestimonialsMarqueeRow items={testimonialsRow1} direction="left" durationSec={40} />
               <TestimonialsMarqueeRow items={testimonialsRow2} direction="right" durationSec={34} />

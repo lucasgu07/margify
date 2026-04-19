@@ -8,6 +8,7 @@ import {
   ComparativaDiariaChart,
   type ComparativaDiariaRow,
 } from "@/components/dashboard/ComparativaDiariaChart";
+import { useDashboardIdentity } from "@/components/dashboard/DemoModeContext";
 import { useDashboard } from "@/components/dashboard/DashboardContext";
 import { ChartContainer, MargifyTooltip } from "@/components/ui/Chart";
 import { DataTable, type Column } from "@/components/ui/Table";
@@ -16,7 +17,7 @@ import { MetricCard } from "@/components/ui/MetricCard";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
 import { costTotalsFromOrders } from "@/lib/calculations";
 import { cn, formatCurrency } from "@/lib/utils";
-import { getDashboardMetrics, mockUser, channelProfitRows } from "@/lib/mock-data";
+import { getDashboardMetrics, channelProfitRows } from "@/lib/mock-data";
 import { DollarSign, Percent, ShoppingBag, Wallet } from "lucide-react";
 import {
   IntegrationBrandIcon,
@@ -28,6 +29,7 @@ import type { OrderChannel } from "@/types";
 const PIE_COLORS = ["#64DFDF", "#ffffff", "#888888", "#444444", "#64DFDF99"];
 
 export default function RentabilidadPage() {
+  const { full_name } = useDashboardIdentity();
   const { dateRange, setDateRange, filteredOrders, chartSeries, storeScope } = useDashboard();
   const m = getDashboardMetrics(filteredOrders, storeScope === "all" ? null : storeScope);
   const [pieHidden, setPieHidden] = useState<Record<string, boolean>>({});
@@ -149,7 +151,7 @@ export default function RentabilidadPage() {
 
   return (
     <>
-      <Header userName={mockUser.full_name} />
+      <Header userName={full_name} />
       <div className="grid grid-cols-2 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           title="Ventas totales"

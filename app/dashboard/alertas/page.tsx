@@ -6,9 +6,10 @@ import { AIAdvisor } from "@/components/dashboard/AIAdvisor";
 import { Button } from "@/components/ui/Button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
 import { DataTable, type Column } from "@/components/ui/Table";
+import { useDashboardIdentity } from "@/components/dashboard/DemoModeContext";
 import { Header } from "@/components/ui/Header";
 import { Input, Label } from "@/components/ui/Input";
-import { mockAlertsHistory, mockUser } from "@/lib/mock-data";
+import { mockAlertsHistory } from "@/lib/mock-data";
 import type { AlertChannel } from "@/types";
 import { formatDate } from "@/lib/utils";
 
@@ -73,6 +74,7 @@ const defaults: AlertRow[] = [
 ];
 
 export default function AlertasPage() {
+  const { full_name } = useDashboardIdentity();
   const advisorInsights = useMemo(() => buildAlertasAdvisorInsights(), []);
   const [rows, setRows] = useState(defaults);
   const [wa, setWa] = useState("+5491122334455");
@@ -97,7 +99,7 @@ export default function AlertasPage() {
 
   return (
     <>
-      <Header userName={mockUser.full_name} showDateRange={false} />
+      <Header userName={full_name} showDateRange={false} />
       <h1 className="mb-6 text-2xl font-bold text-white">Alertas</h1>
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-1 md:gap-4">

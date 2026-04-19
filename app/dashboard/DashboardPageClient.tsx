@@ -3,15 +3,17 @@
 import { useMemo } from "react";
 import { BarChart3, DollarSign, Package, Percent, Receipt, ShoppingBag, Target, Wallet } from "lucide-react";
 import { AIAdvisor } from "@/components/dashboard/AIAdvisor";
+import { useDashboardIdentity } from "@/components/dashboard/DemoModeContext";
 import { useDashboard } from "@/components/dashboard/DashboardContext";
 import { buildDashboardAdvisorInsights } from "@/lib/ai-advisor-insights";
 import { OrdersTable } from "@/components/dashboard/OrdersTable";
 import { RevenueChart } from "@/components/dashboard/RevenueChart";
 import { Header } from "@/components/ui/Header";
 import { MetricCard } from "@/components/ui/MetricCard";
-import { getDashboardMetrics, mockUser } from "@/lib/mock-data";
+import { getDashboardMetrics } from "@/lib/mock-data";
 
 export function DashboardPageClient() {
+  const { full_name } = useDashboardIdentity();
   const { dateRange, filteredOrders, chartSeries, storeScope, rangeDisplayLabel } = useDashboard();
   const m = getDashboardMetrics(filteredOrders, storeScope === "all" ? null : storeScope);
   const advisorInsights = useMemo(
@@ -22,7 +24,7 @@ export function DashboardPageClient() {
   return (
     <>
       <Header
-        userName={mockUser.full_name}
+        userName={full_name}
         showConnect
         onConnect={() => {
           window.location.href = "/dashboard/configuracion";

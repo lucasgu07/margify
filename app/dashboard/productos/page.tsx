@@ -5,6 +5,7 @@ import { ListFilter } from "lucide-react";
 import { buildProductosAdvisorInsights } from "@/lib/ai-advisor-insights";
 import { AIAdvisor } from "@/components/dashboard/AIAdvisor";
 import { ProductFiltersFields } from "@/components/dashboard/ProductFiltersFields";
+import { useDashboardIdentity } from "@/components/dashboard/DemoModeContext";
 import { useDashboard } from "@/components/dashboard/DashboardContext";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
 import { DataTable, type Column } from "@/components/ui/Table";
@@ -15,7 +16,7 @@ import {
   filterAndSortProducts,
   type ProductFilterState,
 } from "@/lib/product-filters";
-import { buildProductProfits, mockUser } from "@/lib/mock-data";
+import { buildProductProfits } from "@/lib/mock-data";
 import type { ProductProfit } from "@/types";
 import { formatCurrency } from "@/lib/utils";
 import { cn } from "@/lib/utils";
@@ -29,6 +30,7 @@ function marginColor(m: number) {
 type ProductRow = ProductProfit & { costo_edit: number; precio_edit: number };
 
 export default function ProductosPage() {
+  const { full_name } = useDashboardIdentity();
   const { filteredOrders } = useDashboard();
   const [products, setProducts] = useState<ProductProfit[]>(() =>
     buildProductProfits(filteredOrders)
@@ -167,7 +169,7 @@ export default function ProductosPage() {
 
   return (
     <>
-      <Header userName={mockUser.full_name} />
+      <Header userName={full_name} />
 
       {/* max-md: 3 filas — título | filtro | tarjetas (+ card de filtros si aplica). md+: como antes. */}
       <div className="max-md:flex max-md:flex-col max-md:gap-4">
