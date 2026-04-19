@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
 import { DashboardProvider } from "@/components/dashboard/DashboardContext";
-import { DEMO_USER_LABEL, DemoModeProvider } from "@/components/dashboard/DemoModeContext";
+import { DemoModeProvider } from "@/components/dashboard/DemoModeContext";
 import { StarterPlanUsageBar } from "@/components/dashboard/StarterPlanUsageBar";
+import { DEMO_USER_LABEL } from "@/lib/demo-user";
 import { Sidebar } from "@/components/ui/Sidebar";
 import {
   countCompletedOrdersInCurrentMonth,

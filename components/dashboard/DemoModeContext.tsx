@@ -1,15 +1,12 @@
 "use client";
 
 import { createContext, useContext, useMemo } from "react";
+import { DEMO_USER_LABEL } from "@/lib/demo-user";
 import { mockUser } from "@/lib/mock-data";
 
 const DemoModeContext = createContext(false);
 
-/** Textos para layout server y modo demo (sin datos personales). */
-export const DEMO_USER_LABEL = {
-  full_name: "Usuario demo",
-  email: "demo@margify.app",
-} as const;
+export { DEMO_USER_LABEL };
 
 export function DemoModeProvider({
   isDemo,
