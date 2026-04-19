@@ -41,7 +41,7 @@ export function Sidebar({
   userEmail: string;
   alertCount?: number;
 }) {
-  const pathname = usePathname();
+  const pathname = usePathname() ?? "";
   const [open, setOpen] = useState(false);
   const isDemo = useDemoMode();
   const navItems = useMemo(

@@ -12,6 +12,9 @@ import {
 
 const DEMO_COOKIE = "margify_demo";
 
+/** Evita prerender estático: `cookies()` requiere request en runtime (Vercel / producción). */
+export const dynamic = "force-dynamic";
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = cookies();
   const isDemo = cookieStore.get(DEMO_COOKIE)?.value === "1";
