@@ -10,6 +10,7 @@ import { AIAdvisor } from "@/components/dashboard/AIAdvisor";
 
 import { CampaignsDataTable } from "@/components/dashboard/CampaignsDataTable";
 import { GoogleAdsCampaignsTable } from "@/components/dashboard/GoogleAdsCampaignsTable";
+import { MetaAdsCampaignsTable } from "@/components/dashboard/MetaAdsCampaignsTable";
 
 import { useDashboardIdentity } from "@/components/dashboard/DemoModeContext";
 import { useDashboard } from "@/components/dashboard/DashboardContext";
@@ -200,6 +201,8 @@ export default function CampanasPage() {
       <div className="mt-8">
         {adsPlatform === "google" ? (
           <GoogleAdsCampaignsTable />
+        ) : adsPlatform === "meta" ? (
+          <MetaAdsCampaignsTable />
         ) : (
           <CampaignsDataTable
             campaigns={rows}
