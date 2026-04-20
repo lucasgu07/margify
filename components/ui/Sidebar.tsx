@@ -12,6 +12,7 @@ import {
   Megaphone,
   Menu,
   Settings,
+  ShoppingBag,
   Sparkles,
   X,
 } from "lucide-react";
@@ -26,6 +27,7 @@ const nav = [
   { href: "/dashboard/rentabilidad", label: "Rentabilidad", icon: BarChart3 },
   { href: "/dashboard/campanas", label: "Campañas", icon: Megaphone },
   { href: "/dashboard/productos", label: "Productos", icon: Box },
+  { href: "/dashboard/pedidos", label: "Pedidos", icon: ShoppingBag },
   { href: "/dashboard/cashflow", label: "Cashflow", icon: Wallet },
   { href: "/dashboard/alertas", label: "Alertas", icon: Bell },
   { href: "/dashboard/margify-ai", label: "Margify AI", icon: Sparkles },

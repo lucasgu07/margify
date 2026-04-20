@@ -9,6 +9,7 @@ import { Input, Label } from "@/components/ui/Input";
 import { GoogleAdsIntegrationCard } from "@/components/dashboard/GoogleAdsIntegrationCard";
 import { MercadoLibreIntegrationCard } from "@/components/dashboard/MercadoLibreIntegrationCard";
 import { MetaIntegrationCard } from "@/components/dashboard/MetaIntegrationCard";
+import { ShopifyIntegrationCard } from "@/components/dashboard/ShopifyIntegrationCard";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
 import type { IntegrationBrandId } from "@/lib/integration-brands";
 import { mockCostsConfig } from "@/lib/mock-data";
@@ -94,7 +95,15 @@ export default function ConfiguracionPage() {
         >
           <MercadoLibreIntegrationCard />
         </Suspense>
-        <IntegrationCard brand="shopify" name="Shopify" status="Conectada" />
+        <Suspense
+          fallback={
+            <Card className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-margify-muted">Cargando Shopify…</p>
+            </Card>
+          }
+        >
+          <ShopifyIntegrationCard />
+        </Suspense>
         <Suspense
           fallback={
             <Card className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
