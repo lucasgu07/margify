@@ -123,9 +123,9 @@ export default function LandingPage() {
                 </div>
 
                 <div className="relative flex min-h-0 min-w-0 flex-col justify-center lg:row-span-2 lg:min-h-full lg:pt-7">
+                  {/* Ratio nativo del PNG hero (1024×471) para evitar bandas o recortes raros */}
                   <div
-                    className="relative w-full overflow-hidden rounded-2xl border border-margify-border/70 bg-[#0a0f14] shadow-[0_28px_100px_rgba(0,0,0,0.55),0_0_0_1px_rgba(255,255,255,0.04)_inset] ring-1 ring-white/[0.05]"
-                    style={{ aspectRatio: "16 / 10" }}
+                    className="relative w-full overflow-hidden rounded-2xl border border-margify-border/70 bg-[#0a0f14] shadow-[0_28px_100px_rgba(0,0,0,0.55),0_0_0_1px_rgba(255,255,255,0.04)_inset] ring-1 ring-white/[0.05] aspect-[1024/471]"
                   >
                     <Image
                       src="/landing-dashboard-hero.png"
@@ -134,7 +134,7 @@ export default function LandingPage() {
                       priority
                       unoptimized
                       sizes="(min-width: 1536px) 1200px, (min-width: 1024px) min(1200px, 52vw), min(100vw, 900px)"
-                      className="object-contain object-top"
+                      className="object-contain object-left-top"
                     />
                   </div>
                 </div>
