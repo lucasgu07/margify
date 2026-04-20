@@ -16,8 +16,7 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
-import { useMemo, useState } from "react";
-import { useDemoMode } from "@/components/dashboard/DemoModeContext";
+import { useState } from "react";
 import { Logo } from "@/components/ui/Logo";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase";
@@ -45,12 +44,7 @@ export function Sidebar({
 }) {
   const pathname = usePathname() ?? "";
   const [open, setOpen] = useState(false);
-  const isDemo = useDemoMode();
-  const navItems = useMemo(
-    () =>
-      isDemo ? nav.filter((item) => item.href !== "/dashboard/margify-ai") : nav,
-    [isDemo]
-  );
+  const navItems = nav;
 
   async function handleLogout() {
     const supabase = createClient();

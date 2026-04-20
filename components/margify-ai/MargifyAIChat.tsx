@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { Brain, Loader2, Send } from "lucide-react";
+import { useDemoMode } from "@/components/dashboard/DemoModeContext";
 import { buttonClassName } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import type { MargifyAIChatMessage } from "@/lib/margify-ai/types";
@@ -34,6 +36,7 @@ type MargifyAIChatProps = {
 };
 
 export function MargifyAIChat({ storageKey }: MargifyAIChatProps) {
+  const isDemo = useDemoMode();
   const [messages, setMessages] = useState<MargifyAIChatMessage[]>([createWelcomeMessage()]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -79,6 +82,7 @@ export function MargifyAIChat({ storageKey }: MargifyAIChatProps) {
   }, [messages, loading]);
 
   const send = useCallback(async () => {
+    if (isDemo) return;
     const text = input.trim();
     if (!text || loading) return;
 
@@ -144,7 +148,7 @@ export function MargifyAIChat({ storageKey }: MargifyAIChatProps) {
       setLoading(false);
       textareaRef.current?.focus();
     }
-  }, [input, loading, messages]);
+  }, [input, loading, messages, isDemo]);
 
   function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -184,7 +188,18 @@ export function MargifyAIChat({ storageKey }: MargifyAIChatProps) {
         </button>
       </div>
 
-      {error ? (
+      {isDemo ? (
+        <div className="border-b border-margify-cyan/25 bg-margify-cyan/10 px-4 py-3 text-sm text-margify-text md:px-5">
+          <span className="font-medium text-margify-cyan">Modo demo:</span> el chat no envía mensajes al
+          servidor (ahorrá API).{" "}
+          <Link href="/auth/register" className="font-medium text-margify-cyan underline underline-offset-2">
+            Creá tu cuenta
+          </Link>{" "}
+          para usar Margify AI con tu negocio y campañas.
+        </div>
+      ) : null}
+
+      {!isDemo && error ? (
         <div className="border-b border-margify-negative/30 bg-margify-negative/10 px-4 py-2 text-sm text-margify-negative md:px-5">
           {error}
         </div>
@@ -249,12 +264,12 @@ export function MargifyAIChat({ storageKey }: MargifyAIChatProps) {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={onKeyDown}
             placeholder="Ej.: ¿Por qué mi CTR es bajo? ¿Cómo escalar esta campaña?"
-            disabled={loading}
+            disabled={loading || isDemo}
             className="min-h-[3rem] w-full flex-1 resize-y rounded-control border border-margify-border bg-margify-cardAlt px-4 py-3 text-sm text-white placeholder:text-margify-muted/80 focus:border-margify-cyan focus:outline-none focus:ring-1 focus:ring-margify-cyan/40 disabled:opacity-60"
           />
           <button
             type="submit"
-            disabled={loading || !input.trim()}
+            disabled={loading || isDemo || !input.trim()}
             className={buttonClassName(
               "primary",
               "inline-flex shrink-0 items-center justify-center gap-2 px-5 py-3 sm:min-w-[7.5rem]"

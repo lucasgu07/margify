@@ -13,12 +13,6 @@ export function middleware(request: NextRequest) {
     }
   }
 
-  if (pathname.startsWith("/dashboard/margify-ai")) {
-    if (request.cookies.get(DEMO_COOKIE)?.value === "1") {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
-  }
-
   if (pathname.startsWith("/dashboard") && url.searchParams.get("demo") === "1") {
     url.searchParams.delete("demo");
     const res = NextResponse.redirect(url);
