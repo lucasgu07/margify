@@ -87,8 +87,8 @@ export default function LandingPage() {
 
         <main className="relative z-10 overflow-x-hidden bg-transparent">
           <section id="inicio" className="relative z-10 scroll-mt-32">
-            <div className="mx-auto max-w-6xl px-4 py-14 md:px-6 md:py-20 lg:py-24">
-              <div className="grid gap-8 lg:grid-cols-2 lg:items-start lg:gap-x-10 lg:gap-y-6 xl:gap-x-12">
+            <div className="mx-auto max-w-6xl px-4 py-14 md:px-6 md:py-20 lg:max-w-7xl lg:py-24">
+              <div className="grid gap-8 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:items-start lg:gap-x-10 lg:gap-y-6 xl:gap-x-14">
                 <div className="flex min-w-0 flex-col gap-5 lg:max-w-xl xl:max-w-lg">
                   <div className="mb-1 flex flex-wrap gap-2">
                     <Badge type="neutral" label="Rentabilidad real + campañas + IA" className="w-fit" />
@@ -133,7 +133,7 @@ export default function LandingPage() {
                       fill
                       priority
                       unoptimized
-                      sizes="(min-width: 1536px) 1200px, (min-width: 1024px) min(1200px, 52vw), min(100vw, 900px)"
+                      sizes="(min-width: 1536px) 720px, (min-width: 1024px) 58vw, min(100vw, 900px)"
                       className="object-contain object-left-top"
                     />
                   </div>
