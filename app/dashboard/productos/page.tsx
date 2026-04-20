@@ -6,6 +6,7 @@ import { buildProductosAdvisorInsights } from "@/lib/ai-advisor-insights";
 import { AIAdvisor } from "@/components/dashboard/AIAdvisor";
 import { ProductFiltersFields } from "@/components/dashboard/ProductFiltersFields";
 import { ShopifyProductsTable } from "@/components/dashboard/ShopifyProductsTable";
+import { TiendanubeProductsTable } from "@/components/dashboard/TiendanubeProductsTable";
 import { useDashboardIdentity } from "@/components/dashboard/DemoModeContext";
 import { useDashboard } from "@/components/dashboard/DashboardContext";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
@@ -172,7 +173,8 @@ export default function ProductosPage() {
     <>
       <Header userName={full_name} />
 
-      <section className="mb-10 min-w-0">
+      <section className="mb-10 min-w-0 space-y-10">
+        <TiendanubeProductsTable hideWhenDisconnected />
         <ShopifyProductsTable hideWhenDisconnected />
       </section>
 

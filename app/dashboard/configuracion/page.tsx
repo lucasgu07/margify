@@ -10,6 +10,7 @@ import { GoogleAdsIntegrationCard } from "@/components/dashboard/GoogleAdsIntegr
 import { MercadoLibreIntegrationCard } from "@/components/dashboard/MercadoLibreIntegrationCard";
 import { MetaIntegrationCard } from "@/components/dashboard/MetaIntegrationCard";
 import { ShopifyIntegrationCard } from "@/components/dashboard/ShopifyIntegrationCard";
+import { TiendanubeIntegrationCard } from "@/components/dashboard/TiendanubeIntegrationCard";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
 import type { IntegrationBrandId } from "@/lib/integration-brands";
 import { mockCostsConfig } from "@/lib/mock-data";
@@ -85,7 +86,15 @@ export default function ConfiguracionPage() {
 
       <section className="mt-10 space-y-4">
         <h2 className="text-lg font-semibold text-margify-cyan">Integraciones conectadas</h2>
-        <IntegrationCard brand="tiendanube" name="TiendaNube" status="Conectada" />
+        <Suspense
+          fallback={
+            <Card className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-margify-muted">Cargando TiendaNube…</p>
+            </Card>
+          }
+        >
+          <TiendanubeIntegrationCard />
+        </Suspense>
         <Suspense
           fallback={
             <Card className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
