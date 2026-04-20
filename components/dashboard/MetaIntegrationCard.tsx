@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Button, buttonClassName } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { DemoIntegrationPlaceholder } from "@/components/dashboard/DemoIntegrationPlaceholder";
+import { useDemoMode } from "@/components/dashboard/DemoModeContext";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
 import type { MetaAdAccount } from "@/lib/meta-auth";
 
@@ -34,6 +36,7 @@ function formatLastSync(ts: number | null): string {
 }
 
 export function MetaIntegrationCard() {
+  const isDemo = useDemoMode();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<StatusResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -115,6 +118,10 @@ export function MetaIntegrationCard() {
     () => (status && "adAccounts" in status ? status.adAccounts : []),
     [status]
   );
+
+  if (isDemo) {
+    return <DemoIntegrationPlaceholder brand="meta" name="Meta Ads" />;
+  }
 
   async function onSwitchAccount(next: string) {
     setSelectedAccount(next);

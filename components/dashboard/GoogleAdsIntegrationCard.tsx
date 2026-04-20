@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Button, buttonClassName } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { DemoIntegrationPlaceholder } from "@/components/dashboard/DemoIntegrationPlaceholder";
+import { useDemoMode } from "@/components/dashboard/DemoModeContext";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
 
 type StatusResponse =
@@ -36,6 +38,7 @@ function formatCustomerId(id: string | null): string {
 }
 
 export function GoogleAdsIntegrationCard() {
+  const isDemo = useDemoMode();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<StatusResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -66,6 +69,10 @@ export function GoogleAdsIntegrationCard() {
 
   const gaNotice = searchParams.get("ga");
   const gaReason = searchParams.get("reason");
+
+  if (isDemo) {
+    return <DemoIntegrationPlaceholder brand="googleAds" name="Google Ads" />;
+  }
 
   async function disconnect() {
     setBusy("disconnect");

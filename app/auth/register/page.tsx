@@ -46,6 +46,11 @@ export default function RegisterPage() {
       setError(err.message);
       return;
     }
+    try {
+      await fetch("/api/auth/clear-demo", { method: "POST" });
+    } catch {
+      /* no bloquear registro */
+    }
     router.push("/onboarding");
     router.refresh();
   }

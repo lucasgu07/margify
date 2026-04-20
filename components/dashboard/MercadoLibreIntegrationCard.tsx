@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Button, buttonClassName } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { DemoIntegrationPlaceholder } from "@/components/dashboard/DemoIntegrationPlaceholder";
+import { useDemoMode } from "@/components/dashboard/DemoModeContext";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
 
 type StatusResponse =
@@ -13,6 +15,7 @@ type StatusResponse =
   | { configured: true; connected: true; userId: number | null };
 
 export function MercadoLibreIntegrationCard() {
+  const isDemo = useDemoMode();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<StatusResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -37,6 +40,10 @@ export function MercadoLibreIntegrationCard() {
 
   const mlNotice = searchParams.get("ml");
   const mlReason = searchParams.get("reason");
+
+  if (isDemo) {
+    return <DemoIntegrationPlaceholder brand="mercadolibre" name="Mercado Libre" />;
+  }
 
   async function disconnect() {
     setDisconnecting(true);

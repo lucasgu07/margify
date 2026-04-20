@@ -31,6 +31,11 @@ export default function LoginPage() {
       setError(err.message);
       return;
     }
+    try {
+      await fetch("/api/auth/clear-demo", { method: "POST" });
+    } catch {
+      /* no bloquear login */
+    }
     router.push("/dashboard");
     router.refresh();
   }

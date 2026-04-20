@@ -7,12 +7,6 @@ export function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
   const pathname = url.pathname;
 
-  if (pathname.startsWith("/api/margify-ai")) {
-    if (request.cookies.get(DEMO_COOKIE)?.value === "1") {
-      return NextResponse.json({ error: "No disponible en modo demo" }, { status: 403 });
-    }
-  }
-
   if (pathname.startsWith("/dashboard") && url.searchParams.get("demo") === "1") {
     url.searchParams.delete("demo");
     const res = NextResponse.redirect(url);

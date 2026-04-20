@@ -1,35 +1,41 @@
 "use client";
 
-import { createContext, useContext, useMemo } from "react";
-import { DEMO_USER_LABEL } from "@/lib/demo-user";
-import { mockUser } from "@/lib/mock-data";
+import { createContext, useContext } from "react";
 
-const DemoModeContext = createContext(false);
+export type DashboardSessionValue = {
+  isDemo: boolean;
+  full_name: string;
+  email: string;
+};
 
-export { DEMO_USER_LABEL };
+const DashboardSessionContext = createContext<DashboardSessionValue | null>(null);
 
 export function DemoModeProvider({
-  isDemo,
+  value,
   children,
 }: {
-  isDemo: boolean;
+  value: DashboardSessionValue;
   children: React.ReactNode;
 }) {
-  return <DemoModeContext.Provider value={isDemo}>{children}</DemoModeContext.Provider>;
-}
-
-export function useDemoMode(): boolean {
-  return useContext(DemoModeContext);
-}
-
-/** Identidad mostrada en header/sidebar: en modo demo, sin datos personales. */
-export function useDashboardIdentity() {
-  const isDemo = useDemoMode();
-  return useMemo(
-    () =>
-      isDemo
-        ? { full_name: DEMO_USER_LABEL.full_name, email: DEMO_USER_LABEL.email }
-        : { full_name: mockUser.full_name, email: mockUser.email },
-    [isDemo]
+  return (
+    <DashboardSessionContext.Provider value={value}>{children}</DashboardSessionContext.Provider>
   );
+}
+
+/** `true` solo con cookie "Ver demo" y sin sesión de Supabase (visitante sin cuenta). */
+export function useDemoMode(): boolean {
+  const ctx = useContext(DashboardSessionContext);
+  if (!ctx) {
+    throw new Error("useDemoMode debe usarse dentro de DemoModeProvider");
+  }
+  return ctx.isDemo;
+}
+
+/** Nombre y email mostrados en header/sidebar: demo, usuario Supabase o mock si no hay auth. */
+export function useDashboardIdentity(): { full_name: string; email: string } {
+  const ctx = useContext(DashboardSessionContext);
+  if (!ctx) {
+    throw new Error("useDashboardIdentity debe usarse dentro de DemoModeProvider");
+  }
+  return { full_name: ctx.full_name, email: ctx.email };
 }

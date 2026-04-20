@@ -4,6 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { DemoIntegrationPlaceholder } from "@/components/dashboard/DemoIntegrationPlaceholder";
+import { useDemoMode } from "@/components/dashboard/DemoModeContext";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
 
 const SHOP_DOMAIN_REGEX = /^[a-z0-9][a-z0-9-]*\.myshopify\.com$/;
@@ -41,6 +43,7 @@ function normalizeShopInput(raw: string): string {
 }
 
 export function ShopifyIntegrationCard() {
+  const isDemo = useDemoMode();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<StatusResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -53,6 +56,7 @@ export function ShopifyIntegrationCard() {
   const [inputError, setInputError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
+    if (isDemo) return;
     setLoading(true);
     try {
       const res = await fetch("/api/shopify/status", { cache: "no-store" });
@@ -67,14 +71,19 @@ export function ShopifyIntegrationCard() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [isDemo]);
 
   useEffect(() => {
+    if (isDemo) return;
     void load();
-  }, [load]);
+  }, [load, isDemo]);
 
   const notice = searchParams.get("shopify");
   const reason = searchParams.get("reason");
+
+  if (isDemo) {
+    return <DemoIntegrationPlaceholder brand="shopify" name="Shopify" />;
+  }
 
   async function disconnect() {
     setBusy("disconnect");

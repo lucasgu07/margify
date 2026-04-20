@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import OpenAI from "openai";
 import { buildMargifyAIContextBlock } from "@/lib/margify-ai/build-context";
 import { MARGIFY_AI_SYSTEM_PROMPT } from "@/lib/margify-ai/system-prompt";
 import type { MargifyAIApiMessage } from "@/lib/margify-ai/types";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
+
+const DEMO_COOKIE = "margify_demo";
 
 const MAX_MESSAGES = 40;
 const MAX_CONTENT_PER_MESSAGE = 12_000;
@@ -31,6 +35,14 @@ function validateMessages(raw: unknown): MargifyAIApiMessage[] {
 }
 
 export async function POST(req: Request) {
+  const cookieStore = cookies();
+  const demoCookie = cookieStore.get(DEMO_COOKIE)?.value === "1";
+  const supabase = createServerSupabaseClient();
+  const { data: authData } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
+  if (demoCookie && !authData.user) {
+    return NextResponse.json({ error: "No disponible en modo demo" }, { status: 403 });
+  }
+
   const apiKey = process.env.OPENAI_API_KEY?.trim();
   if (!apiKey) {
     return NextResponse.json(

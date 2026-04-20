@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Button, buttonClassName } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { DemoIntegrationPlaceholder } from "@/components/dashboard/DemoIntegrationPlaceholder";
+import { useDemoMode } from "@/components/dashboard/DemoModeContext";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
 
 type StatusResponse =
@@ -34,6 +36,7 @@ function formatLastSync(ts: number | null): string {
 }
 
 export function TiendanubeIntegrationCard() {
+  const isDemo = useDemoMode();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<StatusResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -66,6 +69,10 @@ export function TiendanubeIntegrationCard() {
 
   const notice = searchParams.get("tiendanube");
   const reason = searchParams.get("reason");
+
+  if (isDemo) {
+    return <DemoIntegrationPlaceholder brand="tiendanube" name="TiendaNube" />;
+  }
 
   async function disconnect() {
     setBusy("disconnect");
