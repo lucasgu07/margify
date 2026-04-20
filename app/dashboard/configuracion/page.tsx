@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
 import { Header } from "@/components/ui/Header";
 import { Input, Label } from "@/components/ui/Input";
+import { GoogleAdsIntegrationCard } from "@/components/dashboard/GoogleAdsIntegrationCard";
 import { MercadoLibreIntegrationCard } from "@/components/dashboard/MercadoLibreIntegrationCard";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
 import type { IntegrationBrandId } from "@/lib/integration-brands";
@@ -94,7 +95,15 @@ export default function ConfiguracionPage() {
         </Suspense>
         <IntegrationCard brand="shopify" name="Shopify" status="Conectada" />
         <IntegrationCard brand="meta" name="Meta Ads" status="Conectada" />
-        <IntegrationCard brand="googleAds" name="Google Ads" status="Desconectada" soon />
+        <Suspense
+          fallback={
+            <Card className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-margify-muted">Cargando Google Ads…</p>
+            </Card>
+          }
+        >
+          <GoogleAdsIntegrationCard />
+        </Suspense>
         <IntegrationCard brand="tiktok" name="TikTok Ads" status="Desconectada" soon />
       </section>
 

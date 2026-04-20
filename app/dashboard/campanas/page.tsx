@@ -9,6 +9,7 @@ import { Megaphone, MousePointerClick, Target, Wallet } from "lucide-react";
 import { AIAdvisor } from "@/components/dashboard/AIAdvisor";
 
 import { CampaignsDataTable } from "@/components/dashboard/CampaignsDataTable";
+import { GoogleAdsCampaignsTable } from "@/components/dashboard/GoogleAdsCampaignsTable";
 
 import { useDashboardIdentity } from "@/components/dashboard/DemoModeContext";
 import { useDashboard } from "@/components/dashboard/DashboardContext";
@@ -197,11 +198,15 @@ export default function CampanasPage() {
       </Card>
 
       <div className="mt-8">
-        <CampaignsDataTable
-          campaigns={rows}
-          onToggleStatus={toggleStatus}
-          adsPlatform={adsPlatform}
-        />
+        {adsPlatform === "google" ? (
+          <GoogleAdsCampaignsTable />
+        ) : (
+          <CampaignsDataTable
+            campaigns={rows}
+            onToggleStatus={toggleStatus}
+            adsPlatform={adsPlatform}
+          />
+        )}
       </div>
 
       <div className="mt-10">
