@@ -124,17 +124,17 @@ export default function LandingPage() {
 
                 <div className="relative flex min-h-0 min-w-0 flex-col justify-center lg:row-span-2 lg:min-h-full lg:pt-7">
                   <div
-                    className="relative w-full overflow-hidden rounded-2xl border border-margify-border/70 bg-margify-black/50 shadow-[0_28px_100px_rgba(0,0,0,0.55),0_0_0_1px_rgba(255,255,255,0.04)_inset] ring-1 ring-white/[0.05]"
+                    className="relative w-full overflow-hidden rounded-2xl border border-margify-border/70 bg-[#0a0f14] shadow-[0_28px_100px_rgba(0,0,0,0.55),0_0_0_1px_rgba(255,255,255,0.04)_inset] ring-1 ring-white/[0.05]"
                     style={{ aspectRatio: "16 / 10" }}
                   >
                     <Image
                       src="/landing-dashboard-hero.png"
-                      alt="Vista del dashboard Margify: métricas de rentabilidad, gráfico y resumen de los últimos 30 días"
+                      alt="Vista del dashboard Margify: KPIs, gráfico de los últimos 30 días, sidebar con Alertas y métricas de rentabilidad"
                       fill
                       priority
                       unoptimized
-                      sizes="(min-width: 1536px) 600px, (min-width: 1024px) min(560px, 48vw), 100vw"
-                      className="object-cover object-left-top"
+                      sizes="(min-width: 1536px) 1200px, (min-width: 1024px) min(1200px, 52vw), min(100vw, 900px)"
+                      className="object-contain object-top"
                     />
                   </div>
                 </div>
