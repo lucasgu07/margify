@@ -28,7 +28,7 @@ const faqs = [
   {
     id: "cancelar",
     q: "¿Puedo cancelar o cambiar de plan en cualquier momento?",
-    a: "Podés ajustar o cancelar tu suscripción según las condiciones de tu facturación. Si tenés dudas sobre tu caso, podés escribirnos desde la app.",
+    a: "Podés ajustar o cancelar tu suscripción según las condiciones de tu facturación. Si tenés dudas sobre tu caso, podés escribirnos por WhatsApp.",
   },
   {
     id: "ia",
