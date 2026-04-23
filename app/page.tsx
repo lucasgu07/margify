@@ -11,8 +11,8 @@ import { LandingPricing } from "@/components/landing/LandingPricing";
 import { LandingMainAmbient } from "@/components/landing/LandingMainAmbient";
 import { LandingFaq } from "@/components/landing/LandingFaq";
 import { LandingTestimonials } from "@/components/landing/LandingTestimonials";
-import { IntegrationBrandGrid } from "@/components/landing/IntegrationBrandGrid";
 import { LandingHeader } from "@/components/landing/LandingHeader";
+import { LandingIntegrationsShowcase } from "@/components/landing/LandingIntegrationsShowcase";
 
 /** Reemplazá por tu perfil de Instagram, X y el correo de contacto cuando estén listos. */
 const LANDING_FOOTER_INSTAGRAM = "https://www.instagram.com/";
@@ -88,7 +88,7 @@ export default function LandingPage() {
         <main className="relative z-10 overflow-x-hidden bg-transparent">
           <section id="inicio" className="relative z-10 scroll-mt-32">
             <div className="mx-auto max-w-6xl px-4 py-14 md:px-6 md:py-20 lg:max-w-7xl lg:py-24">
-              <div className="grid gap-8 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:items-start lg:gap-x-10 lg:gap-y-6 xl:gap-x-14">
+              <div className="grid gap-8 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:items-center lg:gap-x-10 lg:gap-y-0 xl:gap-x-14">
                 <div className="flex min-w-0 flex-col gap-5 lg:max-w-xl xl:max-w-lg">
                   <div className="mb-1 flex flex-wrap gap-2">
                     <Badge type="neutral" label="Rentabilidad real + campañas + IA" className="w-fit" />
@@ -122,7 +122,7 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                <div className="relative flex min-h-0 min-w-0 flex-col justify-center lg:row-span-2 lg:min-h-full lg:pt-7">
+                <div className="relative flex min-h-0 min-w-0 flex-col justify-center lg:pt-2 xl:pt-0">
                   {/* Ratio nativo del PNG hero (1024×471) para evitar bandas o recortes raros */}
                   <div
                     className="relative w-full overflow-hidden rounded-2xl border border-margify-border/70 bg-[#0a0f14] shadow-[0_28px_100px_rgba(0,0,0,0.55),0_0_0_1px_rgba(255,255,255,0.04)_inset] ring-1 ring-white/[0.05] aspect-[1024/471]"
@@ -138,12 +138,9 @@ export default function LandingPage() {
                     />
                   </div>
                 </div>
-
-                <div className="min-w-0 lg:col-start-1 lg:row-start-2">
-                  <IntegrationBrandGrid />
-                </div>
               </div>
             </div>
+            <LandingIntegrationsShowcase />
           </section>
 
           <section
