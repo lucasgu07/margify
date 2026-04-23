@@ -12,6 +12,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [terms, setTerms] = useState(false);
@@ -29,6 +30,11 @@ export default function RegisterPage() {
       setError("Tenés que aceptar los términos para continuar.");
       return;
     }
+    const phoneDigits = phone.replace(/\D/g, "");
+    if (phone.trim().length < 8 || phoneDigits.length < 8 || phoneDigits.length > 15) {
+      setError("Necesitamos un teléfono válido (incl. código de país) para alertas por WhatsApp.");
+      return;
+    }
     setLoading(true);
     const supabase = createClient();
     if (!supabase) {
@@ -39,7 +45,12 @@ export default function RegisterPage() {
     const { error: err } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName } },
+      options: {
+        data: {
+          full_name: fullName,
+          phone: phone.trim(),
+        },
+      },
     });
     setLoading(false);
     if (err) {
@@ -81,6 +92,22 @@ export default function RegisterPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
+          </div>
+          <div>
+            <Label htmlFor="phone">Teléfono (WhatsApp)</Label>
+            <Input
+              id="phone"
+              type="tel"
+              autoComplete="tel"
+              inputMode="tel"
+              required
+              placeholder="Ej. +598 99 123 456 o +54 9 11 0000-0000"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+            <p className="mt-1 text-xs text-margify-muted">
+              Lo usaremos para enviarte alertas importantes por WhatsApp.
+            </p>
           </div>
           <div>
             <Label htmlFor="password">Contraseña</Label>
