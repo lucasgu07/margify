@@ -87,7 +87,7 @@ export default function LandingPage() {
 
         <main className="relative z-10 overflow-x-hidden bg-transparent">
           <section id="inicio" className="relative z-10 scroll-mt-32">
-            <div className="mx-auto max-w-6xl px-4 py-14 md:px-6 md:py-20 lg:max-w-7xl lg:py-24">
+            <div className="mx-auto max-w-6xl px-4 pt-14 pb-6 md:px-6 md:pt-20 md:pb-8 lg:max-w-7xl lg:pt-24 lg:pb-8">
               <div className="grid gap-8 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:items-center lg:gap-x-10 lg:gap-y-0 xl:gap-x-14">
                 <div className="flex min-w-0 flex-col gap-5 lg:max-w-xl xl:max-w-lg">
                   <div className="mb-1 flex flex-wrap gap-2">
