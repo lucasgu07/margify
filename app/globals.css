@@ -25,3 +25,49 @@ body {
   background: rgba(100, 223, 223, 0.25);
   color: #fff;
 }
+
+/* react-international-phone — tema Margify (registro) */
+.margify-intl-phone {
+  --react-international-phone-height: 2.75rem;
+  --react-international-phone-border-radius: 8px;
+  --react-international-phone-font-size: 0.875rem;
+  --react-international-phone-background-color: #1a1a1a;
+  --react-international-phone-text-color: #ffffff;
+  --react-international-phone-border-color: #222222;
+  --react-international-phone-country-selector-border-color: #222222;
+  --react-international-phone-country-selector-background-color: #1a1a1a;
+  --react-international-phone-country-selector-background-color-hover: #141414;
+  --react-international-phone-country-selector-arrow-color: #888888;
+  --react-international-phone-dropdown-top: 2.75rem;
+  --react-international-phone-dropdown-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+  --react-international-phone-selected-dropdown-item-background-color: rgba(100, 223, 223, 0.12);
+  --react-international-phone-selected-dropdown-item-text-color: #ffffff;
+  --react-international-phone-dropdown-item-text-color: #e5e5e5;
+  --react-international-phone-dropdown-item-dial-code-color: #888888;
+  --react-international-phone-disabled-background-color: #111111;
+  --react-international-phone-disabled-text-color: #666666;
+  --react-international-phone-disabled-country-selector-background-color: #111111;
+}
+
+.margify-intl-phone .react-international-phone-country-selector {
+  z-index: 2;
+}
+
+.margify-intl-phone .react-international-phone-country-selector-dropdown {
+  z-index: 50;
+  border: 1px solid #222222;
+  border-radius: 8px;
+}
+
+.margify-intl-phone .react-international-phone-input-container {
+  width: 100%;
+}
+
+.margify-intl-phone .react-international-phone-input-container:focus-within {
+  box-shadow: 0 0 0 1px rgba(100, 223, 223, 0.45);
+  border-radius: 8px;
+}
+
+.margify-intl-phone .react-international-phone-input::placeholder {
+  color: rgba(136, 136, 136, 0.85);
+}

@@ -6,6 +6,7 @@ import { useState } from "react";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { Button } from "@/components/ui/Button";
 import { Input, Label } from "@/components/ui/Input";
+import { MargifyPhoneInput } from "@/components/ui/MargifyPhoneInput";
 import { createClient } from "@/lib/supabase";
 
 export default function RegisterPage() {
@@ -30,9 +31,13 @@ export default function RegisterPage() {
       setError("Tenés que aceptar los términos para continuar.");
       return;
     }
+    if (!phone.trim()) {
+      setError("Ingresá tu número de teléfono con el prefijo de tu país.");
+      return;
+    }
     const phoneDigits = phone.replace(/\D/g, "");
-    if (phone.trim().length < 8 || phoneDigits.length < 8 || phoneDigits.length > 15) {
-      setError("Necesitamos un teléfono válido (incl. código de país) para alertas por WhatsApp.");
+    if (phoneDigits.length < 8 || phoneDigits.length > 15) {
+      setError("Necesitamos un teléfono válido (código de país + número) para alertas por WhatsApp.");
       return;
     }
     setLoading(true);
@@ -94,19 +99,10 @@ export default function RegisterPage() {
             />
           </div>
           <div>
-            <Label htmlFor="phone">Teléfono (WhatsApp)</Label>
-            <Input
-              id="phone"
-              type="tel"
-              autoComplete="tel"
-              inputMode="tel"
-              required
-              placeholder="Ej. +598 99 123 456 o +54 9 11 0000-0000"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
+            <Label htmlFor="phone">Número de teléfono</Label>
+            <MargifyPhoneInput id="phone" value={phone} onChange={setPhone} disabled={loading} />
             <p className="mt-1 text-xs text-margify-muted">
-              Lo usaremos para enviarte alertas importantes por WhatsApp.
+              Elegí el país, el prefijo y el número. Lo usaremos para alertas importantes por WhatsApp.
             </p>
           </div>
           <div>
