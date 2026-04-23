@@ -26,7 +26,7 @@ export function LandingIntegrationsShowcase() {
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl">
-            Plataformas con las que trabajamos
+            Las apps con las que trabajamos
           </h2>
           <p className="mt-2 text-pretty text-sm text-margify-muted sm:text-base">
             Conectá las mismas tiendas y canales de ads que ya usás: todo queda orquestado en un solo
