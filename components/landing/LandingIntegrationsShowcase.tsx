@@ -1,6 +1,5 @@
 "use client";
 
-import { Sparkles } from "@/components/ui/sparkles";
 import { InfiniteSlider } from "@/components/ui/infinite-slider";
 import { ProgressiveBlur } from "@/components/ui/progressive-blur";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
@@ -14,18 +13,6 @@ export function LandingIntegrationsShowcase() {
 
   return (
     <div className="relative pt-2 pb-16 md:pt-3 md:pb-20 lg:pb-24">
-      <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 top-0 -z-10 [mask-image:linear-gradient(90deg,transparent_0%,white_4%,white_96%,transparent_100%)]"
-        aria-hidden
-      >
-        <div className="absolute inset-0 before:absolute before:inset-0 before:bg-[radial-gradient(ellipse_120%_80%_at_50%_0%,hsl(170_100%_65%/0.12),transparent_60%)]" />
-        <Sparkles
-          density={900}
-          className="absolute inset-0 h-full w-full [mask-image:linear-gradient(90deg,transparent_0%,white_3%,white_97%,transparent_100%)]"
-          color="rgba(100, 223, 223, 0.9)"
-        />
-      </div>
-
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl md:text-[1.65rem]">

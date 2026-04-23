@@ -9,6 +9,7 @@ import { Logo } from "@/components/ui/Logo";
 import { Badge } from "@/components/ui/Badge";
 import { LandingPricing } from "@/components/landing/LandingPricing";
 import { LandingMainAmbient } from "@/components/landing/LandingMainAmbient";
+import { LandingParticleBackground } from "@/components/landing/LandingParticleBackground";
 import { LandingFaq } from "@/components/landing/LandingFaq";
 import { LandingTestimonials } from "@/components/landing/LandingTestimonials";
 import { LandingHeader } from "@/components/landing/LandingHeader";
@@ -77,11 +78,8 @@ const howItWorksSteps = [
 export default function LandingPage() {
   return (
     <div className="relative min-h-screen bg-margify-bg text-margify-text">
-      <div
-        className="pointer-events-none fixed inset-0 z-0 opacity-[0.28] bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.08)_1px,transparent_1px)] bg-[length:22px_22px]"
-        aria-hidden
-      />
-      <div className="relative">
+      <LandingParticleBackground />
+      <div className="relative z-[1]">
         <LandingMainAmbient />
         <LandingHeader />
 
