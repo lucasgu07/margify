@@ -40,20 +40,28 @@ export function IntegrationBrandIcon({
   withBackdrop = true,
 }: {
   brand: IntegrationBrandId;
-  size?: "xs" | "sm" | "md";
+  size?: "xs" | "sm" | "md" | "lg";
   className?: string;
   /** Fondo suave para contraste sobre cards oscuras. */
   withBackdrop?: boolean;
 }) {
   const def = BRANDS[brand];
   const iconBox =
-    size === "xs" ? "h-3.5 w-3.5" : size === "md" ? "h-[1.125rem] w-[1.125rem]" : "h-4 w-4";
+    size === "xs"
+      ? "h-3.5 w-3.5"
+      : size === "md"
+        ? "h-[1.125rem] w-[1.125rem]"
+        : size === "lg"
+          ? "h-7 w-7"
+          : "h-4 w-4";
   const imgClass =
     size === "xs"
       ? "h-3 w-auto max-w-[2.75rem]"
       : size === "md"
         ? "h-[1.1rem] w-auto max-w-[4rem]"
-        : "h-3.5 w-auto max-w-[3.5rem]";
+        : size === "lg"
+          ? "h-8 w-auto max-w-[5.75rem]"
+          : "h-3.5 w-auto max-w-[3.5rem]";
 
   const inner =
     def.simple != null ? (
@@ -75,7 +83,13 @@ export function IntegrationBrandIcon({
     <span
       className={cn(
         "inline-flex shrink-0 items-center justify-center rounded-control bg-white/[0.07] ring-1 ring-white/10",
-        size === "xs" ? "h-6 min-w-[1.5rem] px-0.5" : size === "md" ? "h-8 min-w-[2rem] px-1" : "h-7 min-w-[1.75rem] px-0.5",
+        size === "xs"
+          ? "h-6 min-w-[1.5rem] px-0.5"
+          : size === "md"
+            ? "h-8 min-w-[2rem] px-1"
+            : size === "lg"
+              ? "h-12 min-w-[3rem] px-2"
+              : "h-7 min-w-[1.75rem] px-0.5",
         className
       )}
     >

@@ -25,20 +25,20 @@ export function LandingIntegrationsShowcase() {
         </div>
 
         <div className="relative mx-auto mt-10 w-full max-w-5xl sm:mt-12 md:mt-14">
-          <div className="relative h-32 w-full sm:h-40 md:h-44">
+          <div className="relative h-44 w-full sm:h-52 md:h-56">
             <InfiniteSlider
               className="flex h-full w-full items-center"
               duration={32}
-              gap={40}
+              gap={48}
               durationOnHover={50}
             >
               {brands.map((id) => (
                 <div
                   key={id}
-                  className="flex w-[9.5rem] shrink-0 flex-col items-center justify-center gap-2.5 sm:w-44"
+                  className="flex w-[12rem] shrink-0 flex-col items-center justify-center gap-3 sm:w-52"
                 >
-                  <IntegrationBrandIcon brand={id} size="md" withBackdrop />
-                  <span className="text-center text-xs font-medium text-margify-muted/95 sm:text-sm">
+                  <IntegrationBrandIcon brand={id} size="lg" withBackdrop />
+                  <span className="text-center text-sm font-medium text-margify-muted/95 sm:text-base">
                     {INTEGRATION_DISPLAY_LABEL[id]}
                   </span>
                 </div>
