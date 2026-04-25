@@ -7,6 +7,7 @@ import {
   getShopifyRedirectUri,
   getShopifyScopes,
   isValidShopDomain,
+  sanitizeShopifyOAuthReturnTo,
 } from "@/lib/shopify-auth";
 
 export const dynamic = "force-dynamic";
@@ -19,6 +20,7 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const rawShop = url.searchParams.get("shop");
   const shop = rawShop?.trim().toLowerCase() ?? null;
+  const returnTo = sanitizeShopifyOAuthReturnTo(url.searchParams.get("return_to"));
 
   const origin = getAppOrigin();
   const back = (params: Record<string, string>) => {
@@ -39,7 +41,7 @@ export async function GET(request: Request) {
   const state = crypto.randomBytes(16).toString("hex");
   cookies().set(
     SHOPIFY_STATE_COOKIE,
-    JSON.stringify({ state, shop }),
+    JSON.stringify({ state, shop, returnTo }),
     {
       httpOnly: true,
       sameSite: "lax",

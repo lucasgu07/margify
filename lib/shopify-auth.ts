@@ -142,7 +142,21 @@ export function serializeShopifySession(session: ShopifySession): string {
 export type ShopifyStateCookie = {
   state: string;
   shop: string;
+  /** Path relativo permitido post-OAuth (ej. /onboarding). */
+  returnTo?: string;
 };
+
+const ALLOWED_SHOPIFY_OAUTH_RETURN_PATHS = new Set(["/onboarding", "/dashboard/configuracion"]);
+
+export function sanitizeShopifyOAuthReturnTo(raw: string | null | undefined): string {
+  if (!raw || typeof raw !== "string") return "/dashboard/configuracion";
+  const path = raw.split("?")[0].trim();
+  if (!path.startsWith("/") || path.startsWith("//")) return "/dashboard/configuracion";
+  if (ALLOWED_SHOPIFY_OAUTH_RETURN_PATHS.has(path)) {
+    return path;
+  }
+  return "/dashboard/configuracion";
+}
 
 export function parseShopifyState(
   raw: string | undefined | null
@@ -151,7 +165,8 @@ export function parseShopifyState(
   try {
     const s = JSON.parse(raw) as Partial<ShopifyStateCookie>;
     if (!s.state || !s.shop) return null;
-    return { state: s.state, shop: s.shop };
+    const returnTo = sanitizeShopifyOAuthReturnTo(s.returnTo);
+    return { state: s.state, shop: s.shop, returnTo };
   } catch {
     return null;
   }

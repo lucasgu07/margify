@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useCallback, useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -13,6 +13,11 @@ import {
   type SelectedPlanChoice,
 } from "@/components/landing/PricingPlansContent";
 import { createClient } from "@/lib/supabase";
+import {
+  buildShopifyOAuthUrl,
+  shopifyShopInputErrorMessage,
+  stripShopifyShopInput,
+} from "@/lib/shopify-shop-input";
 
 type Platform = "tiendanube" | "shopify" | "mercadolibre";
 
@@ -25,11 +30,32 @@ const platforms: { id: Platform; label: string }[] = [
 const STEPS = 5;
 
 export default function OnboardingPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-margify-bg px-4 py-8">
+          <div className="mx-auto w-full max-w-6xl animate-pulse">
+            <div className="h-8 w-40 rounded bg-margify-border" />
+            <div className="mt-8 h-64 rounded-card bg-margify-card" />
+          </div>
+        </div>
+      }
+    >
+      <OnboardingPageContent />
+    </Suspense>
+  );
+}
+
+function OnboardingPageContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const shopifyOAuthOk = searchParams.get("shopify") === "connected";
   const [step, setStep] = useState(1);
   const [selected, setSelected] = useState<Platform[]>([]);
   const [storeUrl, setStoreUrl] = useState("");
   const [apiToken, setApiToken] = useState("");
+  const [shopifyShopInput, setShopifyShopInput] = useState("");
+  const [shopifyConnectError, setShopifyConnectError] = useState<string | null>(null);
   const [productCost, setProductCost] = useState(40);
   const [payComm, setPayComm] = useState(3.5);
   const [ship, setShip] = useState(5);
@@ -76,6 +102,14 @@ export default function OnboardingPage() {
         <Link href="/" className="inline-block">
           <Logo priority />
         </Link>
+        {shopifyOAuthOk ? (
+          <p
+            className="mt-4 rounded-control border border-margify-cyan/35 bg-margify-cyan/10 px-4 py-3 text-sm text-margify-cyan"
+            role="status"
+          >
+            Shopify quedó conectada con inicio de sesión seguro. Continuá con los pasos de abajo.
+          </p>
+        ) : null}
         <div className="mt-6 flex gap-2" role="list" aria-label="Progreso de configuración">
           {Array.from({ length: STEPS }, (_, i) => i + 1).map((n) => (
             <div
@@ -171,14 +205,50 @@ export default function OnboardingPage() {
               {selected.includes("shopify") ? (
                 <div className="space-y-3 rounded-card border border-margify-border bg-margify-cardAlt p-4">
                   <p className="text-sm font-semibold text-margify-cyan">Shopify</p>
+                  <p className="text-xs text-margify-muted">
+                    Conectá con el inicio de sesión de Shopify: no hace falta API Key ni claves
+                    privadas. Serás redirigido, autorizás a Margify y volvés a continuar el onboarding.
+                  </p>
                   <div>
-                    <Label>URL de tu tienda</Label>
-                    <Input placeholder="https://tu-marca.myshopify.com" />
+                    <Label htmlFor="onboarding-shopify-shop">Dominio del admin de tu tienda</Label>
+                    <Input
+                      id="onboarding-shopify-shop"
+                      placeholder="mi-tienda.myshopify.com"
+                      value={shopifyShopInput}
+                      onChange={(e) => {
+                        setShopifyShopInput(e.target.value);
+                        setShopifyConnectError(null);
+                      }}
+                      autoComplete="off"
+                      spellCheck={false}
+                    />
+                    {shopifyConnectError ? (
+                      <p className="mt-1 text-xs text-margify-negative">{shopifyConnectError}</p>
+                    ) : null}
+                    <p className="mt-1 text-xs text-margify-muted">
+                      Tiene que ser el host del panel (termina en <code className="text-margify-text">.myshopify.com</code>
+                      ), no el dominio público. No completamos el sufijo por vos: copiá el dominio completo del
+                      admin.
+                    </p>
                   </div>
-                  <div>
-                    <Label>API Key</Label>
-                    <Input placeholder="Clave de app privada" />
-                  </div>
+                  <Button
+                    type="button"
+                    variant="primary"
+                    className="w-full sm:w-auto"
+                    disabled={!stripShopifyShopInput(shopifyShopInput)}
+                    onClick={() => {
+                      setShopifyConnectError(null);
+                      const err = shopifyShopInputErrorMessage(shopifyShopInput);
+                      if (err) {
+                        setShopifyConnectError(err);
+                        return;
+                      }
+                      const shop = stripShopifyShopInput(shopifyShopInput);
+                      window.location.href = buildShopifyOAuthUrl(shop, "/onboarding");
+                    }}
+                  >
+                    Conectar con Shopify
+                  </Button>
                 </div>
               ) : null}
               {selected.includes("mercadolibre") ? (

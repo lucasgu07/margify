@@ -7,8 +7,11 @@ import { Card } from "@/components/ui/Card";
 import { DemoIntegrationPlaceholder } from "@/components/dashboard/DemoIntegrationPlaceholder";
 import { useDemoMode } from "@/components/dashboard/DemoModeContext";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
-
-const SHOP_DOMAIN_REGEX = /^[a-z0-9][a-z0-9-]*\.myshopify\.com$/;
+import {
+  buildShopifyOAuthUrl,
+  shopifyShopInputErrorMessage,
+  stripShopifyShopInput,
+} from "@/lib/shopify-shop-input";
 
 type StatusResponse =
   | { configured: false; connected: false; message?: string }
@@ -32,14 +35,6 @@ function formatLastSync(ts: number | null): string {
   } catch {
     return "nunca";
   }
-}
-
-function normalizeShopInput(raw: string): string {
-  const trimmed = raw.trim().toLowerCase();
-  if (!trimmed) return "";
-  const withoutProtocol = trimmed.replace(/^https?:\/\//, "").replace(/\/$/, "");
-  if (withoutProtocol.includes(".myshopify.com")) return withoutProtocol;
-  return `${withoutProtocol}.myshopify.com`;
 }
 
 export function ShopifyIntegrationCard() {
@@ -132,14 +127,13 @@ export function ShopifyIntegrationCard() {
   function handleConnect(e: React.FormEvent) {
     e.preventDefault();
     setInputError(null);
-    const shop = normalizeShopInput(shopInput);
-    if (!SHOP_DOMAIN_REGEX.test(shop)) {
-      setInputError(
-        'Formato inválido. Escribí el dominio como "mi-tienda.myshopify.com".'
-      );
+    const shop = stripShopifyShopInput(shopInput);
+    const err = shopifyShopInputErrorMessage(shopInput);
+    if (err) {
+      setInputError(err);
       return;
     }
-    window.location.href = `/api/auth/shopify?shop=${encodeURIComponent(shop)}`;
+    window.location.href = buildShopifyOAuthUrl(shop);
   }
 
   const connected = status?.configured && status.connected;
@@ -243,8 +237,9 @@ export function ShopifyIntegrationCard() {
               <p className="text-xs text-margify-negative">{inputError}</p>
             ) : null}
             <p className="text-xs text-margify-muted">
-              Podés escribir solo el nombre (ej. <code>mi-tienda</code>) — nosotros
-              completamos <code>.myshopify.com</code>.
+              Es el dominio del panel de administración de Shopify (siempre termina en{" "}
+              <code>.myshopify.com</code>
+              ), no el dominio público de la tienda.
             </p>
           </form>
         )}

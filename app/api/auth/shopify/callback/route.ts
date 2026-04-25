@@ -6,6 +6,7 @@ import {
   getAppOrigin,
   isValidShopDomain,
   parseShopifyState,
+  sanitizeShopifyOAuthReturnTo,
   serializeShopifySession,
   verifyShopifyHmac,
   type ShopifySession,
@@ -32,8 +33,15 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const origin = getAppOrigin();
 
+  const cookieStore = cookies();
+  const savedRaw = cookieStore.get(SHOPIFY_STATE_COOKIE)?.value;
+  const savedPreview = parseShopifyState(savedRaw);
+  const returnPath = savedPreview
+    ? sanitizeShopifyOAuthReturnTo(savedPreview.returnTo)
+    : "/dashboard/configuracion";
+
   const back = (params: Record<string, string>) => {
-    const u = new URL(`${origin}/dashboard/configuracion`);
+    const u = new URL(`${origin}${returnPath}`);
     for (const [k, v] of Object.entries(params)) u.searchParams.set(k, v);
     return NextResponse.redirect(u.toString());
   };
@@ -43,11 +51,10 @@ export async function GET(request: Request) {
   const state = url.searchParams.get("state");
 
   if (!isValidShopDomain(shop)) {
+    cookieStore.delete(SHOPIFY_STATE_COOKIE);
     return back({ shopify: "invalid_shop" });
   }
 
-  const cookieStore = cookies();
-  const savedRaw = cookieStore.get(SHOPIFY_STATE_COOKIE)?.value;
   cookieStore.delete(SHOPIFY_STATE_COOKIE);
   const saved = parseShopifyState(savedRaw);
 
