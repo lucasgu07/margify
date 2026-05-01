@@ -9,7 +9,7 @@ function MarqueeTestimonialCard({ item, className }: { item: TestimonialItem; cl
   return (
     <article
       className={cn(
-        "w-[min(100%,17.5rem)] shrink-0 rounded-card border border-margify-border bg-margify-card p-4 shadow-[0_10px_40px_rgba(0,0,0,0.35),0_0_0_1px_rgba(100,223,223,0.06)] sm:w-[18.5rem] sm:p-5 md:w-[19rem] md:rounded-2xl md:p-6",
+        "w-[min(100%,17.5rem)] shrink-0 rounded-control border border-margify-border bg-margify-card p-4 shadow-[0_10px_40px_rgba(0,0,0,0.35),0_0_0_1px_rgba(100,223,223,0.06)] sm:w-[18.5rem] sm:p-5 md:w-[19rem] md:p-6",
         className
       )}
     >
@@ -53,10 +53,11 @@ export function TestimonialsMarqueeRow({
 
   return (
     <div
-      className={cn(
-        "relative w-full overflow-hidden py-1 [mask-image:linear-gradient(to_right,transparent,black_3%,black_97%,transparent)]",
-        className
-      )}
+      className={cn("relative w-full overflow-hidden py-1", className)}
+      style={{
+        maskImage: "linear-gradient(to right, transparent, black 3%, black 97%, transparent)",
+        WebkitMaskImage: "linear-gradient(to right, transparent, black 3%, black 97%, transparent)",
+      }}
     >
       <motion.div
         className="flex w-max gap-4 md:gap-5"

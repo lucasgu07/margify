@@ -87,42 +87,48 @@ export function LandingTestimonials() {
             Equipos de ecommerce y agencias que unificaron ventas, costos y campañas con Margify.
           </p>
         </div>
+      </div>
 
-        {reduceMotion ? (
-          <>
-            <div className="mx-auto mt-12 flex w-full max-w-xs flex-col items-center gap-5 md:hidden">
-              {testimonials.map((item) => (
+      {reduceMotion ? (
+        <>
+          <div className="mx-auto mt-12 flex w-full max-w-xs flex-col items-center gap-5 px-4 md:hidden">
+            {testimonials.map((item) => (
+              <TestimonialCard key={item.name} item={item} />
+            ))}
+          </div>
+          <div className="mt-12 hidden w-full flex-col gap-6 px-4 md:flex md:px-6">
+            <div className="flex flex-wrap justify-center gap-4 md:gap-5">
+              {testimonialsRow1.map((item) => (
                 <TestimonialCard key={item.name} item={item} />
               ))}
             </div>
-            <div className="mx-auto mt-12 hidden max-w-6xl flex-col gap-6 md:flex">
-              <div className="flex flex-wrap justify-center gap-4 md:gap-5">
-                {testimonialsRow1.map((item) => (
-                  <TestimonialCard key={item.name} item={item} />
-                ))}
-              </div>
-              <div className="flex flex-wrap justify-center gap-4 md:gap-5">
-                {testimonialsRow2.map((item) => (
-                  <TestimonialCard key={item.name} item={item} />
-                ))}
-              </div>
+            <div className="flex flex-wrap justify-center gap-4 md:gap-5">
+              {testimonialsRow2.map((item) => (
+                <TestimonialCard key={item.name} item={item} />
+              ))}
             </div>
-          </>
-        ) : (
-          <>
-            <div className="mx-auto mt-12 flex w-full max-w-full flex-col items-center justify-center md:hidden">
-              <div className="flex max-h-[min(740px,70vh)] w-full justify-center overflow-hidden [mask-image:linear-gradient(to_bottom,transparent,black_12%,black_88%,transparent)]">
-                <TestimonialsColumn testimonials={testimonials} duration={22} />
-              </div>
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="mx-auto mt-12 flex w-full flex-col items-center justify-center px-4 md:hidden">
+            <div
+              className="flex max-h-[min(740px,70vh)] w-full justify-center overflow-hidden"
+              style={{
+                maskImage: "linear-gradient(to bottom, transparent, black 12%, black 88%, transparent)",
+                WebkitMaskImage: "linear-gradient(to bottom, transparent, black 12%, black 88%, transparent)",
+              }}
+            >
+              <TestimonialsColumn testimonials={testimonials} duration={22} />
             </div>
+          </div>
 
-            <div className="mx-auto mt-12 hidden w-full max-w-full flex-col gap-3 md:flex md:gap-4">
-              <TestimonialsMarqueeRow items={testimonialsRow1} direction="left" durationSec={40} />
-              <TestimonialsMarqueeRow items={testimonialsRow2} direction="right" durationSec={34} />
-            </div>
-          </>
-        )}
-      </div>
+          <div className="mt-12 hidden w-full min-w-0 flex-col gap-3 md:flex md:gap-4">
+            <TestimonialsMarqueeRow items={testimonialsRow1} direction="left" durationSec={40} />
+            <TestimonialsMarqueeRow items={testimonialsRow2} direction="right" durationSec={34} />
+          </div>
+        </>
+      )}
     </section>
   );
 }

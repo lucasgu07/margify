@@ -15,7 +15,7 @@ export function TestimonialCard({ item, className }: { item: TestimonialItem; cl
   return (
     <article
       className={cn(
-        "w-full max-w-xs rounded-card border border-margify-border bg-margify-card p-6 shadow-[0_10px_40px_rgba(0,0,0,0.35),0_0_0_1px_rgba(100,223,223,0.06)] md:rounded-2xl md:p-7",
+        "w-full max-w-xs rounded-control border border-margify-border bg-margify-card p-6 shadow-[0_10px_40px_rgba(0,0,0,0.35),0_0_0_1px_rgba(100,223,223,0.06)] md:p-7",
         className
       )}
     >

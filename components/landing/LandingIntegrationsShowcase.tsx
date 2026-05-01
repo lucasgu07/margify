@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { InfiniteSlider } from "@/components/ui/infinite-slider";
-import { ProgressiveBlur } from "@/components/ui/progressive-blur";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
 import { INTEGRATION_BRAND_ORDER, INTEGRATION_DISPLAY_LABEL } from "@/lib/integration-brands";
 
@@ -21,9 +20,6 @@ export function LandingIntegrationsShowcase() {
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  /** Franja en esquinas: en móvil un poco más fina para que se vea más tira útil. */
-  const edgeBlend = "w-6 sm:w-9 md:w-10";
-
   return (
     <div className="relative pt-2 pb-16 md:pt-3 md:pb-20 lg:pb-24">
       <div className="mx-auto w-full max-w-7xl px-2 sm:px-3 md:px-5 lg:max-w-[100rem] lg:px-6">
@@ -37,8 +33,14 @@ export function LandingIntegrationsShowcase() {
           </p>
         </div>
 
-        <div className="relative mx-auto mt-10 w-full sm:mt-12 md:mt-14">
-          <div className="relative h-44 w-full sm:h-52 md:h-56">
+        <div className="relative mx-auto mt-5 w-full sm:mt-6 md:mt-8">
+          <div
+            className="relative h-44 w-full overflow-hidden py-1 sm:h-52 md:h-56"
+            style={{
+              maskImage: "linear-gradient(to right, transparent, black 3%, black 97%, transparent)",
+              WebkitMaskImage: "linear-gradient(to right, transparent, black 3%, black 97%, transparent)",
+            }}
+          >
             <InfiniteSlider
               className="flex h-full w-full items-center"
               duration={32}
@@ -57,18 +59,6 @@ export function LandingIntegrationsShowcase() {
                 </div>
               ))}
             </InfiniteSlider>
-            <ProgressiveBlur
-              className={`pointer-events-none absolute top-0 left-0 h-full ${edgeBlend}`}
-              direction="left"
-              blurLayers={4}
-              blurIntensity={0.6}
-            />
-            <ProgressiveBlur
-              className={`pointer-events-none absolute top-0 right-0 h-full ${edgeBlend}`}
-              direction="right"
-              blurLayers={4}
-              blurIntensity={0.6}
-            />
           </div>
         </div>
       </div>
