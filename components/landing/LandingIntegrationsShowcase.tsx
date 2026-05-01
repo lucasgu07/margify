@@ -27,7 +27,7 @@ export function LandingIntegrationsShowcase() {
   return (
     <div className="relative pt-2 pb-16 md:pt-3 md:pb-20 lg:pb-24">
       <div className="mx-auto w-full max-w-7xl px-2 sm:px-3 md:px-5 lg:max-w-[100rem] lg:px-6">
-        <div className="mx-auto max-w-2xl text-center">
+        <div className="mx-auto max-w-2xl pt-12 text-center sm:pt-16 md:pt-20 lg:pt-24 xl:pt-28">
           <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl md:text-[1.65rem]">
             Las apps con las que trabajamos
           </h2>

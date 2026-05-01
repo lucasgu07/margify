@@ -172,7 +172,7 @@ export default function AlertasPage() {
 
       <Card className="mt-10">
         <CardTitle>WhatsApp</CardTitle>
-        <CardDescription>Conectá tu número para recibir alertas críticas al toque.</CardDescription>
+        <CardDescription>Conectá tu número para recibir alertas críticas al instante.</CardDescription>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
           <div className="flex-1">
             <Label>Número con código de país</Label>

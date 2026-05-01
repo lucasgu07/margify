@@ -8,6 +8,8 @@ import { Button, buttonClassName } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
 import { DataTable, type Column } from "@/components/ui/Table";
+import { useDemoMode } from "@/components/dashboard/DemoModeContext";
+import { demoMetaAdsCampaignRows } from "@/lib/mock-data";
 import {
   metaStatusBadgeTone,
   metaStatusLabel,
@@ -71,6 +73,7 @@ function formatLastSync(ts: number | null): string {
 }
 
 export function MetaAdsCampaignsTable() {
+  const isDemo = useDemoMode();
   const [rows, setRows] = useState<Row[] | null>(null);
   const [currency, setCurrency] = useState<string | null>(null);
   const [meta, setMeta] = useState<CampaignsResponse | null>(null);
@@ -91,6 +94,26 @@ export function MetaAdsCampaignsTable() {
   }, []);
 
   const syncNow = useCallback(async () => {
+    if (isDemo) {
+      setSyncing(true);
+      setError(null);
+      try {
+        await new Promise((r) => setTimeout(r, 450));
+        setMeta((prev) =>
+          prev
+            ? { ...prev, lastSyncedAt: Date.now() }
+            : {
+                connected: true,
+                adAccountId: "act_demo",
+                adAccounts: [],
+                lastSyncedAt: Date.now(),
+              }
+        );
+      } finally {
+        setSyncing(false);
+      }
+      return;
+    }
     setSyncing(true);
     setError(null);
     try {
@@ -114,11 +137,25 @@ export function MetaAdsCampaignsTable() {
     } finally {
       setSyncing(false);
     }
-  }, []);
+  }, [isDemo]);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      if (isDemo) {
+        setLoading(true);
+        setError(null);
+        setCurrency("ARS");
+        setRows(demoMetaAdsCampaignRows);
+        setMeta({
+          connected: true,
+          adAccountId: "act_demo",
+          adAccounts: [],
+          lastSyncedAt: Date.now() - 1000 * 60 * 12,
+        });
+        if (!cancelled) setLoading(false);
+        return;
+      }
       setLoading(true);
       const m = await loadMeta();
       if (cancelled) return;
@@ -130,7 +167,7 @@ export function MetaAdsCampaignsTable() {
     return () => {
       cancelled = true;
     };
-  }, [loadMeta, syncNow]);
+  }, [isDemo, loadMeta, syncNow]);
 
   const columns: Column<Row>[] = useMemo(
     () => [
