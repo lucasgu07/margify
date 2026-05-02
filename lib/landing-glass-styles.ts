@@ -3,7 +3,7 @@
  * con blur; el texto va a opacidad plena vía colores existentes (+ ajustes puntuales).
  */
 export const landingGlassNav =
-  "isolate border border-teal-950/40 bg-[rgba(10,46,46,0.55)] shadow-[0_12px_40px_rgba(0,0,0,0.38)] backdrop-blur-[20px] [-webkit-backdrop-filter:blur(20px)] backdrop-saturate-150";
+  "isolate border border-teal-950/45 bg-[rgba(10,46,46,0.78)] shadow-[0_12px_40px_rgba(0,0,0,0.38)] backdrop-blur-[28px] [-webkit-backdrop-filter:blur(28px)] backdrop-saturate-150";
 
 export const landingGlassPanel =
   "border-white/11 bg-black/48 shadow-[0_12px_44px_rgba(0,0,0,0.42)] backdrop-blur-[16px] backdrop-saturate-150";
