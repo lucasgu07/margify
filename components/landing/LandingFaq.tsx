@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Plus } from "lucide-react";
+import { landingGlassBodyText, landingGlassFaq, landingGlassFaqOpen } from "@/lib/landing-glass-styles";
 import { cn } from "@/lib/utils";
 
 const faqs = [
@@ -49,7 +50,7 @@ export function LandingFaq() {
         >
           Preguntas frecuentes
         </h2>
-        <p className="mt-3 text-margify-muted md:text-lg">
+        <p className={cn("mt-3 md:text-lg", landingGlassBodyText)}>
           Todo lo que necesitás saber sobre Margify antes de empezar.
         </p>
       </div>
@@ -62,9 +63,7 @@ export function LandingFaq() {
               <div
                 className={cn(
                   "overflow-hidden rounded-card border transition-colors duration-margify",
-                  isOpen
-                    ? "border-margify-cyan/35 bg-margify-cardAlt shadow-[0_0_0_1px_rgba(100,223,223,0.12)]"
-                    : "border-margify-border bg-margify-card hover:border-margify-border/90"
+                  isOpen ? landingGlassFaqOpen : cn(landingGlassFaq, "hover:bg-black/50")
                 )}
               >
                 <button
@@ -80,7 +79,7 @@ export function LandingFaq() {
                   </span>
                   <span
                     className={cn(
-                      "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-margify-border bg-margify-cardAlt text-margify-cyan transition-transform duration-margify",
+                      "flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/14 bg-black/40 text-margify-cyan backdrop-blur-md transition-transform duration-margify",
                       isOpen && "rotate-45"
                     )}
                     aria-hidden
@@ -98,7 +97,7 @@ export function LandingFaq() {
                   )}
                 >
                   <div className="min-h-0 overflow-hidden">
-                    <p className="border-t border-margify-border/80 px-4 pb-4 pt-3 text-sm leading-relaxed text-margify-muted md:px-5 md:text-[15px]">
+                    <p className="border-t border-white/10 px-4 pb-4 pt-3 text-sm leading-relaxed md:px-5 md:text-[15px] text-neutral-300">
                       {a}
                     </p>
                   </div>

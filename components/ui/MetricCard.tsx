@@ -17,6 +17,7 @@ export function MetricCard({
   progress,
   decimals,
   compact,
+  dense = false,
 }: {
   title: string;
   value: number;
@@ -34,6 +35,8 @@ export function MetricCard({
   decimals?: number;
   /** Usa notación compacta para montos grandes (K / M). */
   compact?: boolean;
+  /** Tipografía más chica (embed / columnas angostas, p. ej. preview en landing). */
+  dense?: boolean;
 }) {
   const valueDecimals = decimals ?? (suffix === "%" ? 1 : 2);
   const formatted = valueIsCurrency
@@ -46,21 +49,38 @@ export function MetricCard({
   const secondaryClass = "text-margify-muted";
 
   return (
-    <Card className={cn("flex flex-col gap-3", className)}>
-      <div className="flex items-start justify-between gap-2">
-        <p className="flex min-w-0 items-center gap-1.5 text-sm font-medium text-margify-muted">
+    <Card
+      className={cn(
+        "flex min-w-0 flex-col gap-3",
+        dense && "gap-2 p-3.5 sm:p-4",
+        className
+      )}
+    >
+      <div className="flex min-w-0 items-start justify-between gap-2">
+        <p
+          className={cn(
+            "flex min-w-0 items-center gap-1.5 font-medium text-margify-muted",
+            dense ? "text-xs sm:text-[13px]" : "text-sm"
+          )}
+        >
           {integrationBrand ? (
             <IntegrationBrandIcon brand={integrationBrand} size="xs" />
           ) : null}
-          <span>{title}</span>
+          <span className="min-w-0 leading-snug">{title}</span>
         </p>
         {Icon ? (
-          <Icon className={cn("h-5 w-5 shrink-0", secondaryClass)} aria-hidden />
+          <Icon
+            className={cn("shrink-0", dense ? "h-4 w-4 sm:h-5 sm:w-5" : "h-5 w-5", secondaryClass)}
+            aria-hidden
+          />
         ) : null}
       </div>
       <p
         className={cn(
-          "text-2xl font-bold tracking-tight text-margify-text md:text-3xl",
+          "min-w-0 max-w-full font-bold tabular-nums tracking-tight text-margify-text leading-tight",
+          dense
+            ? "text-[13px] sm:text-sm md:text-base lg:text-lg"
+            : "text-2xl md:text-3xl",
           valueClassName
         )}
       >

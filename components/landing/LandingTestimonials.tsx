@@ -8,6 +8,8 @@ import {
   type TestimonialItem,
 } from "@/components/ui/testimonials-columns-1";
 import { TestimonialsMarqueeRow } from "@/components/landing/TestimonialsMarqueeRow";
+import { landingGlassBadge, landingGlassBodyText } from "@/lib/landing-glass-styles";
+import { cn } from "@/lib/utils";
 
 const testimonials: TestimonialItem[] = [
   {
@@ -76,14 +78,14 @@ export function LandingTestimonials() {
     <section className="relative z-10 py-14 md:py-20" aria-labelledby="testimonials-heading">
       <div className="relative mx-auto max-w-6xl px-4 md:px-6">
         <div className="mx-auto flex max-w-[540px] flex-col items-center justify-center text-center">
-          <Badge type="neutral" label="Testimonios" className="mb-4" />
+          <Badge type="neutral" label="Testimonios" className={cn("mb-4", landingGlassBadge)} />
           <h2
             id="testimonials-heading"
             className="text-3xl font-bold tracking-tight text-white md:text-4xl"
           >
             Lo que dicen las tiendas que ya midieron su margen de verdad
           </h2>
-          <p className="mt-4 text-margify-muted md:text-lg">
+          <p className={cn("mt-4 md:text-lg", landingGlassBodyText)}>
             Equipos de ecommerce y agencias que unificaron ventas, costos y campañas con Margify.
           </p>
         </div>

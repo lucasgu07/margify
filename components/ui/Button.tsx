@@ -12,7 +12,7 @@ const variants: Record<ButtonVariant, string> = {
 };
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-control px-4 py-2.5 text-sm transition-all duration-margify disabled:pointer-events-none disabled:opacity-40";
+  "inline-flex items-center justify-center gap-2 rounded-control px-4 py-2.5 text-sm transition-all duration-margify ease-out disabled:pointer-events-none disabled:opacity-40 motion-safe:active:scale-[0.97]";
 
 export function buttonClassName(variant: ButtonVariant = "primary", className?: string) {
   return cn(base, variants[variant], className);

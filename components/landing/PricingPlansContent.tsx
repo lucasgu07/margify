@@ -7,6 +7,11 @@ import { cn } from "@/lib/utils";
 import { buttonClassName } from "@/components/ui/Button";
 import { Card, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
+import {
+  landingGlassPanel,
+  landingGlassPanelHover,
+  landingGlassPricingToggle,
+} from "@/lib/landing-glass-styles";
 
 /** Precio mensual equivalente si pagás 10 meses al año (2 meses gratis). */
 function annualMonthlyEquivalent(usd: number) {
@@ -95,7 +100,7 @@ function FeatureList({ items, emphasisFirst }: { items: readonly string[]; empha
   return (
     <ul className="mt-4 flex flex-1 flex-col gap-2.5">
       {items.map((text, i) => (
-        <li key={`${text}-${i}`} className="flex gap-2 text-sm leading-snug text-margify-muted">
+        <li key={`${text}-${i}`} className="flex gap-2 text-sm leading-snug text-neutral-300">
           <Check
             className="mt-0.5 h-4 w-4 shrink-0 text-margify-cyan"
             aria-hidden
@@ -134,6 +139,7 @@ type PricingPlansContentProps = {
 export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansContentProps) {
   const [annual, setAnnual] = useState(false);
   const isOnboarding = variant === "onboarding";
+  const glassCard = !isOnboarding ? cn(landingGlassPanel, landingGlassPanelHover) : undefined;
 
   function cta(
     plan: SelectedPlanId,
@@ -163,7 +169,10 @@ export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansConte
       <h2 className="text-center text-3xl font-bold text-white md:text-4xl">Planes</h2>
 
       <div
-        className="mx-auto mt-8 flex max-w-md justify-center rounded-full border border-margify-border bg-margify-black p-1"
+        className={cn(
+          "mx-auto mt-8 flex max-w-md justify-center rounded-full border p-1",
+          isOnboarding ? "border-margify-border bg-margify-black" : landingGlassPricingToggle
+        )}
         role="group"
         aria-label="Facturación"
       >
@@ -188,12 +197,12 @@ export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansConte
           Anual
         </button>
       </div>
-      <p className="mt-2 text-center text-xs text-margify-muted">
+      <p className="mt-2 text-center text-xs text-neutral-400">
         Plan anual: cobrás 10 meses por año (2 meses sin cargo).
       </p>
 
       <div className="mx-auto mt-10 grid max-w-6xl max-md:grid-cols-2 max-md:gap-3 items-stretch gap-6 md:grid-cols-3 md:gap-6 lg:gap-8">
-        <Card className={planCardClass}>
+        <Card className={cn(planCardClass, glassCard)}>
           <CardTitle>Gratis</CardTitle>
           <p className="mt-1 text-sm font-bold text-white">Hasta 30 órdenes por mes</p>
           <p className="mt-2 text-3xl font-bold text-white max-md:text-2xl">Gratis</p>
@@ -204,6 +213,7 @@ export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansConte
         <Card
           className={cn(
             planCardClass,
+            glassCard,
             "border-margify-cyan shadow-[0_0_0_1px_rgba(100,223,223,0.35)]"
           )}
         >
@@ -223,6 +233,7 @@ export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansConte
         <Card
           className={cn(
             planCardClass,
+            glassCard,
             "max-md:col-span-2 max-md:w-full max-md:max-w-[22rem] max-md:justify-self-center"
           )}
         >
@@ -251,7 +262,7 @@ export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansConte
             Probar gratis 7 días
           </Link>
         )}
-        <p className="text-center text-xs text-margify-muted">Probá la app 7 días sin compromiso.</p>
+        <p className="text-center text-xs text-neutral-400">Probá la app 7 días sin compromiso.</p>
       </div>
     </div>
   );

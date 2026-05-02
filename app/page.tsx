@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import type { SimpleIcon } from "simple-icons";
 import { siGmail, siInstagram, siX } from "simple-icons";
@@ -13,7 +12,16 @@ import { LandingParticleBackground } from "@/components/landing/LandingParticleB
 import { LandingFaq } from "@/components/landing/LandingFaq";
 import { LandingTestimonials } from "@/components/landing/LandingTestimonials";
 import { LandingHeader } from "@/components/landing/LandingHeader";
+import { LandingHeroCampaignsPreview } from "@/components/landing/LandingHeroCampaignsPreview";
+import { LandingHeroDashboardPreview } from "@/components/landing/LandingHeroDashboardPreview";
 import { LandingIntegrationsShowcase } from "@/components/landing/LandingIntegrationsShowcase";
+import {
+  landingGlassBadge,
+  landingGlassBodyText,
+  landingGlassPanel,
+  landingGlassPanelHover,
+} from "@/lib/landing-glass-styles";
+import { cn } from "@/lib/utils";
 
 /** Reemplazá por tu perfil de Instagram, X y el correo de contacto cuando estén listos. */
 const LANDING_FOOTER_INSTAGRAM = "https://www.instagram.com/";
@@ -34,7 +42,7 @@ function FooterSocialLink({
     <a
       href={href}
       {...(isHttp ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-      className="inline-flex rounded-md p-1.5 text-margify-muted transition-colors duration-margify hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-margify-accent"
+      className="inline-flex rounded-md p-1.5 text-neutral-400 transition-colors duration-margify hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-margify-accent"
       aria-label={label}
     >
       <svg viewBox="0 0 24 24" className="h-5 w-5 shrink-0" fill="currentColor" aria-hidden>
@@ -86,20 +94,20 @@ export default function LandingPage() {
         <main className="relative z-10 overflow-x-hidden bg-transparent">
           <section id="inicio" className="relative z-10 scroll-mt-32">
             <div className="mx-auto max-w-6xl px-4 pt-14 pb-6 md:px-6 md:pt-20 md:pb-8 lg:max-w-7xl lg:pt-24 lg:pb-8">
-              <div className="grid gap-8 lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)] lg:items-center lg:gap-x-10 lg:gap-y-0 xl:gap-x-14">
+              <div className="grid gap-8 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:items-center lg:gap-x-10 lg:gap-y-0 xl:gap-x-14">
                 <div className="flex min-w-0 flex-col gap-5 lg:max-w-xl xl:max-w-lg">
                   <div className="mb-1 flex flex-wrap gap-2">
-                    <Badge type="neutral" label="Rentabilidad real + campañas + IA" className="w-fit" />
+                    <Badge type="neutral" label="Rentabilidad real + campañas + IA" className={cn(landingGlassBadge, "w-fit")} />
                     <Badge
                       type="neutral"
                       label="+704 tiendas ya mejoraron su margen con Margify"
-                      className="w-fit"
+                      className={cn(landingGlassBadge, "w-fit")}
                     />
                   </div>
                   <h1 className="text-3xl font-bold leading-[1.15] tracking-tight text-white sm:text-4xl lg:text-[2.35rem] lg:leading-tight xl:text-5xl">
                     Sabé si ganás o perdés: ventas, ads, costos e IA en un solo panel
                   </h1>
-                  <p className="text-base leading-relaxed text-margify-muted md:text-lg">
+                  <p className="text-base leading-relaxed text-neutral-400 md:text-lg">
                     Margify integra TiendaNube, Shopify o Mercado Libre con Meta, TikTok y Google Ads:
                     ganancia neta y margen por producto, ROAS real, tablas de campañas con Margify AI,
                     alertas por WhatsApp y cashflow proyectado. Todo al día, sin Excel ni datos sueltos.
@@ -111,30 +119,11 @@ export default function LandingPage() {
                     >
                       Empezar gratis
                     </Link>
-                    <Link
-                      href="/dashboard?demo=1"
-                      className={buttonClassName("secondary", "w-full px-7 py-3 sm:w-auto")}
-                    >
-                      Ver demo
-                    </Link>
                   </div>
                 </div>
 
-                <div className="relative flex min-h-0 min-w-0 flex-col justify-center lg:pt-2 xl:pt-0">
-                  {/* Ratio nativo del PNG hero (1024×471) para evitar bandas o recortes raros */}
-                  <div
-                    className="relative w-full overflow-hidden rounded-2xl border border-margify-border/70 bg-[#0a0f14] shadow-[0_28px_100px_rgba(0,0,0,0.55),0_0_0_1px_rgba(255,255,255,0.04)_inset] ring-1 ring-white/[0.05] aspect-[1024/471]"
-                  >
-                    <Image
-                      src="/landing-dashboard-hero.png"
-                      alt="Vista del dashboard Margify: KPIs, gráfico de los últimos 30 días, sidebar con Alertas y métricas de rentabilidad"
-                      fill
-                      priority
-                      unoptimized
-                      sizes="(min-width: 1536px) 720px, (min-width: 1024px) 58vw, min(100vw, 900px)"
-                      className="object-contain object-left-top"
-                    />
-                  </div>
+                <div className="relative min-h-0 min-w-0">
+                  <LandingHeroDashboardPreview />
                 </div>
               </div>
             </div>
@@ -148,29 +137,37 @@ export default function LandingPage() {
           >
             <div className="mx-auto max-w-6xl px-4 md:px-6">
               <div className="mx-auto max-w-2xl text-center">
-                <Badge type="neutral" label="Cómo funciona" className="mb-4" />
+                <Badge type="neutral" label="Cómo funciona" className={cn("mb-4", landingGlassBadge)} />
                 <h2
                   id="how-it-works-heading"
                   className="text-3xl font-bold tracking-tight text-white md:text-4xl"
                 >
                   Cuatro pasos para ver tu negocio con claridad
                 </h2>
-                <p className="mt-4 text-margify-muted md:text-lg">
+                <p className="mt-4 text-neutral-400 md:text-lg">
                   Sin complicaciones: conectás, cargás costos, mirás el panel y reaccionás cuando hace falta.
                 </p>
               </div>
               <ol className="mt-12 grid list-none grid-cols-2 gap-4 p-0 sm:gap-6 lg:grid-cols-4 lg:gap-8">
                 {howItWorksSteps.map(({ step, title, description, Icon }) => (
                   <li key={step}>
-                    <Card className="relative h-full border-margify-border bg-margify-card pt-8 max-md:p-4 max-md:pt-7">
-                      <div className="absolute left-4 top-0 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-margify-border bg-margify-black text-xs font-bold text-margify-cyan sm:left-6 sm:h-10 sm:w-10 sm:text-sm">
+                    <Card
+                      className={cn(
+                        "relative h-full pt-8 max-md:p-4 max-md:pt-7",
+                        landingGlassPanel,
+                        landingGlassPanelHover
+                      )}
+                    >
+                      <div className="absolute left-4 top-0 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border border-white/18 bg-black/55 text-xs font-bold text-margify-cyan backdrop-blur-md sm:left-6 sm:h-10 sm:w-10 sm:text-sm">
                         {step}
                       </div>
-                      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-control border border-margify-border bg-margify-cardAlt text-margify-cyan sm:mb-4 sm:h-11 sm:w-11">
+                      <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-control border border-white/12 bg-white/[0.08] text-margify-cyan backdrop-blur-sm sm:mb-4 sm:h-11 sm:w-11">
                         <Icon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden />
                       </div>
                       <CardTitle className="text-base sm:text-lg">{title}</CardTitle>
-                      <CardDescription className="mt-2 text-xs leading-relaxed text-margify-muted sm:text-sm">
+                      <CardDescription
+                        className={cn("mt-2 text-xs leading-relaxed sm:text-sm", landingGlassBodyText)}
+                      >
                         {description}
                       </CardDescription>
                     </Card>
@@ -193,7 +190,7 @@ export default function LandingPage() {
                 >
                   Campañas y Margify AI en el mismo lugar
                 </h2>
-                <p className="mt-4 text-pretty text-margify-muted md:text-lg">
+                <p className="mt-4 text-pretty text-neutral-400 md:text-lg">
                   Armá la vista con{" "}
                   <span className="font-medium text-margify-text">las métricas y columnas que quieras seguir</span>: vos
                   elegís qué mirar en cada campaña y canal. Debajo,{" "}
@@ -201,18 +198,8 @@ export default function LandingPage() {
                   revisar: también te dice cuando algo va bien, para que puedas potenciarlo o escalar con criterio.
                 </p>
               </div>
-              <div className="mx-auto mt-10 max-w-5xl lg:mt-14">
-                <div className="overflow-hidden rounded-3xl border border-margify-border/70 bg-margify-black/40 shadow-[0_28px_90px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.05)_inset] ring-1 ring-white/[0.06]">
-                  <Image
-                    src="/landing-campaigns-ai.png"
-                    alt="Tabla de campañas de publicidad en Margify y panel Margify AI con recomendaciones"
-                    width={1024}
-                    height={436}
-                    sizes="(min-width: 1280px) 1024px, (min-width: 1024px) 90vw, 100vw"
-                    unoptimized
-                    className="h-auto w-full rounded-3xl"
-                  />
-                </div>
+              <div className="mx-auto mt-10 max-w-4xl lg:mt-14">
+                <LandingHeroCampaignsPreview />
               </div>
             </div>
           </section>
@@ -255,9 +242,14 @@ export default function LandingPage() {
                       "Tu equipo o agencia entra a los mismos números que vos, con accesos acotados y sin mezclar datos entre clientes.",
                   },
                 ].map(({ title, description }) => (
-                  <Card key={title} className="max-md:p-4">
+                  <Card
+                    key={title}
+                    className={cn("max-md:p-4", landingGlassPanel, landingGlassPanelHover)}
+                  >
                     <CardTitle className="text-sm md:text-base">{title}</CardTitle>
-                    <CardDescription className="max-md:text-xs">{description}</CardDescription>
+                    <CardDescription className={cn("max-md:text-xs", landingGlassBodyText)}>
+                      {description}
+                    </CardDescription>
                   </Card>
                 ))}
               </div>
@@ -280,18 +272,18 @@ export default function LandingPage() {
         </main>
 
         <footer className="relative z-10 bg-transparent pb-10 pt-6 md:pb-12 md:pt-8">
-          <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-4 text-sm text-margify-muted md:flex-row md:px-6">
+          <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-4 text-sm text-neutral-400 md:flex-row md:px-6">
             <Logo size="sm" />
             <div className="flex flex-wrap justify-center gap-4">
-              <Link href="/dashboard?demo=1" className="transition-colors duration-margify hover:text-white">
+              <Link href="/dashboard?demo=1" className="transition-colors duration-margify hover:text-white text-neutral-300">
                 Producto
               </Link>
-              <Link href="/auth/login" className="transition-colors duration-margify hover:text-white">
+              <Link href="/auth/login" className="transition-colors duration-margify hover:text-white text-neutral-300">
                 Ingresar
               </Link>
               <Link
                 href="/auth/register"
-                className="transition-colors duration-margify hover:text-white"
+                className="transition-colors duration-margify hover:text-white text-neutral-300"
               >
                 Registro
               </Link>
@@ -312,7 +304,7 @@ export default function LandingPage() {
                 label="Correo electrónico"
               />
             </nav>
-            <p>© Margify 2026</p>
+            <p className="text-neutral-400">© Margify 2026</p>
           </div>
         </footer>
       </div>

@@ -31,17 +31,29 @@ export function Header({
   showDateRange = true,
   showConnect,
   onConnect,
+  landingPreview = false,
+  /** En la vista previa de la home: toolbar tipo dashboard vs campañas (Meta/TikTok/Google). */
+  landingPreviewMode = "dashboard",
+  density = "default",
 }: {
   userName: string;
   /** En Configuración no hace falta el selector de fechas. */
   showDateRange?: boolean;
   showConnect?: boolean;
   onConnect?: () => void;
+  /** En la home, el mismo encabezado que el dashboard principal (alcance tiendas + fechas). */
+  landingPreview?: boolean;
+  landingPreviewMode?: "dashboard" | "campanas";
+  /** Encabezado más denso para vista previa embebida en la landing. */
+  density?: "default" | "compact";
 }) {
   const pathname = usePathname() ?? "";
+  const previewEmbed = landingPreview ? landingPreviewMode : null;
   const showStoreScope =
-    pathname === "/dashboard" || PATHS_WITH_STORE_SCOPE.has(pathname);
-  const showAdsPlatformScope = pathname === "/dashboard/campanas";
+    previewEmbed === "dashboard" ||
+    (!landingPreview && (pathname === "/dashboard" || PATHS_WITH_STORE_SCOPE.has(pathname)));
+  const showAdsPlatformScope =
+    previewEmbed === "campanas" || (!landingPreview && pathname === "/dashboard/campanas");
   const {
     dateRange,
     setDateRange,
@@ -118,26 +130,69 @@ export function Header({
     setCustomPanelOpen(false);
   }
 
+  const compact = density === "compact";
+  /** En el embed de la landing el ancho es ~784px: filas explícitas evitan solapamientos al hacer wrap. */
+  const stackedToolbar = landingPreview && compact;
+
   return (
-    <header className="mb-6 border-b border-margify-border pb-6">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
-        <h1 className="shrink-0 text-2xl font-bold leading-tight text-white max-md:w-full md:text-3xl lg:mr-2">
+    <header
+      className={cn(
+        "border-b border-margify-border",
+        compact ? "mb-3 pb-3" : "mb-6 pb-6"
+      )}
+    >
+      <div
+        className={cn(
+          "flex flex-col",
+          stackedToolbar
+            ? "gap-2"
+            : cn(
+                "lg:flex-row lg:items-center lg:justify-between",
+                compact ? "gap-2 lg:gap-3" : "gap-4 lg:gap-4"
+              )
+        )}
+      >
+        <h1
+          className={cn(
+            "shrink-0 font-bold leading-tight text-white max-md:w-full",
+            stackedToolbar ? "w-full" : "lg:mr-2",
+            compact ? "text-lg md:text-xl" : "text-2xl md:text-3xl"
+          )}
+        >
           {greeting}, {userName}
         </h1>
-        <div className="flex w-full min-w-0 flex-col gap-3 md:flex-1 md:flex-row md:flex-wrap md:items-center lg:flex-row lg:items-center lg:justify-between lg:gap-4">
-          <div className="flex min-w-0 flex-col gap-3 md:flex-row md:items-center md:flex-wrap md:gap-x-4 md:gap-y-2 lg:flex-1">
+        <div
+          className={cn(
+            "flex min-w-0 flex-col",
+            stackedToolbar
+              ? "w-full gap-2"
+              : cn(
+                  "w-full md:flex-1 md:flex-row md:flex-wrap md:items-start lg:items-center lg:justify-between",
+                  compact ? "gap-2 md:gap-x-3 md:gap-y-2 lg:gap-3" : "gap-3 md:gap-x-4 md:gap-y-2 lg:gap-4"
+                )
+          )}
+        >
+          <div
+            className={cn(
+              "flex min-w-0 flex-col md:flex-row md:flex-wrap md:items-center",
+              stackedToolbar
+                ? "w-full gap-2"
+                : cn("lg:flex-1", compact ? "gap-2 md:gap-x-3 md:gap-y-1.5" : "gap-3 md:gap-x-4 md:gap-y-2")
+            )}
+          >
             {showStoreScope ? (
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex min-w-0 flex-wrap items-center gap-2">
                 <span className="sr-only">Alcance de métricas</span>
                 <div className="flex flex-wrap gap-1 rounded-control border border-margify-border bg-margify-card p-1">
                   <button
                     type="button"
                     onClick={selectAllStores}
                     className={cn(
-                      "rounded-control px-3 py-1.5 text-xs font-medium transition-all duration-margify md:text-sm",
+                      "rounded-control font-medium outline-none transition-all duration-200 ease-out motion-safe:hover:brightness-110 motion-safe:active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-margify-cyan/40",
+                      compact ? "px-2 py-1 text-[11px] md:text-xs" : "px-3 py-1.5 text-xs md:text-sm",
                       storeScope === "all"
-                        ? "bg-margify-cyan/15 text-margify-cyan"
-                        : "text-margify-muted hover:text-margify-text"
+                        ? "bg-margify-cyan/15 text-margify-cyan motion-safe:hover:bg-margify-cyan/25"
+                        : "text-margify-muted motion-safe:hover:bg-white/5 motion-safe:hover:text-margify-text"
                     )}
                   >
                     Todos
@@ -146,17 +201,18 @@ export function Header({
                     type="button"
                     onClick={selectOneStoreMode}
                     className={cn(
-                      "rounded-control px-3 py-1.5 text-xs font-medium transition-all duration-margify md:text-sm",
+                      "rounded-control font-medium outline-none transition-all duration-200 ease-out motion-safe:hover:brightness-110 motion-safe:active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-margify-cyan/40",
+                      compact ? "px-2 py-1 text-[11px] md:text-xs" : "px-3 py-1.5 text-xs md:text-sm",
                       storeScope !== "all"
-                        ? "bg-margify-cyan/15 text-margify-cyan"
-                        : "text-margify-muted hover:text-margify-text"
+                        ? "bg-margify-cyan/15 text-margify-cyan motion-safe:hover:bg-margify-cyan/25"
+                        : "text-margify-muted motion-safe:hover:bg-white/5 motion-safe:hover:text-margify-text"
                     )}
                   >
                     Por plataforma
                   </button>
                 </div>
                 {storeScope !== "all" ? (
-                  <label className="flex min-w-0 items-center gap-2">
+                  <label className="flex w-full min-w-0 max-w-full items-center gap-2 sm:w-auto sm:max-w-[min(100%,280px)]">
                     <span className="sr-only">Elegir tienda</span>
                     {selectedStore ? (
                       <IntegrationBrandIcon
@@ -167,7 +223,9 @@ export function Header({
                     <select
                       value={storeScope}
                       onChange={(e) => setStoreScope(e.target.value)}
-                      className="max-w-[min(100%,280px)] truncate rounded-control border border-margify-border bg-margify-cardAlt py-1.5 pl-2 pr-8 text-xs text-white md:text-sm"
+                      className={cn(
+                        "min-w-0 w-full truncate rounded-control border border-margify-border bg-margify-cardAlt py-1.5 pl-2 pr-8 text-xs text-white sm:w-auto md:text-sm"
+                      )}
                     >
                       {connectedStores.map((s) => (
                         <option key={s.id} value={s.id}>
@@ -189,10 +247,11 @@ export function Header({
                       type="button"
                       onClick={() => setAdsPlatform(id)}
                       className={cn(
-                        "inline-flex items-center gap-1.5 rounded-control px-2.5 py-1.5 text-xs font-medium transition-all duration-margify md:px-3 md:text-sm",
+                        "inline-flex items-center gap-1.5 rounded-control font-medium outline-none transition-all duration-200 ease-out motion-safe:hover:brightness-110 motion-safe:active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-margify-cyan/40",
+                        compact ? "px-2 py-1 text-[10px] md:text-xs" : "px-2.5 py-1.5 text-xs md:px-3 md:text-sm",
                         adsPlatform === id
-                          ? "bg-margify-cyan/15 text-margify-cyan"
-                          : "text-margify-muted hover:text-margify-text"
+                          ? "bg-margify-cyan/15 text-margify-cyan motion-safe:hover:bg-margify-cyan/25"
+                          : "text-margify-muted motion-safe:hover:bg-white/5 motion-safe:hover:text-margify-text"
                       )}
                     >
                       <IntegrationBrandIcon brand={adsPlatformToBrandId(id)} size="xs" />
@@ -204,12 +263,24 @@ export function Header({
             ) : null}
           </div>
 
-          <div className="flex w-full flex-col gap-3 md:flex-row md:items-center md:justify-end lg:w-auto lg:shrink-0">
+          <div
+            className={cn(
+              "flex min-w-0 flex-col md:flex-row md:items-center md:justify-end",
+              stackedToolbar
+                ? "w-full flex-row flex-wrap items-center justify-end gap-2"
+                : "w-full",
+              !stackedToolbar && "lg:w-auto lg:shrink-0",
+              compact ? "gap-2" : "gap-3"
+            )}
+          >
             {showConnect ? (
               <Button
                 type="button"
                 variant="secondary"
-                className="shrink-0 border-margify-cyan/40 text-margify-cyan"
+                className={cn(
+                  "shrink-0 border-margify-cyan/40 text-margify-cyan",
+                  compact && "h-8 gap-1 px-2.5 py-1.5 text-xs [&_svg]:h-3.5 [&_svg]:w-3.5"
+                )}
                 onClick={onConnect}
               >
                 <Plus className="h-4 w-4" />
@@ -217,7 +288,13 @@ export function Header({
               </Button>
             ) : null}
             {showDateRange ? (
-              <div ref={dateWrapRef} className="relative min-w-[12rem] max-w-[min(100%,22rem)]">
+              <div
+                ref={dateWrapRef}
+                className={cn(
+                  "relative min-w-0 shrink-0",
+                  stackedToolbar ? "w-full min-w-[12rem] sm:w-auto sm:max-w-[min(100%,22rem)]" : "min-w-[12rem] max-w-[min(100%,22rem)]"
+                )}
+              >
                 <label className="sr-only" htmlFor="header-date-range">
                   Rango de fechas
                 </label>
@@ -226,9 +303,10 @@ export function Header({
                   value={dateRange}
                   onChange={onRangeSelectChange}
                   className={cn(
-                    "h-10 w-full cursor-pointer appearance-none rounded-control border border-margify-border",
-                    "bg-margify-card py-2 pl-3 pr-10 text-left text-sm font-medium text-white",
-                    "transition-colors duration-margify hover:border-margify-cyan/50 focus:border-margify-cyan focus:outline-none focus:ring-1 focus:ring-margify-cyan/40"
+                    "w-full cursor-pointer appearance-none rounded-control border border-margify-border",
+                    "bg-margify-card pl-3 pr-10 text-left font-medium text-white",
+                    "transition-colors duration-margify hover:border-margify-cyan/50 focus:border-margify-cyan focus:outline-none focus:ring-1 focus:ring-margify-cyan/40",
+                    compact ? "h-8 py-1 text-xs" : "h-10 py-2 text-sm"
                   )}
                 >
                   {DATE_RANGE_OPTIONS.map((key) => (
@@ -307,7 +385,14 @@ export function Header({
           </div>
         </div>
       </div>
-      <p className="mt-3 text-sm text-margify-muted">{formatDate(new Date(), "long")}</p>
+      <p
+        className={cn(
+          "text-margify-muted",
+          compact ? "mt-2 text-[11px] leading-snug" : "mt-3 text-sm"
+        )}
+      >
+        {formatDate(new Date(), "long")}
+      </p>
     </header>
   );
 }

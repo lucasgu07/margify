@@ -5,13 +5,16 @@ import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { buttonClassName } from "@/components/ui/Button";
+import { landingGlassNav } from "@/lib/landing-glass-styles";
 import { cn } from "@/lib/utils";
 
 const navLinkClassName =
-  "text-sm font-medium text-margify-muted transition-colors duration-margify hover:text-white";
+  "text-sm font-medium text-neutral-200 transition-colors duration-margify hover:text-white";
 
-const shellClassName =
-  "mx-auto max-w-6xl rounded-2xl border border-margify-border/80 bg-margify-bg/75 shadow-[0_12px_40px_rgba(0,0,0,0.35),0_0_0_1px_rgba(255,255,255,0.05)_inset] backdrop-blur-xl md:rounded-3xl";
+const shellClassName = cn(
+  "mx-auto max-w-6xl rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.35),inset_0_0_0_1px_rgba(255,255,255,0.06)] md:rounded-3xl",
+  landingGlassNav
+);
 
 export function LandingHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -59,7 +62,7 @@ export function LandingHeader() {
           <div className="flex shrink-0 items-center gap-3">
             <Link
               href="/auth/login"
-              className="text-sm font-medium text-margify-muted transition-colors duration-margify hover:text-white"
+              className="text-sm font-medium text-neutral-200 transition-colors duration-margify hover:text-white"
             >
               Ingresar
             </Link>
@@ -81,7 +84,7 @@ export function LandingHeader() {
           <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5 sm:gap-2">
             <Link
               href="/auth/login"
-              className="whitespace-nowrap px-1 text-xs font-medium text-margify-muted transition-colors duration-margify hover:text-white sm:px-2 sm:text-sm"
+              className="whitespace-nowrap px-1 text-xs font-medium text-neutral-200 transition-colors duration-margify hover:text-white sm:px-2 sm:text-sm"
             >
               Ingresar
             </Link>
@@ -96,7 +99,7 @@ export function LandingHeader() {
             </Link>
             <button
               type="button"
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-control border border-margify-border/80 bg-margify-black/40 text-white transition-colors hover:border-margify-cyan/40 hover:text-margify-cyan"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-control border border-white/12 bg-black/45 text-white backdrop-blur-md transition-colors hover:border-margify-cyan/45 hover:text-margify-cyan"
               aria-expanded={menuOpen}
               aria-controls="landing-mobile-nav"
               aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}

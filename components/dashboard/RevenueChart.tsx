@@ -36,11 +36,14 @@ export function RevenueChart({
   data,
   dateRange,
   rangeLabel,
+  compact = false,
 }: {
   data: RevenueChartRow[];
   dateRange: DateRangeKey;
   /** Si viene del contexto, incluye fechas cuando el rango es personalizado. */
   rangeLabel?: string;
+  /** Gráfico más bajo para embeds (p. ej. hero de la landing). */
+  compact?: boolean;
 }) {
   const [hidden, setHidden] = useState<Record<string, boolean>>({});
 
@@ -55,16 +58,21 @@ export function RevenueChart({
   const minTickGap = dateRange === "today" ? 4 : 8;
 
   return (
-    <div className="rounded-card border border-margify-border bg-margify-card p-4 md:p-5">
-      <div className="mb-4">
-        <h2 className="text-lg font-semibold text-white">
+    <div
+      className={cn(
+        "rounded-card border border-margify-border bg-margify-card",
+        compact ? "p-3" : "p-4 md:p-5"
+      )}
+    >
+      <div className={cn(compact ? "mb-2" : "mb-4")}>
+        <h2 className={cn("font-semibold text-white", compact ? "text-base leading-snug" : "text-lg")}>
           {rangeLabel ?? DATE_RANGE_LABELS[dateRange]}
         </h2>
-        <p className="text-sm text-margify-muted">
+        <p className={cn("text-margify-muted", compact ? "mt-0.5 text-[11px] leading-snug" : "text-sm")}>
           Tocá la leyenda para mostrar u ocultar cada serie.
         </p>
       </div>
-      <ChartContainer>
+      <ChartContainer className={compact ? "h-36 w-full md:h-36" : undefined}>
         <ComposedChart
           key={`${dateRange}-${data.length}`}
           data={data}
@@ -123,7 +131,7 @@ export function RevenueChart({
         </ComposedChart>
       </ChartContainer>
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className={cn("flex flex-wrap gap-2", compact ? "mt-2" : "mt-4")}>
         {[
           { id: "ventas", label: "Ventas", color: "bg-white" },
           { id: "ganancia", label: "Ganancia neta", color: "bg-margify-cyan" },
@@ -134,7 +142,8 @@ export function RevenueChart({
             type="button"
             onClick={() => setHidden((h) => ({ ...h, [item.id]: !h[item.id] }))}
             className={cn(
-              "flex items-center gap-2 rounded-full border border-margify-border px-3 py-1.5 text-xs font-medium transition-all duration-margify hover:border-margify-cyan/40",
+              "flex items-center gap-1.5 rounded-full border border-margify-border font-medium outline-none transition-all duration-200 ease-out motion-safe:hover:scale-[1.03] motion-safe:hover:border-margify-cyan/50 motion-safe:active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-margify-cyan/40 touch-manipulation",
+              compact ? "px-2 py-1 text-[10px]" : "gap-2 px-3 py-1.5 text-xs",
               hidden[item.id] ? "opacity-35" : "text-margify-text"
             )}
           >

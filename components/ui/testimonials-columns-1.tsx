@@ -3,6 +3,7 @@
 import React from "react";
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
+import { landingGlassPanel, landingGlassPanelHover } from "@/lib/landing-glass-styles";
 
 export type TestimonialItem = {
   text: string;
@@ -15,11 +16,13 @@ export function TestimonialCard({ item, className }: { item: TestimonialItem; cl
   return (
     <article
       className={cn(
-        "w-full max-w-xs rounded-control border border-margify-border bg-margify-card p-6 shadow-[0_10px_40px_rgba(0,0,0,0.35),0_0_0_1px_rgba(100,223,223,0.06)] md:p-7",
+        "w-full max-w-xs rounded-control border p-6 shadow-[0_10px_40px_rgba(0,0,0,0.35),0_0_0_1px_rgba(100,223,223,0.06)] md:p-7",
+        landingGlassPanel,
+        landingGlassPanelHover,
         className
       )}
     >
-      <p className="text-sm leading-relaxed text-margify-muted">{item.text}</p>
+      <p className="text-sm leading-relaxed text-neutral-300">{item.text}</p>
       <div className="mt-5 flex items-center gap-3">
         {/* eslint-disable-next-line @next/next/no-img-element -- URLs externas de demo */}
         <img
@@ -29,11 +32,11 @@ export function TestimonialCard({ item, className }: { item: TestimonialItem; cl
           alt=""
           loading="eager"
           decoding="async"
-          className="h-10 w-10 shrink-0 rounded-full border border-margify-border object-cover"
+          className="h-10 w-10 shrink-0 rounded-full border border-white/15 object-cover"
         />
         <div className="min-w-0 flex flex-col">
           <span className="text-sm font-semibold leading-tight tracking-tight text-white">{item.name}</span>
-          <span className="text-xs leading-tight tracking-tight text-margify-muted">{item.role}</span>
+          <span className="text-xs leading-tight tracking-tight text-neutral-400">{item.role}</span>
         </div>
       </div>
     </article>

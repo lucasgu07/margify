@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { DashboardProvider } from "@/components/dashboard/DashboardContext";
 import { DemoModeProvider } from "@/components/dashboard/DemoModeContext";
+import { DashboardStarfieldBackground } from "@/components/dashboard/DashboardStarfieldBackground";
 import { StarterPlanUsageBar } from "@/components/dashboard/StarterPlanUsageBar";
 import { Sidebar } from "@/components/ui/Sidebar";
 import { DEMO_USER_LABEL } from "@/lib/demo-user";
@@ -50,9 +51,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <DemoModeProvider value={{ isDemo, full_name, email }}>
       <DashboardProvider>
-        <div className="flex min-h-screen bg-margify-bg">
+        <div className="relative flex min-h-screen bg-black">
+          <DashboardStarfieldBackground />
           <Sidebar userName={full_name} userEmail={email} alertCount={alertCount} />
-          <main className="min-h-screen min-w-0 flex-1 px-4 pb-12 pt-[4.5rem] md:ml-60 md:px-8 md:pt-8">
+          <main className="relative z-[1] min-h-screen min-w-0 flex-1 bg-transparent px-4 pb-12 pt-[4.5rem] md:ml-60 md:px-8 md:pt-8">
             {showStarterUsage ? <StarterPlanUsageBar ordersUsed={starterOrdersThisMonth} /> : null}
             {children}
           </main>

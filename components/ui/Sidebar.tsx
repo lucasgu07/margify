@@ -55,12 +55,12 @@ export function Sidebar({
   const inner = (
     <>
       <div className="flex items-center justify-between border-b border-margify-border px-5 py-5">
-        <Link href="/dashboard" onClick={() => setOpen(false)} className="min-w-0">
+        <Link href="/dashboard" onClick={() => setOpen(false)} className="min-w-0 rounded-control outline-none transition-transform duration-200 ease-out motion-safe:hover:brightness-110 motion-safe:active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-margify-cyan/45 focus-visible:ring-offset-2 focus-visible:ring-offset-margify-black">
           <Logo className="max-w-full" align="start" />
         </Link>
         <button
           type="button"
-          className="rounded-control p-2 text-margify-muted transition-colors duration-margify hover:bg-margify-cyan/15 hover:text-margify-cyan md:hidden"
+          className="rounded-control p-2 text-margify-muted outline-none transition-all duration-200 ease-out motion-safe:hover:bg-margify-cyan/15 motion-safe:hover:text-margify-cyan motion-safe:active:scale-95 focus-visible:ring-2 focus-visible:ring-margify-cyan/40 md:hidden"
           onClick={() => setOpen(false)}
           aria-label="Cerrar menú"
         >
@@ -88,13 +88,14 @@ export function Sidebar({
               href={item.href}
               onClick={() => setOpen(false)}
               className={cn(
-                "flex items-center gap-3 rounded-control px-3 py-2.5 text-sm font-medium transition-all duration-margify",
+                "group flex items-center gap-3 rounded-control px-3 py-2.5 text-sm font-medium outline-none transition-all duration-200 ease-out motion-safe:hover:brightness-110 motion-safe:active:scale-[0.97] touch-manipulation",
+                "focus-visible:ring-2 focus-visible:ring-margify-cyan/45 focus-visible:ring-offset-2 focus-visible:ring-offset-margify-black",
                 active
-                  ? "border-l-2 border-margify-cyan bg-margify-cyan/15 text-margify-cyan"
-                  : "border-l-2 border-transparent text-margify-muted hover:bg-margify-cyan/10 hover:text-margify-text"
+                  ? "border-l-2 border-margify-cyan bg-margify-cyan/15 text-margify-cyan motion-safe:hover:bg-margify-cyan/25"
+                  : "border-l-2 border-transparent text-margify-muted motion-safe:hover:translate-x-0.5 motion-safe:hover:bg-margify-cyan/10 motion-safe:hover:text-margify-text motion-safe:hover:shadow-[inset_0_0_0_1px_rgba(100,223,223,0.2)]"
               )}
             >
-              <span className="relative">
+              <span className="relative transition-transform duration-200 ease-out group-hover:scale-110 motion-safe:group-active:scale-95">
                 <Icon className="h-5 w-5" />
                 {item.href === "/dashboard/alertas" && alertCount > 0 ? (
                   <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-margify-negative px-1 text-[10px] font-bold text-white">
@@ -111,7 +112,7 @@ export function Sidebar({
         <button
           type="button"
           onClick={handleLogout}
-          className="flex w-full items-center justify-center gap-2 rounded-control border border-margify-border px-3 py-2.5 text-sm font-medium text-margify-muted transition-all duration-margify hover:border-margify-negative/50 hover:text-margify-negative"
+          className="flex w-full items-center justify-center gap-2 rounded-control border border-margify-border px-3 py-2.5 text-sm font-medium text-margify-muted outline-none transition-all duration-200 ease-out motion-safe:hover:border-margify-negative/50 motion-safe:hover:text-margify-negative motion-safe:hover:brightness-110 motion-safe:active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-margify-negative/40"
         >
           <LogOut className="h-4 w-4" />
           Cerrar sesión
@@ -128,7 +129,7 @@ export function Sidebar({
         </Link>
         <button
           type="button"
-          className="rounded-control p-2 text-margify-muted hover:bg-margify-cyan/15 hover:text-margify-cyan"
+          className="rounded-control p-2 text-margify-muted outline-none transition-all duration-200 ease-out motion-safe:hover:bg-margify-cyan/15 motion-safe:hover:text-margify-cyan motion-safe:active:scale-95 focus-visible:ring-2 focus-visible:ring-margify-cyan/40"
           onClick={() => setOpen(true)}
           aria-label="Abrir menú"
         >

@@ -2,6 +2,7 @@
 
 import { motion } from "motion/react";
 import { cn } from "@/lib/utils";
+import { landingGlassPanel, landingGlassPanelHover } from "@/lib/landing-glass-styles";
 import type { TestimonialItem } from "@/components/ui/testimonials-columns-1";
 
 /** Tarjeta compacta para carruseles horizontales (tablet / desktop). */
@@ -9,11 +10,13 @@ function MarqueeTestimonialCard({ item, className }: { item: TestimonialItem; cl
   return (
     <article
       className={cn(
-        "w-[min(100%,17.5rem)] shrink-0 rounded-control border border-margify-border bg-margify-card p-4 shadow-[0_10px_40px_rgba(0,0,0,0.35),0_0_0_1px_rgba(100,223,223,0.06)] sm:w-[18.5rem] sm:p-5 md:w-[19rem] md:p-6",
+        "w-[min(100%,17.5rem)] shrink-0 rounded-control p-4 shadow-[0_10px_40px_rgba(0,0,0,0.35),0_0_0_1px_rgba(100,223,223,0.06)] sm:w-[18.5rem] sm:p-5 md:w-[19rem] md:p-6",
+        landingGlassPanel,
+        landingGlassPanelHover,
         className
       )}
     >
-      <p className="text-xs leading-relaxed text-margify-muted sm:text-sm">{item.text}</p>
+      <p className="text-xs leading-relaxed text-neutral-300 sm:text-sm">{item.text}</p>
       <div className="mt-4 flex items-center gap-2.5 sm:mt-5 sm:gap-3">
         {/* eslint-disable-next-line @next/next/no-img-element -- URLs externas de demo */}
         <img
@@ -23,13 +26,13 @@ function MarqueeTestimonialCard({ item, className }: { item: TestimonialItem; cl
           alt=""
           loading="eager"
           decoding="async"
-          className="h-9 w-9 shrink-0 rounded-full border border-margify-border object-cover sm:h-10 sm:w-10"
+          className="h-9 w-9 shrink-0 rounded-full border border-white/15 object-cover sm:h-10 sm:w-10"
         />
         <div className="min-w-0 flex flex-col">
           <span className="text-xs font-semibold leading-tight tracking-tight text-white sm:text-sm">
             {item.name}
           </span>
-          <span className="text-[0.65rem] leading-tight tracking-tight text-margify-muted sm:text-xs">
+          <span className="text-[0.65rem] leading-tight tracking-tight text-neutral-400 sm:text-xs">
             {item.role}
           </span>
         </div>

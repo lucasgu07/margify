@@ -27,7 +27,7 @@ export function LandingIntegrationsShowcase() {
           <h2 className="text-xl font-bold tracking-tight text-white sm:text-2xl md:text-[1.65rem]">
             Las apps con las que trabajamos
           </h2>
-          <p className="mt-3 text-pretty text-sm text-margify-muted sm:text-base md:mt-4">
+          <p className="mt-3 text-pretty text-sm text-neutral-400 sm:text-base md:mt-4">
             Conectá las mismas tiendas y canales de ads que ya usás: todo queda orquestado en un solo
             tablero.
           </p>
@@ -52,8 +52,13 @@ export function LandingIntegrationsShowcase() {
                   key={id}
                   className="flex w-[9.5rem] shrink-0 flex-col items-center justify-center gap-2.5 sm:w-52 sm:gap-3"
                 >
-                  <IntegrationBrandIcon brand={id} size="lg" withBackdrop />
-                  <span className="text-center text-sm font-medium text-margify-muted/95 sm:text-base">
+                  <IntegrationBrandIcon
+                    brand={id}
+                    size="lg"
+                    withBackdrop
+                    className="border border-white/12 !bg-white/[0.09] ring-white/10 backdrop-blur-md"
+                  />
+                  <span className="text-center text-sm font-medium text-neutral-300 sm:text-base">
                     {INTEGRATION_DISPLAY_LABEL[id]}
                   </span>
                 </div>
