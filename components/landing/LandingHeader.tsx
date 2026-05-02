@@ -8,11 +8,12 @@ import { buttonClassName } from "@/components/ui/Button";
 import { landingGlassNav } from "@/lib/landing-glass-styles";
 import { cn } from "@/lib/utils";
 
+/** Misma jerarquía visual que la referencia: blanco pleno sobre vidrio teal. */
 const navLinkClassName =
-  "text-sm font-medium text-neutral-200 transition-colors duration-margify hover:text-white";
+  "text-sm font-medium text-white transition-colors duration-margify hover:text-white/90";
 
 const shellClassName = cn(
-  "mx-auto max-w-6xl rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.35),inset_0_0_0_1px_rgba(255,255,255,0.06)] md:rounded-3xl",
+  "mx-auto max-w-6xl rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.35),inset_0_1px_0_0_rgba(255,255,255,0.08)] md:rounded-3xl",
   landingGlassNav
 );
 
@@ -38,13 +39,17 @@ export function LandingHeader() {
 
   return (
     <header className="sticky top-2 z-50 bg-transparent px-3 pt-2 md:top-4 md:px-6 md:pt-4">
-      <div className={cn(shellClassName, "hidden md:block")}>
-        <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3 px-4 py-3 md:px-6 md:py-3.5">
-          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-6 gap-y-2 md:gap-x-8">
-            <Link href="/" className="shrink-0">
+      <div className={shellClassName}>
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-3 px-3 py-2.5 sm:px-4 sm:py-3 md:px-6 md:py-3.5">
+          <div className="flex min-w-0 flex-1 items-center gap-x-4 sm:gap-x-6 md:gap-x-8">
+            <Link href="/" className="shrink-0" onClick={() => setMenuOpen(false)}>
               <Logo priority />
             </Link>
-            <nav className="flex flex-wrap items-center gap-x-5 gap-y-1" aria-label="Secciones de la página">
+
+            <nav
+              className="hidden min-w-0 flex-1 items-center gap-x-4 sm:flex sm:gap-x-5 md:gap-x-5"
+              aria-label="Secciones de la página"
+            >
               <a href="#como-funciona" className={navLinkClassName}>
                 Cómo funciona
               </a>
@@ -59,32 +64,11 @@ export function LandingHeader() {
               </a>
             </nav>
           </div>
-          <div className="flex shrink-0 items-center gap-3">
-            <Link
-              href="/auth/login"
-              className="text-sm font-medium text-neutral-200 transition-colors duration-margify hover:text-white"
-            >
-              Ingresar
-            </Link>
-            <Link
-              href="/auth/register"
-              className={buttonClassName("primary", "px-4 py-2 text-sm shadow-[0_4px_20px_rgba(100,223,223,0.25)]")}
-            >
-              Registrarse
-            </Link>
-          </div>
-        </div>
-      </div>
 
-      <div className={cn(shellClassName, "md:hidden")}>
-        <div className="flex items-center justify-between gap-2 px-2 py-2 sm:gap-3 sm:px-3">
-          <Link href="/" className="min-w-0 shrink" onClick={() => setMenuOpen(false)}>
-            <Logo priority size="sm" />
-          </Link>
-          <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5 sm:gap-2">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-3">
             <Link
               href="/auth/login"
-              className="whitespace-nowrap px-1 text-xs font-medium text-neutral-200 transition-colors duration-margify hover:text-white sm:px-2 sm:text-sm"
+              className="whitespace-nowrap text-sm font-medium text-white transition-colors duration-margify hover:text-white/90"
             >
               Ingresar
             </Link>
@@ -92,14 +76,14 @@ export function LandingHeader() {
               href="/auth/register"
               className={buttonClassName(
                 "primary",
-                "shrink-0 whitespace-nowrap px-2.5 py-1.5 text-xs shadow-[0_4px_16px_rgba(100,223,223,0.22)] sm:px-3 sm:py-2 sm:text-sm"
+                "shrink-0 whitespace-nowrap px-3 py-1.5 text-xs shadow-[0_4px_20px_rgba(100,223,223,0.25)] sm:px-4 sm:py-2 sm:text-sm"
               )}
             >
               Registrarse
             </Link>
             <button
               type="button"
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-control border border-white/12 bg-black/45 text-white backdrop-blur-md transition-colors hover:border-margify-cyan/45 hover:text-margify-cyan"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-control border border-white/15 bg-black/30 text-white backdrop-blur-md transition-colors hover:border-margify-cyan/45 hover:text-margify-cyan sm:hidden"
               aria-expanded={menuOpen}
               aria-controls="landing-mobile-nav"
               aria-label={menuOpen ? "Cerrar menú" : "Abrir menú"}
@@ -111,7 +95,10 @@ export function LandingHeader() {
         </div>
 
         {menuOpen ? (
-          <div id="landing-mobile-nav" className="border-t border-margify-border/60 px-3 pb-3 pt-1">
+          <div
+            id="landing-mobile-nav"
+            className="border-t border-white/10 px-3 pb-3 pt-1 sm:hidden"
+          >
             <nav className="flex flex-col gap-0.5" aria-label="Secciones de la página">
               <a
                 href="#como-funciona"
