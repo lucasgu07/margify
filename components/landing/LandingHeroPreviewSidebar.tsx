@@ -65,7 +65,7 @@ export function LandingHeroPreviewSidebar({
               href={item.href}
               prefetch={false}
               className={cn(
-                "relative z-10 group flex items-center gap-3 rounded-control px-3 py-2.5 text-sm font-medium outline-none transition-all duration-200 ease-out motion-safe:hover:brightness-110 motion-safe:active:scale-[0.97] touch-manipulation",
+                "relative z-10 flex items-center gap-3 rounded-control px-3 py-2.5 text-sm font-medium outline-none transition-all duration-200 ease-out motion-safe:hover:brightness-110 motion-safe:active:scale-[0.97] touch-manipulation",
                 "focus-visible:ring-2 focus-visible:ring-margify-cyan/45 focus-visible:ring-offset-2 focus-visible:ring-offset-margify-black",
                 active
                   ? "border-l-2 border-margify-cyan bg-margify-cyan/15 text-margify-cyan motion-safe:hover:bg-margify-cyan/25"
@@ -77,7 +77,7 @@ export function LandingHeroPreviewSidebar({
                 router.push(item.href);
               }}
             >
-              <span className="relative transition-transform duration-200 ease-out group-hover:scale-110 motion-safe:group-active:scale-95">
+              <span className="relative">
                 <Icon className="h-5 w-5 shrink-0" />
                 {item.href === "/dashboard/alertas" && alertCount > 0 ? (
                   <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-margify-negative px-1 text-[10px] font-bold text-white">

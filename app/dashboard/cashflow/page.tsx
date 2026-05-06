@@ -338,7 +338,7 @@ export default function CashflowPage() {
       </div>
 
       <div className="mt-10">
-        <Card className="border-margify-border bg-margify-cardAlt">
+        <Card glass className="border-margify-border bg-margify-cardAlt">
           <CardTitle>Detalle de órdenes</CardTitle>
           <CardDescription>
             Filtros solo para esta tabla. Ordená por columna con el ícono junto al encabezado.

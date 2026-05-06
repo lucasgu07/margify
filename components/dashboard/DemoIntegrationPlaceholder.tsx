@@ -16,7 +16,7 @@ export function DemoIntegrationPlaceholder({
   name: string;
 }) {
   return (
-    <Card className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <Card glass className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
       <div className="min-w-0 flex-1">
         <p className="flex items-center gap-2 text-lg font-semibold text-white">
           <IntegrationBrandIcon brand={brand} size="sm" />

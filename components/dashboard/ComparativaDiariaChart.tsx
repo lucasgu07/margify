@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/Chart";
 import type { DateRangeKey } from "@/types";
 import { cn, formatCurrency } from "@/lib/utils";
+import { multiTouchClusterClasses } from "@/lib/multi-touch-cluster";
+import { dashboardChartTooltipClass } from "@/lib/landing-glass-styles";
 
 export type ComparativaDiariaRow = {
   date: string;
@@ -26,7 +28,7 @@ function ComparativaDiariaTooltip(props: TooltipProps<ValueType, NameType>) {
   if (!active || !payload?.length) return null;
   const row = payload[0].payload as ComparativaDiariaRow;
   return (
-    <div className="rounded-control border border-margify-border bg-margify-card px-3 py-2 text-xs shadow-lg">
+    <div className={cn(dashboardChartTooltipClass, "border-margify-border/60")}>
       <p className="mb-1.5 font-medium text-margify-text">{row.labelTooltip}</p>
       {payload.map((p) => (
         <p key={String(p.dataKey)} className="text-margify-muted">
@@ -119,7 +121,7 @@ export function ComparativaDiariaChart({
         </ComposedChart>
       </ChartContainer>
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className={cn("mt-4 flex flex-wrap gap-2", multiTouchClusterClasses)}>
         {[
           { id: "ventas", label: "Ventas brutas", color: "bg-white" },
           { id: "costos", label: "Costos totales", color: "bg-[#888888]" },

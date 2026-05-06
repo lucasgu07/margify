@@ -17,6 +17,7 @@ import { MetricCard } from "@/components/ui/MetricCard";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
 import { costTotalsFromOrders } from "@/lib/calculations";
 import { cn, formatCurrency } from "@/lib/utils";
+import { multiTouchClusterClasses } from "@/lib/multi-touch-cluster";
 import { getDashboardMetrics, channelProfitRows } from "@/lib/mock-data";
 import { DollarSign, Percent, ShoppingBag, Wallet } from "lucide-react";
 import {
@@ -183,7 +184,7 @@ export default function RentabilidadPage() {
         />
       </div>
 
-      <Card className="mt-8">
+      <Card glass className="mt-8">
         <CardTitle>Comparativa diaria</CardTitle>
         <CardDescription>Ventas brutas, costos totales y ganancia neta.</CardDescription>
         <div className="mt-4">
@@ -192,14 +193,14 @@ export default function RentabilidadPage() {
       </Card>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
-        <Card>
+        <Card glass>
           <CardTitle>Desglose de costos</CardTitle>
           <CardDescription>
             Distribución aproximada según tus órdenes importadas. Tocá cada concepto para mostrarlo u
             ocultarlo en el gráfico.
           </CardDescription>
           <div className="mt-4 flex flex-col gap-6 sm:flex-row sm:items-stretch">
-            <div className="flex shrink-0 flex-col gap-2 sm:w-[42%] sm:max-w-xs sm:pr-2">
+            <div className={cn("flex shrink-0 flex-col gap-2 sm:w-[42%] sm:max-w-xs sm:pr-2", multiTouchClusterClasses)}>
               {pie.map((p, i) => {
                 const color = PIE_COLORS[i % PIE_COLORS.length];
                 const off = pieHidden[p.name];
@@ -283,7 +284,7 @@ export default function RentabilidadPage() {
             </div>
           </div>
         </Card>
-        <Card>
+        <Card glass>
           <CardTitle>Detalle en tabla</CardTitle>
           <div className="mt-4 overflow-x-auto">
             <table className="w-full text-sm">

@@ -35,6 +35,7 @@ export function DashboardHomeBody({ variant = "default" }: { variant?: "default"
           className={cardCls}
           valueClassName={valueCls}
           compact={hero}
+          glass={!hero}
         />
         <MetricCard
           title="Ganancia neta"
@@ -44,6 +45,7 @@ export function DashboardHomeBody({ variant = "default" }: { variant?: "default"
           className={cardCls}
           valueClassName={valueCls}
           compact={hero}
+          glass={!hero}
         />
         <MetricCard
           title="ROAS real"
@@ -54,6 +56,7 @@ export function DashboardHomeBody({ variant = "default" }: { variant?: "default"
           icon={Target}
           className={cardCls}
           valueClassName={valueCls}
+          glass={!hero}
         />
         <MetricCard
           title="Margen %"
@@ -65,6 +68,7 @@ export function DashboardHomeBody({ variant = "default" }: { variant?: "default"
           progress={Math.min(100, Math.max(0, m.marginPercent))}
           className={cardCls}
           valueClassName={valueCls}
+          glass={!hero}
         />
       </div>
       <div className={cn("grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4", hero ? "mt-2 gap-2" : "mt-4 gap-4")}>
@@ -77,6 +81,7 @@ export function DashboardHomeBody({ variant = "default" }: { variant?: "default"
           icon={Package}
           className={cardCls}
           valueClassName={valueCls}
+          glass={!hero}
         />
         <MetricCard
           title="Ticket promedio"
@@ -86,6 +91,7 @@ export function DashboardHomeBody({ variant = "default" }: { variant?: "default"
           className={cardCls}
           valueClassName={valueCls}
           compact={hero}
+          glass={!hero}
         />
         <MetricCard
           title="Gasto en ads (atribuido)"
@@ -96,6 +102,7 @@ export function DashboardHomeBody({ variant = "default" }: { variant?: "default"
           className={cardCls}
           valueClassName={valueCls}
           compact={hero}
+          glass={!hero}
         />
         <MetricCard
           title="MER (ventas / ads)"
@@ -106,6 +113,7 @@ export function DashboardHomeBody({ variant = "default" }: { variant?: "default"
           icon={BarChart3}
           className={cardCls}
           valueClassName={valueCls}
+          glass={!hero}
         />
       </div>
       <div className={hero ? "mt-4 space-y-4" : "mt-8 space-y-8"}>

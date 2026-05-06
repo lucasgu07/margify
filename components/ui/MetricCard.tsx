@@ -18,6 +18,7 @@ export function MetricCard({
   decimals,
   compact,
   dense = false,
+  glass = true,
 }: {
   title: string;
   value: number;
@@ -37,6 +38,8 @@ export function MetricCard({
   compact?: boolean;
   /** Tipografía más chica (embed / columnas angostas, p. ej. preview en landing). */
   dense?: boolean;
+  /** Vidrio tipo testimonios (dashboard); desactivar p. ej. en preview embebido en la landing. */
+  glass?: boolean;
 }) {
   const valueDecimals = decimals ?? (suffix === "%" ? 1 : 2);
   const formatted = valueIsCurrency
@@ -50,6 +53,7 @@ export function MetricCard({
 
   return (
     <Card
+      glass={glass}
       className={cn(
         "flex min-w-0 flex-col gap-3",
         dense && "gap-2 p-3.5 sm:p-4",

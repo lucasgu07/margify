@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import { ChevronDown, ChevronUp, ChevronsUpDown } from "lucide-react";
+import { multiTouchClusterClasses } from "@/lib/multi-touch-cluster";
 import { cn } from "@/lib/utils";
 
 export type Column<T> = {
@@ -22,6 +23,7 @@ export function DataTable<T extends { id: string }>({
   searchKeys,
   filterSlot,
   rowClassName,
+  glassSurface = true,
 }: {
   columns: Column<T>[];
   data: T[];
@@ -30,6 +32,8 @@ export function DataTable<T extends { id: string }>({
   searchKeys?: (keyof T)[];
   filterSlot?: React.ReactNode;
   rowClassName?: (row: T) => string | undefined;
+  /** Superficie translúcida (dashboard sobre estrellas). */
+  glassSurface?: boolean;
 }) {
   const [sortKey, setSortKey] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
@@ -87,7 +91,12 @@ export function DataTable<T extends { id: string }>({
                 setQuery(e.target.value);
                 setPage(0);
               }}
-              className="w-full rounded-control border border-margify-border bg-margify-cardAlt px-3 py-2 text-sm text-margify-text outline-none transition-[border] duration-margify focus:border-margify-cyan sm:max-w-xs"
+              className={cn(
+                "w-full rounded-control px-3 py-2 text-sm text-margify-text outline-none transition-[border] duration-margify focus:border-margify-cyan sm:max-w-xs",
+                glassSurface
+                  ? "border border-white/10 bg-black/35 backdrop-blur-sm"
+                  : "border border-margify-border bg-margify-cardAlt"
+              )}
             />
           ) : (
             <div />
@@ -95,9 +104,21 @@ export function DataTable<T extends { id: string }>({
           {filterSlot}
         </div>
       )}
-      <div className="max-w-full min-w-0 overflow-x-auto overscroll-x-contain rounded-card border border-margify-border">
+      <div
+        className={cn(
+          "max-w-full min-w-0 overflow-x-auto overscroll-x-contain rounded-card border",
+          glassSurface
+            ? "border-white/11 bg-black/40 shadow-[0_10px_40px_rgba(0,0,0,0.35),0_0_0_1px_rgba(100,223,223,0.06)] backdrop-blur-[16px] backdrop-saturate-150"
+            : "border-margify-border"
+        )}
+      >
         <table className="w-max min-w-full border-collapse text-left text-sm">
-          <thead className="bg-margify-black text-margify-muted">
+          <thead
+            className={cn(
+              "text-margify-muted",
+              glassSurface ? "bg-black/35 backdrop-blur-sm" : "bg-margify-black"
+            )}
+          >
             <tr>
               {columns.map((col) => (
                 <th key={col.key} className={cn("px-4 py-3 font-medium", col.className)}>
@@ -140,7 +161,10 @@ export function DataTable<T extends { id: string }>({
                 <tr
                   key={row.id}
                   className={cn(
-                    "border-t border-margify-border bg-margify-card/80 transition-colors duration-margify hover:bg-margify-cardAlt/80",
+                    "border-t transition-colors duration-margify",
+                    glassSurface
+                      ? "border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.06]"
+                      : "border-margify-border bg-margify-card/80 hover:bg-margify-cardAlt/80",
                     rowClassName?.(row)
                   )}
                 >
@@ -162,7 +186,7 @@ export function DataTable<T extends { id: string }>({
           Mostrando {pageRows.length ? currentPage * pageSize + 1 : 0}–
           {Math.min((currentPage + 1) * pageSize, sorted.length)} de {sorted.length}
         </span>
-        <div className="flex items-center gap-2">
+        <div className={cn("flex items-center gap-2", multiTouchClusterClasses)}>
           <button
             type="button"
             disabled={currentPage === 0}

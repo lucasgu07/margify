@@ -26,3 +26,7 @@ export const landingGlassBadge =
 
 /** Texto secundario un poco más claro sobre vidrio oscuro */
 export const landingGlassBodyText = "text-neutral-300";
+
+/** Tooltips de gráficos sobre fondo con estrellas (dashboard). */
+export const dashboardChartTooltipClass =
+  "rounded-control border border-white/12 bg-black/55 px-3 py-2 text-xs shadow-lg backdrop-blur-md";

@@ -211,17 +211,17 @@ export function ShopifyProductsTable({
       </div>
 
       {error ? (
-        <Card className="mb-4 border-margify-negative/40 bg-margify-negative/5">
+        <Card glass className="mb-4 border-margify-negative/40 bg-margify-negative/5">
           <p className="text-sm text-margify-negative">{error}</p>
         </Card>
       ) : null}
 
       {loading ? (
-        <Card>
+        <Card glass>
           <p className="text-sm text-margify-muted">Cargando productos de Shopify…</p>
         </Card>
       ) : connected === false ? (
-        <Card className="flex flex-col items-start gap-3">
+        <Card glass className="flex flex-col items-start gap-3">
           <p className="text-sm text-margify-muted">
             Conectá tu tienda de Shopify en Configuración para ver tus productos acá.
           </p>
@@ -233,7 +233,7 @@ export function ShopifyProductsTable({
           </Link>
         </Card>
       ) : rows && rows.length === 0 ? (
-        <Card>
+        <Card glass>
           <p className="text-sm text-margify-muted">
             Aún no encontramos productos en tu tienda.
           </p>

@@ -158,7 +158,7 @@ export function CampanasPageClient({ hideHeader = false }: { hideHeader?: boolea
         />
       </div>
 
-      <Card className="mt-8 border-margify-cyan/25 bg-margify-cyan/5">
+      <Card glass className="mt-8 border-margify-cyan/25 bg-margify-cyan/5">
         <CardTitle className="text-margify-cyan">Importante</CardTitle>
         <CardDescription className="text-margify-text/90">
           <span className="inline-flex items-start gap-2">

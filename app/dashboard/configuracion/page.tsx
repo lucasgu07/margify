@@ -27,7 +27,7 @@ function IntegrationCard({
   soon?: boolean;
 }) {
   return (
-    <Card className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <Card glass className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <p className="flex items-center gap-2 text-lg font-semibold text-white">
           <IntegrationBrandIcon brand={brand} size="sm" />
@@ -65,7 +65,7 @@ export default function ConfiguracionPage() {
 
       <section className="space-y-4">
         <h2 className="text-lg font-semibold text-margify-cyan">Tu cuenta</h2>
-        <Card className="grid gap-4 md:grid-cols-2">
+        <Card glass className="grid gap-4 md:grid-cols-2">
           <div>
             <Label>Nombre</Label>
             <Input value={name} onChange={(e) => setName(e.target.value)} />
@@ -88,7 +88,7 @@ export default function ConfiguracionPage() {
         <h2 className="text-lg font-semibold text-margify-cyan">Integraciones conectadas</h2>
         <Suspense
           fallback={
-            <Card className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <Card glass className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-margify-muted">Cargando TiendaNube…</p>
             </Card>
           }
@@ -97,7 +97,7 @@ export default function ConfiguracionPage() {
         </Suspense>
         <Suspense
           fallback={
-            <Card className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <Card glass className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-margify-muted">Cargando Mercado Libre…</p>
             </Card>
           }
@@ -106,7 +106,7 @@ export default function ConfiguracionPage() {
         </Suspense>
         <Suspense
           fallback={
-            <Card className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <Card glass className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-margify-muted">Cargando Shopify…</p>
             </Card>
           }
@@ -115,7 +115,7 @@ export default function ConfiguracionPage() {
         </Suspense>
         <Suspense
           fallback={
-            <Card className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <Card glass className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-margify-muted">Cargando Meta Ads…</p>
             </Card>
           }
@@ -124,7 +124,7 @@ export default function ConfiguracionPage() {
         </Suspense>
         <Suspense
           fallback={
-            <Card className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <Card glass className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm text-margify-muted">Cargando Google Ads…</p>
             </Card>
           }
@@ -136,7 +136,7 @@ export default function ConfiguracionPage() {
 
       <section className="mt-10 space-y-4">
         <h2 className="text-lg font-semibold text-margify-cyan">Mis costos</h2>
-        <Card className="grid gap-4 md:grid-cols-2">
+        <Card glass className="grid gap-4 md:grid-cols-2">
           <div>
             <Label>Costo del producto (%)</Label>
             <Input
@@ -177,7 +177,7 @@ export default function ConfiguracionPage() {
 
       <section className="mt-10 space-y-4">
         <h2 className="text-lg font-semibold text-margify-cyan">Plan actual</h2>
-        <Card>
+        <Card glass>
           <CardTitle>Pro — USD 26 / mes</CardTitle>
           <CardDescription>Renovación estimada: 12/05/2026.</CardDescription>
           <Button type="button" className="mt-4" variant="secondary">
@@ -188,7 +188,7 @@ export default function ConfiguracionPage() {
 
       <section className="mt-10 space-y-4">
         <h2 className="text-lg font-semibold text-margify-negative">Zona de peligro</h2>
-        <Card className="border-margify-negative/40">
+        <Card glass className="border-margify-negative/40">
           <CardTitle>Eliminar cuenta</CardTitle>
           <CardDescription>
             Esta acción es irreversible. Vas a perder históricos, integraciones y alertas.

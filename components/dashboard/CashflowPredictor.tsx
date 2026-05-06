@@ -11,7 +11,7 @@ export function CashflowPredictor({
   month: number;
 }) {
   return (
-    <Card className="border-margify-border bg-margify-cardAlt">
+    <Card glass className="border-margify-border bg-margify-cardAlt">
       <CardTitle>Proyección rápida</CardTitle>
       <CardDescription>
         Estimación de cobros según medios de pago y plazos típicos en LATAM.

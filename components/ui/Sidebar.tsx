@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "@/components/ui/Logo";
+import { MargifyStarfieldBackdrop } from "@/components/ui/MargifyStarfieldBackdrop";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase";
 
@@ -88,14 +89,14 @@ export function Sidebar({
               href={item.href}
               onClick={() => setOpen(false)}
               className={cn(
-                "group flex items-center gap-3 rounded-control px-3 py-2.5 text-sm font-medium outline-none transition-all duration-200 ease-out motion-safe:hover:brightness-110 motion-safe:active:scale-[0.97] touch-manipulation",
+                "flex items-center gap-3 rounded-control px-3 py-2.5 text-sm font-medium outline-none transition-all duration-200 ease-out motion-safe:hover:brightness-110 motion-safe:active:scale-[0.97] touch-manipulation",
                 "focus-visible:ring-2 focus-visible:ring-margify-cyan/45 focus-visible:ring-offset-2 focus-visible:ring-offset-margify-black",
                 active
                   ? "border-l-2 border-margify-cyan bg-margify-cyan/15 text-margify-cyan motion-safe:hover:bg-margify-cyan/25"
                   : "border-l-2 border-transparent text-margify-muted motion-safe:hover:translate-x-0.5 motion-safe:hover:bg-margify-cyan/10 motion-safe:hover:text-margify-text motion-safe:hover:shadow-[inset_0_0_0_1px_rgba(100,223,223,0.2)]"
               )}
             >
-              <span className="relative transition-transform duration-200 ease-out group-hover:scale-110 motion-safe:group-active:scale-95">
+              <span className="relative">
                 <Icon className="h-5 w-5" />
                 {item.href === "/dashboard/alertas" && alertCount > 0 ? (
                   <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-margify-negative px-1 text-[10px] font-bold text-white">
@@ -142,7 +143,12 @@ export function Sidebar({
           open && "translate-x-0"
         )}
       >
-        {inner}
+        <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
+          <div className="pointer-events-none absolute inset-0 z-0" aria-hidden>
+            <MargifyStarfieldBackdrop preset="sidebar" />
+          </div>
+          <div className="relative z-[1] flex min-h-0 flex-1 flex-col">{inner}</div>
+        </div>
       </aside>
       {open ? (
         <button

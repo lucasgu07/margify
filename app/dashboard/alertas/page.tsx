@@ -170,7 +170,7 @@ export default function AlertasPage() {
         ))}
       </div>
 
-      <Card className="mt-10">
+      <Card glass className="mt-10">
         <CardTitle>WhatsApp</CardTitle>
         <CardDescription>Conectá tu número para recibir alertas críticas al instante.</CardDescription>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">

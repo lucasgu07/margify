@@ -12,6 +12,8 @@ import {
   PricingPlansContent,
   type SelectedPlanChoice,
 } from "@/components/landing/PricingPlansContent";
+import { multiTouchClusterClasses, multiTouchClusterChildButtonClasses } from "@/lib/multi-touch-cluster";
+import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase";
 import {
   buildShopifyOAuthUrl,
@@ -157,13 +159,18 @@ function OnboardingPageContent() {
                   );
                 })}
               </div>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Button type="button" variant="ghost" onClick={() => setStep(1)}>
+              <div className={cn("mt-8 flex flex-wrap gap-3", multiTouchClusterClasses)}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className={multiTouchClusterChildButtonClasses}
+                  onClick={() => setStep(1)}
+                >
                   Atrás
                 </Button>
                 <Button
                   type="button"
-                  className="w-full sm:w-auto"
+                  className={cn("w-full sm:w-auto", multiTouchClusterChildButtonClasses)}
                   disabled={!selected.length}
                   onClick={() => setStep(3)}
                 >
@@ -259,11 +266,20 @@ function OnboardingPageContent() {
                   </Button>
                 </div>
               ) : null}
-              <div className="flex flex-wrap gap-3">
-                <Button type="button" variant="ghost" onClick={() => setStep(2)}>
+              <div className={cn("flex flex-wrap gap-3", multiTouchClusterClasses)}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className={multiTouchClusterChildButtonClasses}
+                  onClick={() => setStep(2)}
+                >
                   Atrás
                 </Button>
-                <Button type="button" onClick={() => setStep(4)}>
+                <Button
+                  type="button"
+                  className={multiTouchClusterChildButtonClasses}
+                  onClick={() => setStep(4)}
+                >
                   Conectar y continuar
                 </Button>
               </div>
@@ -335,11 +351,20 @@ function OnboardingPageContent() {
                   />
                 </div>
               </div>
-              <div className="flex flex-wrap gap-3">
-                <Button type="button" variant="ghost" onClick={() => setStep(3)}>
+              <div className={cn("flex flex-wrap gap-3", multiTouchClusterClasses)}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className={multiTouchClusterChildButtonClasses}
+                  onClick={() => setStep(3)}
+                >
                   Atrás
                 </Button>
-                <Button type="button" onClick={() => setStep(5)}>
+                <Button
+                  type="button"
+                  className={multiTouchClusterChildButtonClasses}
+                  onClick={() => setStep(5)}
+                >
                   Guardar y ver mi dashboard
                 </Button>
               </div>

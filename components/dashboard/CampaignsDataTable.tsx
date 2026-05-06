@@ -21,6 +21,7 @@ import {
   type IntegrationBrandId,
 } from "@/lib/integration-brands";
 import type { AdsPlatformScope, Campaign } from "@/types";
+import { multiTouchClusterClasses, multiTouchClusterChildButtonClasses } from "@/lib/multi-touch-cluster";
 import { cn } from "@/lib/utils";
 
 function campaignMetricHeader(
@@ -199,11 +200,21 @@ export function CampaignsDataTable({ campaigns, onToggleStatus, adsPlatform }: P
                 Las columnas Estado y Acción (Pausar/Activar) van siempre primero; después el nombre
                 de la campaña y las métricas que marques.
               </p>
-              <div className="mb-3 flex flex-wrap gap-2">
-                <Button type="button" variant="secondary" className="text-xs" onClick={selectAll}>
+              <div className={cn("mb-3 flex flex-wrap gap-2", multiTouchClusterClasses)}>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className={cn("text-xs", multiTouchClusterChildButtonClasses)}
+                  onClick={selectAll}
+                >
                   Todas
                 </Button>
-                <Button type="button" variant="ghost" className="text-xs" onClick={selectNone}>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className={cn("text-xs", multiTouchClusterChildButtonClasses)}
+                  onClick={selectNone}
+                >
                   Ninguna
                 </Button>
               </div>

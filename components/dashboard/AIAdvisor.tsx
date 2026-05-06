@@ -6,7 +6,7 @@ import Link from "next/link";
 
 export function AIAdvisor({ insights }: { insights: AdvisorInsights }) {
   return (
-    <Card className="border-margify-cyan/40 bg-gradient-to-br from-margify-card to-margify-black">
+    <Card glass className="border-margify-cyan/35 shadow-[0_0_0_1px_rgba(100,223,223,0.12)]">
       <div className="flex items-start gap-4">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-control bg-margify-cyan/15">
           <Brain className="h-7 w-7 text-margify-cyan" aria-hidden />

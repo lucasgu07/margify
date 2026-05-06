@@ -12,6 +12,8 @@ import {
   shopifyShopInputErrorMessage,
   stripShopifyShopInput,
 } from "@/lib/shopify-shop-input";
+import { multiTouchClusterClasses, multiTouchClusterChildButtonClasses } from "@/lib/multi-touch-cluster";
+import { cn } from "@/lib/utils";
 
 type StatusResponse =
   | { configured: false; connected: false; message?: string }
@@ -167,7 +169,7 @@ export function ShopifyIntegrationCard() {
   const noticeEntry = notice ? noticeMap[notice] : null;
 
   return (
-    <Card className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <Card glass className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
       <div className="min-w-0 flex-1">
         <p className="flex items-center gap-2 text-lg font-semibold text-white">
           <IntegrationBrandIcon brand="shopify" size="sm" />
@@ -256,11 +258,12 @@ export function ShopifyIntegrationCard() {
       </div>
 
       {connected ? (
-        <div className="flex shrink-0 flex-wrap gap-2">
+        <div className={cn("flex shrink-0 flex-wrap gap-2", multiTouchClusterClasses)}>
           <Button
             type="button"
             variant="primary"
             disabled={busy !== null}
+            className={multiTouchClusterChildButtonClasses}
             onClick={() => void sync()}
           >
             {busy === "sync" ? "Sincronizando…" : "Sincronizar ahora"}
@@ -269,6 +272,7 @@ export function ShopifyIntegrationCard() {
             type="button"
             variant="secondary"
             disabled={busy !== null}
+            className={multiTouchClusterChildButtonClasses}
             onClick={() => void disconnect()}
           >
             {busy === "disconnect" ? "Desconectando…" : "Desconectar"}

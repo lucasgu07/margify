@@ -199,7 +199,7 @@ export default function ProductosPage() {
         </div>
 
       {openCards ? (
-        <Card className="mb-6 border-margify-border bg-margify-cardAlt/40 max-md:mb-0">
+        <Card glass className="mb-6 border-margify-border bg-margify-cardAlt/40 max-md:mb-0">
           <CardTitle className="text-base text-white">Filtros — vista en tarjetas</CardTitle>
           <CardDescription className="text-margify-muted">
             Solo afecta la grilla de arriba.{" "}
@@ -315,7 +315,7 @@ export default function ProductosPage() {
       </div>
 
       {openTable ? (
-        <Card className="mt-4 border-margify-border bg-margify-cardAlt/40">
+        <Card glass className="mt-4 border-margify-border bg-margify-cardAlt/40">
           <CardTitle className="text-base text-white">Filtros — tabla Ajuste fino por SKU</CardTitle>
           <CardDescription className="text-margify-muted">
             Solo afecta la tabla de abajo y el bloque de peores márgenes.{" "}
@@ -336,7 +336,7 @@ export default function ProductosPage() {
         <DataTable columns={cols} data={tableRows} pageSize={6} />
       </div>
 
-      <Card className="mt-10 border-margify-negative/30 bg-margify-negative/5">
+      <Card glass className="mt-10 border-margify-negative/30 bg-margify-negative/5">
         <CardTitle className="text-margify-negative">Estos productos están destruyendo tu margen</CardTitle>
         <CardDescription>
           Peores performers por margen % según los filtros de la tabla (Ajuste fino por SKU).

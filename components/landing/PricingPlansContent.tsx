@@ -12,6 +12,7 @@ import {
   landingGlassPanelHover,
   landingGlassPricingToggle,
 } from "@/lib/landing-glass-styles";
+import { multiTouchClusterClasses } from "@/lib/multi-touch-cluster";
 
 /** Precio mensual equivalente si pagás 10 meses al año (2 meses gratis). */
 function annualMonthlyEquivalent(usd: number) {
@@ -171,6 +172,7 @@ export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansConte
       <div
         className={cn(
           "mx-auto mt-8 flex max-w-md justify-center rounded-full border p-1",
+          multiTouchClusterClasses,
           isOnboarding ? "border-margify-border bg-margify-black" : landingGlassPricingToggle
         )}
         role="group"

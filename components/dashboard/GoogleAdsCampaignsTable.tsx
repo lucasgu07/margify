@@ -207,17 +207,17 @@ export function GoogleAdsCampaignsTable() {
       </div>
 
       {error ? (
-        <Card className="mb-4 border-margify-negative/40 bg-margify-negative/5">
+        <Card glass className="mb-4 border-margify-negative/40 bg-margify-negative/5">
           <p className="text-sm text-margify-negative">{error}</p>
         </Card>
       ) : null}
 
       {loading ? (
-        <Card>
+        <Card glass>
           <p className="text-sm text-margify-muted">Cargando campañas de Google Ads…</p>
         </Card>
       ) : notConnected ? (
-        <Card className="flex flex-col items-start gap-3">
+        <Card glass className="flex flex-col items-start gap-3">
           <p className="text-sm text-margify-muted">
             Conectá tu cuenta de Google Ads en Configuración para ver tus campañas acá.
           </p>
@@ -226,7 +226,7 @@ export function GoogleAdsCampaignsTable() {
           </Link>
         </Card>
       ) : rows && rows.length === 0 ? (
-        <Card>
+        <Card glass>
           <p className="text-sm text-margify-muted">
             No encontramos campañas con actividad en los últimos 30 días.
           </p>

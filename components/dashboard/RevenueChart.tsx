@@ -10,17 +10,19 @@ import {
   MargifyXAxis,
   MargifyYAxis,
 } from "@/components/ui/Chart";
+import { dashboardChartTooltipClass, landingGlassPanel, landingGlassPanelHover } from "@/lib/landing-glass-styles";
 import { DATE_RANGE_LABELS } from "@/lib/dashboard-filters";
 import type { DateRangeKey, RevenueChartRow } from "@/types";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
 import { cn, formatCurrency } from "@/lib/utils";
+import { multiTouchClusterClasses } from "@/lib/multi-touch-cluster";
 
 function RevenueChartTooltip(props: TooltipProps<ValueType, NameType>) {
   const { active, payload } = props;
   if (!active || !payload?.length) return null;
   const row = payload[0].payload as RevenueChartRow;
   return (
-    <div className="rounded-control border border-margify-border bg-margify-card px-3 py-2 text-xs shadow-lg">
+    <div className={cn(dashboardChartTooltipClass, "border-margify-border/60")}>
       <p className="mb-1.5 font-medium text-margify-text">{row.labelTooltip}</p>
       {payload.map((p) => (
         <p key={String(p.dataKey)} className="text-margify-muted">
@@ -60,7 +62,10 @@ export function RevenueChart({
   return (
     <div
       className={cn(
-        "rounded-card border border-margify-border bg-margify-card",
+        "rounded-card border",
+        landingGlassPanel,
+        landingGlassPanelHover,
+        "shadow-[0_10px_40px_rgba(0,0,0,0.35),0_0_0_1px_rgba(100,223,223,0.06)]",
         compact ? "p-3" : "p-4 md:p-5"
       )}
     >
@@ -131,7 +136,7 @@ export function RevenueChart({
         </ComposedChart>
       </ChartContainer>
 
-      <div className={cn("flex flex-wrap gap-2", compact ? "mt-2" : "mt-4")}>
+      <div className={cn("flex flex-wrap gap-2", multiTouchClusterClasses, compact ? "mt-2" : "mt-4")}>
         {[
           { id: "ventas", label: "Ventas", color: "bg-white" },
           { id: "ganancia", label: "Ganancia neta", color: "bg-margify-cyan" },
@@ -142,7 +147,7 @@ export function RevenueChart({
             type="button"
             onClick={() => setHidden((h) => ({ ...h, [item.id]: !h[item.id] }))}
             className={cn(
-              "flex items-center gap-1.5 rounded-full border border-margify-border font-medium outline-none transition-all duration-200 ease-out motion-safe:hover:scale-[1.03] motion-safe:hover:border-margify-cyan/50 motion-safe:active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-margify-cyan/40 touch-manipulation",
+              "flex items-center gap-1.5 rounded-full border border-margify-border font-medium outline-none transition-colors duration-200 ease-out motion-safe:hover:border-margify-cyan/50 focus-visible:ring-2 focus-visible:ring-margify-cyan/40 touch-manipulation",
               compact ? "px-2 py-1 text-[10px]" : "gap-2 px-3 py-1.5 text-xs",
               hidden[item.id] ? "opacity-35" : "text-margify-text"
             )}

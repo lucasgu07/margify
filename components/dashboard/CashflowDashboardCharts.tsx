@@ -6,7 +6,8 @@ import type { NameType, ValueType } from "recharts/types/component/DefaultToolti
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
 import { ChartContainer } from "@/components/ui/Chart";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
-import { formatCurrency, formatCurrencyCompact } from "@/lib/utils";
+import { cn, formatCurrency, formatCurrencyCompact } from "@/lib/utils";
+import { dashboardChartTooltipClass } from "@/lib/landing-glass-styles";
 
 function pendingSliceBrand(name: string): "mercadolibre" | "mercadopago" | null {
   if (name === "Mercado Libre") return "mercadolibre";
@@ -30,7 +31,7 @@ function PieCashTooltip({ active, payload }: TooltipProps<ValueType, NameType>) 
   const p = payload[0];
   const v = p?.value;
   return (
-    <div className="rounded-control border border-margify-border bg-margify-card px-3 py-2 text-xs shadow-lg">
+    <div className={cn(dashboardChartTooltipClass, "border-margify-border/60")}>
       <p className="font-medium text-margify-text">{p?.name != null ? String(p.name) : "—"}</p>
       <p className="text-margify-muted">{typeof v === "number" ? formatCurrency(v) : v}</p>
     </div>
@@ -48,7 +49,7 @@ export function CashflowPendingDonutSection({
   const hasData = visible.length > 0 && totalPending > 0;
 
   return (
-    <Card className="min-w-0 border-margify-border bg-margify-cardAlt">
+    <Card glass className="min-w-0 border-margify-border bg-margify-cardAlt">
       <CardTitle>Distribución de pagos pendientes</CardTitle>
       <CardDescription>
         Monto aún no liquidado agrupado por red de cobro (Mercado Libre vs. Mercado Pago u otros).

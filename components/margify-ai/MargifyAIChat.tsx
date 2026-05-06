@@ -16,6 +16,7 @@ import {
 import { useDemoMode } from "@/components/dashboard/DemoModeContext";
 import { buttonClassName } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/textarea";
+import { multiTouchClusterClasses } from "@/lib/multi-touch-cluster";
 import { cn } from "@/lib/utils";
 import type { MargifyAIChatMessage } from "@/lib/margify-ai/types";
 
@@ -379,7 +380,11 @@ export function MargifyAIChat({ storageKey }: MargifyAIChatProps) {
           </div>
 
           <div
-            className={cn("mt-4 flex flex-wrap items-center justify-center gap-2", showIntroHero && "md:mt-5")}
+            className={cn(
+              "mt-4 flex flex-wrap items-center justify-center gap-2",
+              multiTouchClusterClasses,
+              showIntroHero && "md:mt-5"
+            )}
             role="group"
             aria-label="Preguntas sugeridas"
           >

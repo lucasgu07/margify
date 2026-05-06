@@ -8,11 +8,11 @@ import { Button } from "@/components/ui/Button";
 import type { DateRangeKey } from "@/types";
 import { DATE_RANGE_LABELS, DATE_RANGE_OPTIONS, isoDateLocal } from "@/lib/dashboard-filters";
 import type { CustomDateBounds } from "@/lib/dashboard-filters";
-import { formatDate } from "@/lib/utils";
+import { formatDate, cn } from "@/lib/utils";
 import { IntegrationBrandIcon, storePlatformToBrandId } from "@/components/ui/IntegrationBrandIcon";
 import { adsPlatformToBrandId } from "@/lib/integration-brands";
 import type { AdsPlatformScope } from "@/types";
-import { cn } from "@/lib/utils";
+import { multiTouchClusterClasses, multiTouchClusterChildButtonClasses } from "@/lib/multi-touch-cluster";
 
 const PATHS_WITH_STORE_SCOPE = new Set([
   "/dashboard/rentabilidad",
@@ -183,12 +183,17 @@ export function Header({
             {showStoreScope ? (
               <div className="flex min-w-0 flex-wrap items-center gap-2">
                 <span className="sr-only">Alcance de métricas</span>
-                <div className="flex flex-wrap gap-1 rounded-control border border-margify-border bg-margify-card p-1">
+                <div
+                  className={cn(
+                    "flex flex-wrap gap-1 rounded-control border border-margify-border bg-margify-card p-1",
+                    multiTouchClusterClasses
+                  )}
+                >
                   <button
                     type="button"
                     onClick={selectAllStores}
                     className={cn(
-                      "rounded-control font-medium outline-none transition-all duration-200 ease-out motion-safe:hover:brightness-110 motion-safe:active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-margify-cyan/40",
+                      "rounded-control font-medium outline-none transition-all duration-200 ease-out motion-safe:hover:brightness-110 focus-visible:ring-2 focus-visible:ring-margify-cyan/40",
                       compact ? "px-2 py-1 text-[11px] md:text-xs" : "px-3 py-1.5 text-xs md:text-sm",
                       storeScope === "all"
                         ? "bg-margify-cyan/15 text-margify-cyan motion-safe:hover:bg-margify-cyan/25"
@@ -201,7 +206,7 @@ export function Header({
                     type="button"
                     onClick={selectOneStoreMode}
                     className={cn(
-                      "rounded-control font-medium outline-none transition-all duration-200 ease-out motion-safe:hover:brightness-110 motion-safe:active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-margify-cyan/40",
+                      "rounded-control font-medium outline-none transition-all duration-200 ease-out motion-safe:hover:brightness-110 focus-visible:ring-2 focus-visible:ring-margify-cyan/40",
                       compact ? "px-2 py-1 text-[11px] md:text-xs" : "px-3 py-1.5 text-xs md:text-sm",
                       storeScope !== "all"
                         ? "bg-margify-cyan/15 text-margify-cyan motion-safe:hover:bg-margify-cyan/25"
@@ -240,14 +245,19 @@ export function Header({
             {showAdsPlatformScope ? (
               <div className="flex flex-wrap items-center gap-2">
                 <span className="sr-only">Plataforma de publicidad</span>
-                <div className="flex max-w-full flex-wrap gap-1 rounded-control border border-margify-border bg-margify-card p-1">
+                <div
+                  className={cn(
+                    "flex max-w-full flex-wrap gap-1 rounded-control border border-margify-border bg-margify-card p-1",
+                    multiTouchClusterClasses
+                  )}
+                >
                   {ADS_PLATFORM_OPTIONS.map(({ id, label }) => (
                     <button
                       key={id}
                       type="button"
                       onClick={() => setAdsPlatform(id)}
                       className={cn(
-                        "inline-flex items-center gap-1.5 rounded-control font-medium outline-none transition-all duration-200 ease-out motion-safe:hover:brightness-110 motion-safe:active:scale-[0.96] focus-visible:ring-2 focus-visible:ring-margify-cyan/40",
+                        "inline-flex items-center gap-1.5 rounded-control font-medium outline-none transition-all duration-200 ease-out motion-safe:hover:brightness-110 focus-visible:ring-2 focus-visible:ring-margify-cyan/40",
                         compact ? "px-2 py-1 text-[10px] md:text-xs" : "px-2.5 py-1.5 text-xs md:px-3 md:text-sm",
                         adsPlatform === id
                           ? "bg-margify-cyan/15 text-margify-cyan motion-safe:hover:bg-margify-cyan/25"
@@ -366,13 +376,18 @@ export function Header({
                         />
                       </div>
                     </div>
-                    <div className="mt-4 flex flex-wrap gap-2">
-                      <Button type="button" className="flex-1" onClick={applyCustomRange}>
+                    <div className={cn("mt-4 flex flex-wrap gap-2", multiTouchClusterClasses)}>
+                      <Button
+                        type="button"
+                        className={cn("flex-1", multiTouchClusterChildButtonClasses)}
+                        onClick={applyCustomRange}
+                      >
                         Aplicar
                       </Button>
                       <Button
                         type="button"
                         variant="secondary"
+                        className={multiTouchClusterChildButtonClasses}
                         onClick={() => setCustomPanelOpen(false)}
                       >
                         Cancelar

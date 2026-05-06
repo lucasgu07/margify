@@ -1,14 +1,23 @@
+import { landingGlassPanel, landingGlassPanelHover } from "@/lib/landing-glass-styles";
 import { cn } from "@/lib/utils";
+
+/** Misma sombra bisel que las tarjetas de testimonios en la landing. */
+const dashboardGlassShadow =
+  "shadow-[0_10px_40px_rgba(0,0,0,0.35),0_0_0_1px_rgba(100,223,223,0.06)]";
 
 export function Card({
   className,
   children,
+  glass,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: React.HTMLAttributes<HTMLDivElement> & { glass?: boolean }) {
   return (
     <div
       className={cn(
-        "rounded-card border border-margify-border bg-margify-card p-5 transition-[box-shadow,transform] duration-margify hover:shadow-lg hover:shadow-black/20",
+        "rounded-card p-5 transition-[box-shadow,transform,border-color,background-color] duration-margify",
+        glass
+          ? cn(landingGlassPanel, landingGlassPanelHover, dashboardGlassShadow)
+          : "border border-margify-border bg-margify-card hover:shadow-lg hover:shadow-black/20",
         className
       )}
       {...props}

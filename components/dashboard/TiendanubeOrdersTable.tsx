@@ -220,19 +220,19 @@ export function TiendanubeOrdersTable() {
 
       {metrics && connected ? (
         <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
-          <Card>
+          <Card glass>
             <p className="text-xs text-margify-muted">Revenue (últimos 30 días)</p>
             <p className="mt-1 text-xl font-bold text-white">
               {formatCurrency(metrics.totalRevenue, currency)}
             </p>
           </Card>
-          <Card>
+          <Card glass>
             <p className="text-xs text-margify-muted">Pedidos</p>
             <p className="mt-1 text-xl font-bold text-white">
               {metrics.totalOrders}
             </p>
           </Card>
-          <Card>
+          <Card glass>
             <p className="text-xs text-margify-muted">AOV (ticket promedio)</p>
             <p className="mt-1 text-xl font-bold text-white">
               {formatCurrency(metrics.aov, currency)}
@@ -242,17 +242,17 @@ export function TiendanubeOrdersTable() {
       ) : null}
 
       {error ? (
-        <Card className="mb-4 border-margify-negative/40 bg-margify-negative/5">
+        <Card glass className="mb-4 border-margify-negative/40 bg-margify-negative/5">
           <p className="text-sm text-margify-negative">{error}</p>
         </Card>
       ) : null}
 
       {loading ? (
-        <Card>
+        <Card glass>
           <p className="text-sm text-margify-muted">Cargando pedidos de TiendaNube…</p>
         </Card>
       ) : connected === false ? (
-        <Card className="flex flex-col items-start gap-3">
+        <Card glass className="flex flex-col items-start gap-3">
           <p className="text-sm text-margify-muted">
             Conectá tu tienda de TiendaNube en Configuración para ver tus pedidos acá.
           </p>
@@ -261,7 +261,7 @@ export function TiendanubeOrdersTable() {
           </Link>
         </Card>
       ) : rows && rows.length === 0 ? (
-        <Card>
+        <Card glass>
           <p className="text-sm text-margify-muted">
             No encontramos pedidos en los últimos 30 días.
           </p>

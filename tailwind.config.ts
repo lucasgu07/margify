@@ -13,6 +13,8 @@ const config: Config = {
         margify: {
           black: "#000000",
           cyan: "#64DFDF",
+          /** Teal profundo — pareja del cyan en degradados (logo / fondos) */
+          teal: "#0f4a4a",
           bg: "#0a0a0a",
           card: "#111111",
           cardAlt: "#1a1a1a",
