@@ -54,7 +54,7 @@ import { createClient } from "@supabase/supabase-js"
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
-  const code = searchParams.get("code")
+  const code = searchParams.get("auth_code") || searchParams.get("code")
 
   if (!code) {
     return NextResponse.json({ error: "No code provided" }, { status: 400 })
