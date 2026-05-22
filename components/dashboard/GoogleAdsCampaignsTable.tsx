@@ -6,8 +6,12 @@ import { RefreshCw } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Button, buttonClassName } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
+import { CampaignOnOffSwitch } from "@/components/ui/CampaignOnOffSwitch";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
 import { DataTable, type Column } from "@/components/ui/Table";
+import { useDashboard } from "@/components/dashboard/DashboardContext";
+import { useDemoMode } from "@/components/dashboard/DemoModeContext";
+import { demoGoogleAdsCampaignRows } from "@/lib/mock-data";
 import { statusBadgeTone, type GoogleAdsCampaignRow } from "@/lib/google-ads";
 
 type Row = GoogleAdsCampaignRow;
@@ -56,12 +60,14 @@ function formatLastSync(ts: number | null): string {
 }
 
 export function GoogleAdsCampaignsTable() {
+  const isDemo = useDemoMode();
+  const { refreshBootstrap } = useDashboard();
   const [rows, setRows] = useState<Row[] | null>(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
   const [meta, setMeta] = useState<CampaignsResponse | null>(null);
   const [syncing, setSyncing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const loadMeta = useCallback(async () => {
     try {
       const res = await fetch("/api/google-ads/campaigns", { cache: "no-store" });
@@ -75,6 +81,21 @@ export function GoogleAdsCampaignsTable() {
   }, []);
 
   const syncNow = useCallback(async () => {
+    if (isDemo) {
+      setSyncing(true);
+      setError(null);
+      try {
+        await new Promise((r) => setTimeout(r, 450));
+        setMeta({
+          connected: true,
+          customerId: "demo-customer",
+          lastSyncedAt: Date.now(),
+        });
+      } finally {
+        setSyncing(false);
+      }
+      return;
+    }
     setSyncing(true);
     setError(null);
     try {
@@ -96,11 +117,23 @@ export function GoogleAdsCampaignsTable() {
     } finally {
       setSyncing(false);
     }
-  }, []);
+  }, [isDemo]);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      if (isDemo) {
+        setLoading(true);
+        setError(null);
+        setRows(demoGoogleAdsCampaignRows);
+        setMeta({
+          connected: true,
+          customerId: "demo-customer",
+          lastSyncedAt: Date.now() - 1000 * 60 * 18,
+        });
+        if (!cancelled) setLoading(false);
+        return;
+      }
       setLoading(true);
       const m = await loadMeta();
       if (cancelled) return;
@@ -112,9 +145,62 @@ export function GoogleAdsCampaignsTable() {
     return () => {
       cancelled = true;
     };
-  }, [loadMeta, syncNow]);
+  }, [isDemo, loadMeta, syncNow]);
+
+  const toggleCampaign = useCallback(
+    async (id: string) => {
+      const current = rows?.find((r) => r.id === id);
+      if (!current || current.status === "REMOVED") return;
+      const nextStatus = current.status === "ENABLED" ? "PAUSED" : "ENABLED";
+
+      setRows((prev) =>
+        prev?.map((r) => (r.id === id ? { ...r, status: nextStatus } : r)) ?? null
+      );
+
+      if (isDemo) return;
+
+      setTogglingId(id);
+      setError(null);
+      try {
+        const res = await fetch(`/api/google-ads/campaigns/${id}/status`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: nextStatus }),
+        });
+        const data = (await res.json()) as { error?: string };
+        if (!res.ok) {
+          setRows((prev) =>
+            prev?.map((r) => (r.id === id ? { ...r, status: current.status } : r)) ?? null
+          );
+          setError(data.error ?? "No se pudo actualizar la campaña en Google Ads.");
+        } else {
+          void refreshBootstrap();
+        }
+      } catch {
+        setRows((prev) =>
+          prev?.map((r) => (r.id === id ? { ...r, status: current.status } : r)) ?? null
+        );
+        setError("No se pudo actualizar la campaña en Google Ads.");
+      } finally {
+        setTogglingId(null);
+      }
+    },
+    [isDemo, rows, refreshBootstrap]
+  );
 
   const columns: Column<Row>[] = [
+    {
+      key: "toggle",
+      header: "Encendida",
+      sortable: false,
+      render: (r) => (
+        <CampaignOnOffSwitch
+          on={r.status === "ENABLED"}
+          onChange={() => void toggleCampaign(r.id)}
+          disabled={r.status === "REMOVED" || togglingId === r.id}
+        />
+      ),
+    },
     {
       key: "name",
       header: "Campaña",

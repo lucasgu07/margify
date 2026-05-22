@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { SquarePen } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { CampaignOnOffSwitch } from "@/components/ui/CampaignOnOffSwitch";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
 import { DataTable, type Column } from "@/components/ui/Table";
 import {
@@ -64,18 +65,15 @@ function buildColumns(
     ),
   };
 
-  const actionCol: Column<CampaignTableRow> = {
-    key: "acciones",
-    header: "Acción",
+  const toggleCol: Column<CampaignTableRow> = {
+    key: "encendida",
+    header: "Encendida",
     sortable: false,
     render: (r) => (
-      <button
-        type="button"
-        onClick={() => onToggleStatus(r.id)}
-        className="rounded-control border border-margify-border px-2 py-1 text-xs text-margify-muted transition-colors duration-margify hover:border-margify-cyan hover:text-margify-cyan"
-      >
-        {r.estado === "active" ? "Pausar" : "Activar"}
-      </button>
+      <CampaignOnOffSwitch
+        on={r.estado === "active"}
+        onChange={() => onToggleStatus(r.id)}
+      />
     ),
   };
 
@@ -103,7 +101,7 @@ function buildColumns(
     };
   });
 
-  return [estadoCol, actionCol, nombreCol, ...metricCols];
+  return [toggleCol, estadoCol, nombreCol, ...metricCols];
 }
 
 type Props = {

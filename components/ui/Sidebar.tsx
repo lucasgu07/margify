@@ -77,7 +77,7 @@ export function Sidebar({
           <p className="truncate text-xs text-margify-muted">{userEmail}</p>
         </div>
       </div>
-      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+      <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4" data-lenis-prevent>
         {navItems.map((item) => {
           const active =
             pathname === item.href ||

@@ -8,6 +8,8 @@ import { Button, buttonClassName } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
 import { DataTable, type Column } from "@/components/ui/Table";
+import { CampaignOnOffSwitch } from "@/components/ui/CampaignOnOffSwitch";
+import { useDashboard } from "@/components/dashboard/DashboardContext";
 import { useDemoMode } from "@/components/dashboard/DemoModeContext";
 import { demoMetaAdsCampaignRows } from "@/lib/mock-data";
 import {
@@ -74,12 +76,14 @@ function formatLastSync(ts: number | null): string {
 
 export function MetaAdsCampaignsTable() {
   const isDemo = useDemoMode();
+  const { refreshBootstrap } = useDashboard();
   const [rows, setRows] = useState<Row[] | null>(null);
   const [currency, setCurrency] = useState<string | null>(null);
   const [meta, setMeta] = useState<CampaignsResponse | null>(null);
   const [syncing, setSyncing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [togglingId, setTogglingId] = useState<string | null>(null);
 
   const loadMeta = useCallback(async () => {
     try {
@@ -169,8 +173,61 @@ export function MetaAdsCampaignsTable() {
     };
   }, [isDemo, loadMeta, syncNow]);
 
+  const toggleCampaign = useCallback(
+    async (id: string) => {
+      const current = rows?.find((r) => r.id === id);
+      if (!current) return;
+      const nextStatus = current.status === "ACTIVE" ? "PAUSED" : "ACTIVE";
+
+      setRows((prev) =>
+        prev?.map((r) => (r.id === id ? { ...r, status: nextStatus } : r)) ?? null
+      );
+
+      if (isDemo) return;
+
+      setTogglingId(id);
+      setError(null);
+      try {
+        const res = await fetch(`/api/meta-ads/campaigns/${id}/status`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: nextStatus }),
+        });
+        const data = (await res.json()) as { error?: string };
+        if (!res.ok) {
+          setRows((prev) =>
+            prev?.map((r) => (r.id === id ? { ...r, status: current.status } : r)) ?? null
+          );
+          setError(data.error ?? "No se pudo actualizar el estado de la campaña.");
+        } else {
+          void refreshBootstrap();
+        }
+      } catch {
+        setRows((prev) =>
+          prev?.map((r) => (r.id === id ? { ...r, status: current.status } : r)) ?? null
+        );
+        setError("No se pudo actualizar el estado de la campaña.");
+      } finally {
+        setTogglingId(null);
+      }
+    },
+    [isDemo, rows, refreshBootstrap]
+  );
+
   const columns: Column<Row>[] = useMemo(
     () => [
+      {
+        key: "toggle",
+        header: "Encendida",
+        sortable: false,
+        render: (r) => (
+          <CampaignOnOffSwitch
+            on={r.status === "ACTIVE"}
+            onChange={() => void toggleCampaign(r.id)}
+            disabled={togglingId === r.id}
+          />
+        ),
+      },
       {
         key: "name",
         header: "Campaña",
@@ -284,7 +341,7 @@ export function MetaAdsCampaignsTable() {
         render: (r) => (r.roas > 0 ? `${floatFmt.format(r.roas)}x` : "—"),
       },
     ],
-    []
+    [toggleCampaign, togglingId]
   );
 
   const notConnected = meta && !meta.connected;

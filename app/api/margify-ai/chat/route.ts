@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import OpenAI from "openai";
-import { buildMargifyAIContextBlock } from "@/lib/margify-ai/build-context";
+import {
+  buildMargifyAIContextBlock,
+  buildMargifyAIContextForUser,
+} from "@/lib/margify-ai/build-context";
+import { getAuthUser } from "@/lib/server/auth-user";
 import { MARGIFY_AI_SYSTEM_PROMPT } from "@/lib/margify-ai/system-prompt";
 import type { MargifyAIApiMessage } from "@/lib/margify-ai/types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -70,12 +74,17 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: msg }, { status: 400 });
   }
 
+  const authUser = await getAuthUser();
+  const contextBlock = authUser
+    ? await buildMargifyAIContextForUser(authUser.id, authUser.plan)
+    : buildMargifyAIContextBlock();
+
   const systemContent = `${MARGIFY_AI_SYSTEM_PROMPT}
 
 ---
 Contexto de la cuenta (usalo solo como referencia; no inventes datos que no figuren aquí):
 
-${buildMargifyAIContextBlock()}`;
+${contextBlock}`;
 
   const openai = new OpenAI({ apiKey });
   const model = process.env.OPENAI_MODEL?.trim() || "gpt-4o-mini";

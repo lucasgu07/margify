@@ -1,7 +1,8 @@
 "use client";
 
-import { Suspense, useState } from "react";
-import { useDashboardIdentity } from "@/components/dashboard/DemoModeContext";
+import { Suspense, useEffect, useState } from "react";
+import { useDashboard } from "@/components/dashboard/DashboardContext";
+import { useDashboardIdentity, useDemoMode } from "@/components/dashboard/DemoModeContext";
 import { Button } from "@/components/ui/Button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
 import { Header } from "@/components/ui/Header";
@@ -14,6 +15,7 @@ import { TiendanubeIntegrationCard } from "@/components/dashboard/TiendanubeInte
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
 import type { IntegrationBrandId } from "@/lib/integration-brands";
 import { mockCostsConfig } from "@/lib/mock-data";
+import { createClient } from "@/lib/supabase";
 
 function IntegrationCard({
   brand,
@@ -49,6 +51,8 @@ function IntegrationCard({
 
 export default function ConfiguracionPage() {
   const identity = useDashboardIdentity();
+  const isDemo = useDemoMode();
+  const { costsConfig, refreshBootstrap } = useDashboard();
   const [name, setName] = useState(identity.full_name);
   const [email, setEmail] = useState(identity.email);
   const [costs, setCosts] = useState({
@@ -57,11 +61,89 @@ export default function ConfiguracionPage() {
     ship: mockCostsConfig.shipping_cost_fixed,
     agency: mockCostsConfig.agency_fee_percent,
   });
+  const [savingAccount, setSavingAccount] = useState(false);
+  const [savingCosts, setSavingCosts] = useState(false);
+  const [saveMsg, setSaveMsg] = useState<string | null>(null);
+  const [saveErr, setSaveErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isDemo) return;
+    setCosts({
+      product: costsConfig.product_cost_percent,
+      pay: costsConfig.payment_commission_percent,
+      ship: costsConfig.shipping_cost_fixed,
+      agency: costsConfig.agency_fee_percent,
+    });
+  }, [costsConfig, isDemo]);
+
+  async function saveAccount() {
+    if (isDemo) return;
+    setSavingAccount(true);
+    setSaveErr(null);
+    setSaveMsg(null);
+    const supabase = createClient();
+    if (!supabase) {
+      setSaveErr("Supabase no configurado.");
+      setSavingAccount(false);
+      return;
+    }
+    const { error } = await supabase.auth.updateUser({
+      email: email.trim(),
+      data: { full_name: name.trim() },
+    });
+    setSavingAccount(false);
+    if (error) {
+      setSaveErr(error.message);
+      return;
+    }
+    setSaveMsg("Cuenta actualizada.");
+  }
+
+  async function saveCosts() {
+    if (isDemo) return;
+    setSavingCosts(true);
+    setSaveErr(null);
+    setSaveMsg(null);
+    try {
+      const res = await fetch("/api/dashboard/costs-config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          product_cost_percent: costs.product,
+          payment_commission_percent: costs.pay,
+          shipping_cost_fixed: costs.ship,
+          agency_fee_percent: costs.agency,
+        }),
+      });
+      if (!res.ok) {
+        const data = (await res.json()) as { error?: string };
+        setSaveErr(data.error ?? "No se pudieron guardar los costos.");
+        return;
+      }
+      await refreshBootstrap();
+      setSaveMsg("Costos guardados. Las métricas se recalculan con estos valores.");
+    } catch {
+      setSaveErr("Error de red al guardar costos.");
+    } finally {
+      setSavingCosts(false);
+    }
+  }
 
   return (
     <>
       <Header userName={identity.full_name} showDateRange={false} />
       <h1 className="mb-8 text-2xl font-bold text-white">Configuración</h1>
+
+      {saveMsg ? (
+        <p className="mb-4 text-sm text-margify-cyan" role="status">
+          {saveMsg}
+        </p>
+      ) : null}
+      {saveErr ? (
+        <p className="mb-4 text-sm text-margify-negative" role="alert">
+          {saveErr}
+        </p>
+      ) : null}
 
       <section className="space-y-4">
         <h2 className="text-lg font-semibold text-margify-cyan">Tu cuenta</h2>
@@ -79,7 +161,13 @@ export default function ConfiguracionPage() {
             <Input type="password" placeholder="••••••••" autoComplete="new-password" />
           </div>
           <div className="md:col-span-2">
-            <Button type="button">Guardar cuenta</Button>
+            <Button
+              type="button"
+              disabled={isDemo || savingAccount}
+              onClick={() => void saveAccount()}
+            >
+              {savingAccount ? "Guardando…" : "Guardar cuenta"}
+            </Button>
           </div>
         </Card>
       </section>
@@ -170,7 +258,13 @@ export default function ConfiguracionPage() {
             />
           </div>
           <div className="md:col-span-2">
-            <Button type="button">Guardar cambios</Button>
+            <Button
+              type="button"
+              disabled={isDemo || savingCosts}
+              onClick={() => void saveCosts()}
+            >
+              {savingCosts ? "Guardando…" : "Guardar cambios"}
+            </Button>
           </div>
         </Card>
       </section>

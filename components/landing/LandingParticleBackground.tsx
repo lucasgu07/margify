@@ -8,8 +8,11 @@ import { Sparkles } from "@/components/ui/sparkles";
  */
 export function LandingParticleBackground() {
   return (
-    <div className="pointer-events-none fixed inset-0 z-0 h-[100dvh] w-full" aria-hidden>
-      <div className="absolute inset-0 opacity-[0.32]">
+    <div
+      className="pointer-events-none fixed inset-0 z-0 h-[100dvh] w-full contain-paint [transform:translateZ(0)]"
+      aria-hidden
+    >
+      <div className="absolute inset-0 opacity-[0.32] [transform:translateZ(0)]">
         <Sparkles
           density={720}
           className="absolute inset-0 h-full w-full"

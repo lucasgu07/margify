@@ -8,7 +8,7 @@ export function WhatsAppFloatButton({ href }: WhatsAppFloatButtonProps) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom,0px))] right-[max(1.25rem,env(safe-area-inset-right,0px))] z-[60] flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#142828] via-[#2a6868] to-margify-cyan text-white shadow-[0_4px_28px_rgba(100,223,223,0.42),0_0_0_1px_rgba(100,223,223,0.2)_inset] ring-2 ring-margify-cyan/30 transition-[transform,filter,box-shadow] duration-margify hover:scale-110 hover:shadow-[0_8px_36px_rgba(100,223,223,0.55)] hover:brightness-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-margify-cyan active:scale-95 max-[480px]:h-[3.25rem] max-[480px]:w-[3.25rem]"
+      className="fixed bottom-[max(1.25rem,env(safe-area-inset-bottom,0px))] right-[max(1.25rem,env(safe-area-inset-right,0px))] z-[60] flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#142828] via-[#2a6868] to-margify-cyan text-white shadow-[0_4px_28px_rgba(100,223,223,0.42),0_0_0_1px_rgba(100,223,223,0.2)_inset] ring-2 ring-margify-cyan/30 motion-gpu transition-[transform,filter,box-shadow] duration-margify hover:scale-110 hover:shadow-[0_8px_36px_rgba(100,223,223,0.55)] hover:brightness-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-margify-cyan active:scale-95 max-[480px]:h-[3.25rem] max-[480px]:w-[3.25rem]"
       aria-label="Escribinos por WhatsApp"
       title="WhatsApp"
     >

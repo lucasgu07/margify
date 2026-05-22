@@ -48,18 +48,20 @@ export type AdvisorInsights = {
 
 
 /** Campañas para métricas del dashboard (todas las plataformas de ads, filtradas por tienda). */
-function campaignsForStoreScope(storeScope: AdvisorStoreScope): Campaign[] {
-  return storeScope === "all"
-    ? mockCampaigns
-    : mockCampaigns.filter((c) => c.store_id === storeScope);
+function campaignsForStoreScope(
+  storeScope: AdvisorStoreScope,
+  source: Campaign[] = mockCampaigns
+): Campaign[] {
+  return storeScope === "all" ? source : source.filter((c) => c.store_id === storeScope);
 }
 
 /** Campañas para la página Campañas (tienda + plataforma de ads). */
 function campaignsForCampanasScope(
   storeScope: AdvisorStoreScope,
-  adsPlatform: AdsPlatformScope
+  adsPlatform: AdsPlatformScope,
+  source: Campaign[] = mockCampaigns
 ): Campaign[] {
-  return campaignsForStoreScope(storeScope).filter((c) => c.platform === adsPlatform);
+  return campaignsForStoreScope(storeScope, source).filter((c) => c.platform === adsPlatform);
 }
 
 
@@ -195,16 +197,13 @@ function mergeGrowthAndAttention(
 
 
 export function buildDashboardAdvisorInsights(
-
   orders: Order[],
-
-  storeScope: AdvisorStoreScope
-
+  storeScope: AdvisorStoreScope,
+  campaignsSource: Campaign[] = mockCampaigns
 ): AdvisorInsights {
-
-  const m = getDashboardMetrics(orders, storeScope === "all" ? null : storeScope);
-
-  const campaigns = campaignsForStoreScope(storeScope);
+  const scope = storeScope === "all" ? null : storeScope;
+  const m = getDashboardMetrics(orders, scope, campaignsSource);
+  const campaigns = campaignsForStoreScope(storeScope, campaignsSource);
 
   const active = campaigns.filter((c) => c.status === "active");
 
@@ -498,9 +497,10 @@ export function buildRentabilidadAdvisorInsights(orders: Order[]): AdvisorInsigh
 
 export function buildCampanasAdvisorInsights(
   storeScope: AdvisorStoreScope,
-  adsPlatform: AdsPlatformScope
+  adsPlatform: AdsPlatformScope,
+  campaignsSource: Campaign[] = mockCampaigns
 ): AdvisorInsights {
-  const campaigns = campaignsForCampanasScope(storeScope, adsPlatform);
+  const campaigns = campaignsForCampanasScope(storeScope, adsPlatform, campaignsSource);
 
   const active = campaigns.filter((c) => c.status === "active");
 

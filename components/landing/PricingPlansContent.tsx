@@ -13,58 +13,70 @@ import {
   landingGlassPricingToggle,
 } from "@/lib/landing-glass-styles";
 import { multiTouchClusterClasses } from "@/lib/multi-touch-cluster";
+import { getWhatsAppChatUrl } from "@/lib/whatsapp";
 
-/** Precio mensual equivalente si pagás 10 meses al año (2 meses gratis). */
-function annualMonthlyEquivalent(usd: number) {
-  return Math.round((usd * 10) / 12);
-}
+/** Pro: anual USD/mes (principal) vs mensual de referencia. */
+const PRO_ANNUAL_USD = 26;
+const PRO_MONTHLY_REF_USD = 39;
+const SCALE_ANNUAL_USD = 67;
+const SCALE_MONTHLY_REF_USD = Math.round((SCALE_ANNUAL_USD * PRO_MONTHLY_REF_USD) / PRO_ANNUAL_USD);
 
-/** Mismo % de descuento que Pro (26 vs 39) aplicado a Scale → precio de lista mensual. */
-const PRO_LIST_USD = 39;
-const PRO_PRICE_USD = 26;
-const SCALE_PRICE_USD = 67;
-const SCALE_LIST_USD = Math.round((SCALE_PRICE_USD * PRO_LIST_USD) / PRO_PRICE_USD);
-
+/** Precio según facturación anual (efectivo/mes) o mensual. */
 function PaidPlanPrice({
+  annualUsd,
   monthlyUsd,
-  listUsd,
-  annual,
+  billingAnnual,
   featured,
 }: {
+  annualUsd: number;
   monthlyUsd: number;
-  listUsd: number;
-  annual: boolean;
+  billingAnnual: boolean;
   featured?: boolean;
 }) {
-  const color = featured ? "text-margify-cyan" : "text-white";
-  const equiv = annualMonthlyEquivalent(monthlyUsd);
-
-  if (!annual) {
-    return (
-      <div className="mt-2">
-        <p className="text-sm text-margify-muted line-through max-md:text-xs">USD {listUsd} / mes</p>
-        <p className={cn("text-3xl font-bold tabular-nums max-md:text-2xl", color)}>USD {monthlyUsd}</p>
-      </div>
-    );
-  }
+  const priceColor = featured ? "text-margify-cyan" : "text-white";
+  const displayUsd = billingAnnual ? annualUsd : monthlyUsd;
 
   return (
-    <div className="mt-2">
-      <p className="text-sm text-margify-muted line-through max-md:text-xs">USD {listUsd} / mes</p>
-      <p className="text-sm text-margify-muted line-through max-md:text-xs">USD {monthlyUsd} / mes</p>
-      <p className={cn("mt-1 text-3xl font-bold tabular-nums max-md:text-2xl", color)}>
-        USD {equiv}
+    <div className="mt-2 space-y-1.5">
+      <p className="text-[0.625rem] font-semibold uppercase tracking-wider text-margify-cyan/85">
+        {billingAnnual ? "Facturación anual" : "Facturación mensual"}
+      </p>
+      <p className={cn("text-3xl font-bold tabular-nums leading-none max-md:text-2xl", priceColor)}>
+        USD {displayUsd}
         <span className="ml-1 text-base font-normal text-margify-muted">/ mes</span>
       </p>
-      <p className="mt-1 text-xs leading-snug text-margify-muted">
-        Equivalente con facturación anual (ahorrás 2 meses).
-      </p>
+      {/* Misma altura en anual/mensual: ambos bloques ocupan la grilla (el oculto sigue midiendo). */}
+      <div className="grid [&>*]:col-start-1 [&>*]:row-start-1">
+        <div className={cn("space-y-1.5", !billingAnnual && "invisible")} aria-hidden={!billingAnnual}>
+          <p className="text-xs leading-snug text-margify-muted">10 meses al año · 2 sin cargo</p>
+          <p className="border-t border-margify-border/50 pt-1.5 text-xs leading-snug text-margify-muted">
+            Ref. mes a mes:{" "}
+            <span className="text-neutral-400">USD {monthlyUsd} / mes</span>
+          </p>
+        </div>
+        <div className={cn("space-y-1.5", billingAnnual && "invisible")} aria-hidden={billingAnnual}>
+          <p className="text-xs leading-snug text-margify-muted">
+            Con facturación anual:{" "}
+            <span className="text-neutral-300">USD {annualUsd} / mes</span>
+            <span className="text-margify-muted"> (2 meses sin cargo)</span>
+          </p>
+          <p
+            className="border-t border-margify-border/50 pt-1.5 text-xs leading-snug text-margify-muted opacity-0"
+            aria-hidden
+          >
+            &nbsp;
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
 
 const planCardClass =
   "flex h-full min-h-0 w-full min-w-0 flex-col max-md:p-4 max-md:[&_h3]:text-base";
+
+/** Separador fino antes de features (sin agrandar la tarjeta). */
+const paidFeaturesClass = "mt-3 border-t border-margify-border/40 pt-3";
 
 const freeFeatures = [
   "Dashboard y ganancia neta en tiempo real",
@@ -97,9 +109,17 @@ const scaleFeatures = [
   "Integraciones completas y sin límites",
 ] as const;
 
-function FeatureList({ items, emphasisFirst }: { items: readonly string[]; emphasisFirst?: boolean }) {
+function FeatureList({
+  items,
+  emphasisFirst,
+  className,
+}: {
+  items: readonly string[];
+  emphasisFirst?: boolean;
+  className?: string;
+}) {
   return (
-    <ul className="mt-4 flex flex-1 flex-col gap-2.5">
+    <ul className={cn("mt-4 flex flex-1 flex-col gap-2.5", className)}>
       {items.map((text, i) => (
         <li key={`${text}-${i}`} className="flex gap-2 text-sm leading-snug text-neutral-300">
           <Check
@@ -138,32 +158,46 @@ type PricingPlansContentProps = {
  * Misma sección de planes que la home (`variant="landing"`) o flujo post-registro (`variant="onboarding"`).
  */
 export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansContentProps) {
-  const [annual, setAnnual] = useState(false);
+  const [annual, setAnnual] = useState(true);
   const isOnboarding = variant === "onboarding";
   const glassCard = !isOnboarding ? cn(landingGlassPanel, landingGlassPanelHover) : undefined;
 
   function cta(
     plan: SelectedPlanId,
     label: string,
-    style: "primary" | "secondary"
+    style: "primary" | "secondary",
+    href = "/auth/register",
+    featured = false
   ) {
     const classes = buttonClassName(
       style,
-      "mt-auto block w-full pt-6 text-center max-md:pt-4"
+      featured
+        ? "mt-auto w-full px-4 py-2.5 text-sm font-semibold max-md:mt-3"
+        : "mt-auto w-fit self-center px-4 py-2 text-sm font-semibold max-md:mt-3"
     );
-    if (isOnboarding && onSelectPlan) {
+    const external = href.startsWith("http");
+    if (isOnboarding && onSelectPlan && !external) {
       return (
         <button type="button" className={classes} onClick={() => onSelectPlan({ plan, annual })}>
           {label}
         </button>
       );
     }
+    if (external) {
+      return (
+        <a href={href} target="_blank" rel="noopener noreferrer" className={classes}>
+          {label}
+        </a>
+      );
+    }
     return (
-      <Link href="/auth/register" className={classes}>
+      <Link href={href} className={classes}>
         {label}
       </Link>
     );
   }
+
+  const whatsappUrl = getWhatsAppChatUrl();
 
   return (
     <div className="mx-auto max-w-6xl px-4 md:px-6">
@@ -180,16 +214,6 @@ export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansConte
       >
         <button
           type="button"
-          onClick={() => setAnnual(false)}
-          className={cn(
-            "min-h-[2.5rem] flex-1 rounded-full px-4 py-2 text-sm font-medium transition-all duration-margify",
-            !annual ? "bg-margify-cyan text-black" : "text-margify-muted hover:text-white"
-          )}
-        >
-          Mensual
-        </button>
-        <button
-          type="button"
           onClick={() => setAnnual(true)}
           className={cn(
             "min-h-[2.5rem] flex-1 rounded-full px-4 py-2 text-sm font-medium transition-all duration-margify",
@@ -198,10 +222,25 @@ export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansConte
         >
           Anual
         </button>
+        <button
+          type="button"
+          onClick={() => setAnnual(false)}
+          className={cn(
+            "min-h-[2.5rem] flex-1 rounded-full px-4 py-2 text-sm font-medium transition-all duration-margify",
+            !annual ? "bg-margify-cyan text-black" : "text-margify-muted hover:text-white"
+          )}
+        >
+          Mensual
+        </button>
       </div>
-      <p className="mt-2 text-center text-xs text-neutral-400">
-        Plan anual: cobrás 10 meses por año (2 meses sin cargo).
-      </p>
+      <div className="mx-auto mt-2 max-w-md grid [&>*]:col-start-1 [&>*]:row-start-1 text-center text-xs text-neutral-400">
+        <p className={cn(!annual && "invisible")} aria-hidden={!annual}>
+          Plan anual: cobrás 10 meses por año (2 meses sin cargo).
+        </p>
+        <p className={cn(annual && "invisible")} aria-hidden={annual}>
+          Facturación mes a mes, sin compromiso anual.
+        </p>
+      </div>
 
       <div className="mx-auto mt-10 grid max-w-6xl max-md:grid-cols-2 max-md:gap-3 items-stretch gap-6 md:grid-cols-3 md:gap-6 lg:gap-8">
         <Card className={cn(planCardClass, glassCard)}>
@@ -209,27 +248,35 @@ export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansConte
           <p className="mt-1 text-sm font-bold text-white">Hasta 30 órdenes por mes</p>
           <p className="mt-2 text-3xl font-bold text-white max-md:text-2xl">Gratis</p>
           <FeatureList items={freeFeatures} />
-          {cta("free", "Empezar", "secondary")}
+          {cta("free", "Empezar gratis", "secondary")}
         </Card>
 
         <Card
           className={cn(
             planCardClass,
             glassCard,
-            "border-margify-cyan shadow-[0_0_0_1px_rgba(100,223,223,0.35)]"
+            "border-2 border-margify-cyan shadow-[0_0_0_1px_rgba(100,223,223,0.35)]"
           )}
         >
-          <Badge type="success" label="Más popular" className="mb-2 w-fit" />
+          <div className="mb-2 flex flex-wrap gap-1.5">
+            <Badge type="success" label="Más popular" className="w-fit" />
+            <Badge
+              type="success"
+              label="Mejor precio · anual"
+              className={cn("w-fit", !annual && "invisible")}
+              aria-hidden={!annual}
+            />
+          </div>
           <CardTitle>Pro</CardTitle>
           <p className="mt-1 text-sm font-bold text-white">Órdenes ilimitadas</p>
           <PaidPlanPrice
-            monthlyUsd={PRO_PRICE_USD}
-            listUsd={PRO_LIST_USD}
-            annual={annual}
+            annualUsd={PRO_ANNUAL_USD}
+            monthlyUsd={PRO_MONTHLY_REF_USD}
+            billingAnnual={annual}
             featured
           />
-          <FeatureList items={proFeatures} emphasisFirst />
-          {cta("pro", "Elegir Pro", "primary")}
+          <FeatureList items={proFeatures} emphasisFirst className={paidFeaturesClass} />
+          {cta("pro", "Probar gratis 7 días", "primary", "/auth/register", true)}
         </Card>
 
         <Card
@@ -241,30 +288,14 @@ export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansConte
         >
           <CardTitle>Scale</CardTitle>
           <p className="mt-1 text-sm font-bold text-white">Órdenes ilimitadas</p>
-          <PaidPlanPrice monthlyUsd={SCALE_PRICE_USD} listUsd={SCALE_LIST_USD} annual={annual} />
-          <FeatureList items={scaleFeatures} emphasisFirst />
-          {cta("scale", "Elegir Scale", "secondary")}
+          <PaidPlanPrice
+            annualUsd={SCALE_ANNUAL_USD}
+            monthlyUsd={SCALE_MONTHLY_REF_USD}
+            billingAnnual={annual}
+          />
+          <FeatureList items={scaleFeatures} emphasisFirst className={paidFeaturesClass} />
+          {cta("scale", "Hablar con ventas", "secondary", whatsappUrl ?? "/auth/register")}
         </Card>
-      </div>
-
-      <div className="mt-10 flex flex-col items-center gap-2">
-        {isOnboarding && onSelectPlan ? (
-          <button
-            type="button"
-            onClick={() => onSelectPlan({ plan: "free", annual: false })}
-            className={buttonClassName("primary", "w-full max-w-md px-8 py-3 text-center sm:w-auto")}
-          >
-            Probar gratis 7 días
-          </button>
-        ) : (
-          <Link
-            href="/auth/register"
-            className={buttonClassName("primary", "w-full max-w-md px-8 py-3 text-center sm:w-auto")}
-          >
-            Probar gratis 7 días
-          </Link>
-        )}
-        <p className="text-center text-xs text-neutral-400">Probá la app 7 días sin compromiso.</p>
       </div>
     </div>
   );

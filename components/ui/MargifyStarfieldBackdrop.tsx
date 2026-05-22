@@ -35,7 +35,13 @@ export function MargifyStarfieldBackdrop({
 }) {
   const p = PRESET[preset];
   return (
-    <div className={cn("pointer-events-none absolute inset-0 overflow-hidden", className)} aria-hidden>
+    <div
+      className={cn(
+        "pointer-events-none absolute inset-0 overflow-hidden contain-paint [transform:translateZ(0)]",
+        className
+      )}
+      aria-hidden
+    >
       <div className={cn("absolute inset-0", p.wrap)}>
         <Sparkles
           density={p.density}

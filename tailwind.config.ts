@@ -34,6 +34,25 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
       },
+      keyframes: {
+        "marquee-x-left": {
+          from: { transform: "translate3d(0, 0, 0)" },
+          to: { transform: "translate3d(-50%, 0, 0)" },
+        },
+        "marquee-x-right": {
+          from: { transform: "translate3d(-50%, 0, 0)" },
+          to: { transform: "translate3d(0, 0, 0)" },
+        },
+        "marquee-y": {
+          from: { transform: "translate3d(0, 0, 0)" },
+          to: { transform: "translate3d(0, -50%, 0)" },
+        },
+      },
+      animation: {
+        "marquee-x-left": "marquee-x-left linear infinite",
+        "marquee-x-right": "marquee-x-right linear infinite",
+        "marquee-y": "marquee-y linear infinite",
+      },
     },
   },
   plugins: [],

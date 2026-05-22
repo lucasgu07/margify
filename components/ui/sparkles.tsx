@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useId, useState } from "react";
-import Particles, { initParticlesEngine } from "@tsparticles/react";
-import { loadSlim } from "@tsparticles/slim";
+import { useEffect, useId, useRef, useState } from "react";
+import Particles from "@tsparticles/react";
+import type { Container } from "@tsparticles/engine";
 import type { ISourceOptions } from "@tsparticles/engine";
+import { ensureParticlesEngine } from "@/lib/tsparticles-init";
+import { useDocumentVisible } from "@/lib/use-document-visible";
 
 type SparklesProps = {
   className?: string;
@@ -35,14 +37,19 @@ export function Sparkles({
   options = {},
 }: SparklesProps) {
   const [isReady, setIsReady] = useState(false);
+  const containerRef = useRef<Container | undefined>(undefined);
+  const documentVisible = useDocumentVisible();
 
   useEffect(() => {
-    void initParticlesEngine(async (engine) => {
-      await loadSlim(engine);
-    }).then(() => {
-      setIsReady(true);
-    });
+    void ensureParticlesEngine().then(() => setIsReady(true));
   }, []);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    if (documentVisible) void container.play();
+    else container.pause();
+  }, [documentVisible]);
 
   const id = useId();
 
@@ -50,8 +57,17 @@ export function Sparkles({
     background: {
       color: { value: background },
     },
-    fullScreen: { enable: false, zIndex: 1 },
+    fullScreen: { enable: false, zIndex: 0 },
     fpsLimit: 120,
+    detectRetina: true,
+    interactivity: {
+      detectsOn: "canvas",
+      events: {
+        onClick: { enable: false },
+        onHover: { enable: false },
+        resize: { enable: true },
+      },
+    },
     particles: {
       color: { value: color },
       move: {
@@ -67,10 +83,21 @@ export function Sparkles({
       },
       size: { value: { min: minSize ?? size / 2.5, max: size } },
     },
-    detectRetina: true,
+    pauseOnBlur: true,
+    pauseOnOutsideViewport: true,
   };
 
   if (!isReady) return null;
 
-  return <Particles id={id} options={{ ...defaultOptions, ...options }} className={className} />;
+  return (
+    <Particles
+      id={id}
+      options={{ ...defaultOptions, ...options }}
+      className={className}
+      particlesLoaded={async (container) => {
+        containerRef.current = container;
+        if (!documentVisible && container) container.pause();
+      }}
+    />
+  );
 }

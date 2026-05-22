@@ -22,7 +22,7 @@ export function DemoModeProvider({
   );
 }
 
-/** `true` solo con cookie "Ver demo" y sin sesión de Supabase (visitante sin cuenta). */
+/** `true` sin sesión de Supabase: dashboard con datos ficticios (no pedir conectar integraciones). */
 export function useDemoMode(): boolean {
   const ctx = useContext(DashboardSessionContext);
   if (!ctx) {

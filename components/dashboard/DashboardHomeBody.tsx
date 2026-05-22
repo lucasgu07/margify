@@ -13,11 +13,19 @@ import { getDashboardMetrics } from "@/lib/mock-data";
 
 /** Contenido del home del dashboard (métricas, gráfico, órdenes, IA). */
 export function DashboardHomeBody({ variant = "default" }: { variant?: "default" | "landingHero" }) {
-  const { dateRange, filteredOrders, chartSeries, storeScope, rangeDisplayLabel } = useDashboard();
-  const m = getDashboardMetrics(filteredOrders, storeScope === "all" ? null : storeScope);
+  const {
+    dateRange,
+    filteredOrders,
+    chartSeries,
+    storeScope,
+    rangeDisplayLabel,
+    allCampaigns,
+  } = useDashboard();
+  const roasScope = storeScope === "all" ? null : storeScope;
+  const m = getDashboardMetrics(filteredOrders, roasScope, allCampaigns);
   const advisorInsights = useMemo(
-    () => buildDashboardAdvisorInsights(filteredOrders, storeScope),
-    [filteredOrders, storeScope]
+    () => buildDashboardAdvisorInsights(filteredOrders, storeScope, allCampaigns),
+    [filteredOrders, storeScope, allCampaigns]
   );
 
   const hero = variant === "landingHero";

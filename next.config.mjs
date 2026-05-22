@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  experimental: {
+    optimizePackageImports: ["lucide-react", "motion/react", "framer-motion", "@tsparticles/react"],
+  },
   /** Evita ENOSPC cuando el disco está justo: no persiste el pack cache de webpack en disco. */
   webpack: (config, { dev }) => {
     if (!dev) {

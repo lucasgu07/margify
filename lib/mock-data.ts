@@ -23,6 +23,8 @@ import {
   type CustomDateBounds,
 } from "@/lib/dashboard-filters";
 import type { MetaCampaignRow } from "@/lib/meta-auth";
+import type { GoogleAdsCampaignRow } from "@/lib/google-ads";
+import { DEMO_USER_LABEL } from "@/lib/demo-user";
 
 const USER_ID = "demo-user-1";
 
@@ -50,8 +52,8 @@ export const STARTER_PLAN_MONTHLY_ORDER_LIMIT = 30;
 
 export const mockUser: User = {
   id: USER_ID,
-  email: "lucas@margify.app",
-  full_name: "Lucas",
+  email: DEMO_USER_LABEL.email,
+  full_name: DEMO_USER_LABEL.full_name,
   created_at: "2025-01-10T12:00:00.000Z",
   /** `starter` = plan Gratis (hasta 30 órdenes / mes en la demo). */
   plan: "starter",
@@ -546,16 +548,63 @@ export const demoMetaAdsCampaignRows: MetaCampaignRow[] = [
   },
 ];
 
+/** Filas para /dashboard/campanas → Google Ads en modo demo (alineadas con `mockCampaigns` google). */
+export const demoGoogleAdsCampaignRows: GoogleAdsCampaignRow[] = [
+  {
+    id: "demo-google-1",
+    name: "Search — marca",
+    status: "ENABLED",
+    advertising_channel_type: "SEARCH",
+    impressions: 124_000,
+    clicks: 3100,
+    cost: 3100,
+    conversions: 94,
+    cost_per_conversion: 32.98,
+    ctr: 2.5,
+    average_cpc: 1.0,
+  },
+  {
+    id: "demo-google-2",
+    name: "Performance Max — general",
+    status: "ENABLED",
+    advertising_channel_type: "PERFORMANCE_MAX",
+    impressions: 208_000,
+    clicks: 5200,
+    cost: 5200,
+    conversions: 128,
+    cost_per_conversion: 40.63,
+    ctr: 2.5,
+    average_cpc: 1.0,
+  },
+  {
+    id: "demo-google-3",
+    name: "Display remarketing",
+    status: "PAUSED",
+    advertising_channel_type: "DISPLAY",
+    impressions: 66_000,
+    clicks: 1650,
+    cost: 1650,
+    conversions: 31,
+    cost_per_conversion: 53.23,
+    ctr: 2.5,
+    average_cpc: 1.0,
+  },
+];
+
 /** Campañas filtradas por tienda (alcance dashboard) y plataforma de ads. */
 export function filterCampaignsByStoreAndAds(
   campaigns: Campaign[],
   storeScope: "all" | string,
   adsPlatform: AdsPlatformScope
 ): Campaign[] {
-  return campaigns.filter(
-    (c) =>
-      c.platform === adsPlatform && (storeScope === "all" || c.store_id === storeScope)
-  );
+  return campaigns.filter((c) => {
+    if (c.platform !== adsPlatform) return false;
+    if (storeScope === "all") return true;
+    if (c.store_id === storeScope) return true;
+    // Cuentas de ads suelen ser globales: mostrarlas si coinciden con alguna tienda conectada
+    if (storeScope.startsWith("store-") && c.store_id.startsWith("store-")) return true;
+    return false;
+  });
 }
 
 export const mockAlertsHistory: AlertHistory[] = [
@@ -603,7 +652,11 @@ export const mockAlertsHistory: AlertHistory[] = [
   },
 ];
 
-export function aggregateFromOrders(orders: Order[], roasStoreScope: string | null = null) {
+export function aggregateFromOrders(
+  orders: Order[],
+  roasStoreScope: string | null = null,
+  campaignsSource: Campaign[] = mockCampaigns
+) {
   const totalSales = orders.reduce((a, o) => a + o.revenue, 0);
   const netProfit = orders.reduce(
     (a, o) =>
@@ -620,8 +673,8 @@ export function aggregateFromOrders(orders: Order[], roasStoreScope: string | nu
   const marginPercent = totalSales > 0 ? (netProfit / totalSales) * 100 : 0;
   const campaignsForRoas =
     roasStoreScope === null
-      ? mockCampaigns
-      : mockCampaigns.filter((c) => c.store_id === roasStoreScope);
+      ? campaignsSource
+      : campaignsSource.filter((c) => c.store_id === roasStoreScope);
   const totalSpend = campaignsForRoas.reduce((a, c) => a + c.spend, 0);
   const totalAttr = campaignsForRoas.reduce((a, c) => a + c.attributed_revenue, 0);
   const trueRoas = totalSpend > 0 ? totalAttr / totalSpend : 0;
@@ -645,16 +698,21 @@ export function aggregateFromOrders(orders: Order[], roasStoreScope: string | nu
 
 export function getDashboardMetrics(
   orders: Order[] = mockOrders,
-  roasStoreScope: string | null = null
+  roasStoreScope: string | null = null,
+  campaignsSource: Campaign[] = mockCampaigns
 ) {
-  const cur = aggregateFromOrders(orders, roasStoreScope);
+  const cur = aggregateFromOrders(orders, roasStoreScope, campaignsSource);
   const prevOrders = orders.map((o) => ({
     ...o,
     revenue: o.revenue * 0.92,
     product_cost: o.product_cost * 0.95,
     ads_spend_attributed: (o.ads_spend_attributed ?? 0) * 0.97,
   }));
-  const prev = aggregateFromOrders(prevOrders.length ? prevOrders : orders, roasStoreScope);
+  const prev = aggregateFromOrders(
+    prevOrders.length ? prevOrders : orders,
+    roasStoreScope,
+    campaignsSource
+  );
   const pct = (a: number, b: number) => {
     if (!Number.isFinite(a) || !Number.isFinite(b) || b === 0) return 0;
     return ((a - b) / Math.abs(b)) * 100;

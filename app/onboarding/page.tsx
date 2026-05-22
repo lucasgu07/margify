@@ -363,7 +363,23 @@ function OnboardingPageContent() {
                 <Button
                   type="button"
                   className={multiTouchClusterChildButtonClasses}
-                  onClick={() => setStep(5)}
+                  onClick={async () => {
+                    try {
+                      await fetch("/api/dashboard/costs-config", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          product_cost_percent: productCost,
+                          payment_commission_percent: payComm,
+                          shipping_cost_fixed: ship,
+                          agency_fee_percent: agency,
+                        }),
+                      });
+                    } catch {
+                      /* continuar al dashboard igual */
+                    }
+                    setStep(5);
+                  }}
                 >
                   Guardar y ver mi dashboard
                 </Button>

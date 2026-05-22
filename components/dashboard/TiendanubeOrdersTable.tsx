@@ -7,6 +7,12 @@ import { Button, buttonClassName } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
 import { DataTable, type Column } from "@/components/ui/Table";
+import { useDemoMode } from "@/components/dashboard/DemoModeContext";
+import {
+  DEMO_TIENDANUBE_STORE,
+  demoTiendanubeMetrics,
+  demoTiendanubeOrders,
+} from "@/lib/demo-store-orders";
 import type { TiendanubeMetrics, TiendanubeOrder } from "@/lib/tiendanube-auth";
 
 type SyncResponse =
@@ -57,6 +63,7 @@ function formatDate(iso: string): string {
 }
 
 export function TiendanubeOrdersTable() {
+  const isDemo = useDemoMode();
   const [rows, setRows] = useState<TiendanubeOrder[] | null>(null);
   const [metrics, setMetrics] = useState<TiendanubeMetrics | null>(null);
   const [label, setLabel] = useState<string | null>(null);
@@ -93,6 +100,17 @@ export function TiendanubeOrdersTable() {
   }, []);
 
   const syncNow = useCallback(async () => {
+    if (isDemo) {
+      setSyncing(true);
+      setError(null);
+      try {
+        await new Promise((r) => setTimeout(r, 400));
+        setLastSyncedAt(Date.now());
+      } finally {
+        setSyncing(false);
+      }
+      return;
+    }
     setSyncing(true);
     setError(null);
     try {
@@ -114,11 +132,22 @@ export function TiendanubeOrdersTable() {
     } finally {
       setSyncing(false);
     }
-  }, []);
+  }, [isDemo]);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      if (isDemo) {
+        setLoading(true);
+        setError(null);
+        setConnected(true);
+        setLabel(DEMO_TIENDANUBE_STORE);
+        setRows(demoTiendanubeOrders);
+        setMetrics(demoTiendanubeMetrics);
+        setLastSyncedAt(Date.now() - 1000 * 60 * 30);
+        if (!cancelled) setLoading(false);
+        return;
+      }
       setLoading(true);
       const isConnected = await loadStatus();
       if (cancelled) return;
@@ -128,7 +157,7 @@ export function TiendanubeOrdersTable() {
     return () => {
       cancelled = true;
     };
-  }, [loadStatus, syncNow]);
+  }, [isDemo, loadStatus, syncNow]);
 
   const columns: Column<TiendanubeOrder>[] = [
     {

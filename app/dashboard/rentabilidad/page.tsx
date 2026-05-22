@@ -31,8 +31,13 @@ const PIE_COLORS = ["#64DFDF", "#ffffff", "#888888", "#444444", "#64DFDF99"];
 
 export default function RentabilidadPage() {
   const { full_name } = useDashboardIdentity();
-  const { dateRange, setDateRange, filteredOrders, chartSeries, storeScope } = useDashboard();
-  const m = getDashboardMetrics(filteredOrders, storeScope === "all" ? null : storeScope);
+  const { dateRange, setDateRange, filteredOrders, chartSeries, storeScope, allCampaigns } =
+    useDashboard();
+  const m = getDashboardMetrics(
+    filteredOrders,
+    storeScope === "all" ? null : storeScope,
+    allCampaigns
+  );
   const [pieHidden, setPieHidden] = useState<Record<string, boolean>>({});
 
   const areaData = useMemo((): ComparativaDiariaRow[] => {

@@ -1,16 +1,26 @@
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import type { SimpleIcon } from "simple-icons";
 import { siGmail, siInstagram, siX } from "simple-icons";
-import { LayoutDashboard, Link2, Receipt, Sparkles } from "lucide-react";
+import { Check, LayoutDashboard, Link2, Receipt, Sparkles } from "lucide-react";
 import { buttonClassName } from "@/components/ui/Button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
 import { Logo } from "@/components/ui/Logo";
 import { Badge } from "@/components/ui/Badge";
 import { LandingPricing } from "@/components/landing/LandingPricing";
 import { LandingMainAmbient } from "@/components/landing/LandingMainAmbient";
-import { LandingParticleBackground } from "@/components/landing/LandingParticleBackground";
+
+const LandingParticleBackground = dynamic(
+  () =>
+    import("@/components/landing/LandingParticleBackground").then(
+      (m) => m.LandingParticleBackground
+    ),
+  { ssr: false }
+);
 import { LandingFaq } from "@/components/landing/LandingFaq";
 import { LandingTestimonials } from "@/components/landing/LandingTestimonials";
+import { LandingComparisonSection } from "@/components/landing/LandingComparisonSection";
+import { LandingDemoVideoButton } from "@/components/landing/LandingDemoVideoButton";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { LandingHeroCampaignsPreview } from "@/components/landing/LandingHeroCampaignsPreview";
 import { LandingHeroDashboardPreview } from "@/components/landing/LandingHeroDashboardPreview";
@@ -96,21 +106,19 @@ export default function LandingPage() {
             <div className="mx-auto max-w-6xl px-4 pt-14 pb-6 md:px-6 md:pt-20 md:pb-8 lg:max-w-7xl lg:pt-24 lg:pb-8">
               <div className="grid gap-8 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] lg:items-center lg:gap-x-10 lg:gap-y-0 xl:gap-x-14">
                 <div className="flex min-w-0 flex-col gap-5 lg:max-w-xl xl:max-w-lg">
-                  <div className="mb-1 flex flex-wrap gap-2">
-                    <Badge type="neutral" label="Rentabilidad real + campañas + IA" className={cn(landingGlassBadge, "w-fit")} />
+                  <div className="mb-1">
                     <Badge
-                      type="neutral"
-                      label="+704 tiendas ya mejoraron su margen con Margify"
-                      className={cn(landingGlassBadge, "w-fit")}
+                      type="success"
+                      label="+700 tiendas en LATAM ya lo usan"
+                      className="w-fit"
                     />
                   </div>
                   <h1 className="text-3xl font-bold leading-[1.15] tracking-tight text-white sm:text-4xl lg:text-[2.35rem] lg:leading-tight xl:text-5xl">
-                    Sabé si ganás o perdés: ventas, ads, costos e IA en un solo panel
+                    Descubrí cuánto ganás realmente, no cuánto facturás
                   </h1>
                   <p className="text-base leading-relaxed text-neutral-400 md:text-lg">
-                    Margify integra TiendaNube, Shopify o Mercado Libre con Meta, TikTok y Google Ads:
-                    ganancia neta y margen por producto, ROAS real, tablas de campañas con Margify AI,
-                    alertas por WhatsApp y cashflow proyectado. Todo al día, sin Excel ni datos sueltos.
+                    Conectás tu tienda y tus ads en minutos. Margify integra ventas, costos y campañas
+                    para mostrarte el margen neto real — sin Excel, sin planillas.
                   </p>
                   <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-center">
                     <Link
@@ -119,7 +127,22 @@ export default function LandingPage() {
                     >
                       Empezar gratis
                     </Link>
+                    <LandingDemoVideoButton className="w-full px-7 py-3 sm:w-auto" />
                   </div>
+                  <ul className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-neutral-400">
+                    <li className="inline-flex items-center gap-1.5">
+                      <Check className="h-3.5 w-3.5 shrink-0 text-margify-cyan" aria-hidden />
+                      Sin tarjeta de crédito
+                    </li>
+                    <li className="inline-flex items-center gap-1.5">
+                      <Check className="h-3.5 w-3.5 shrink-0 text-margify-cyan" aria-hidden />
+                      7 días gratis
+                    </li>
+                    <li className="inline-flex items-center gap-1.5">
+                      <Check className="h-3.5 w-3.5 shrink-0 text-margify-cyan" aria-hidden />
+                      Cancelás cuando querés
+                    </li>
+                  </ul>
                 </div>
 
                 <div className="relative min-h-0 min-w-0">
@@ -127,6 +150,7 @@ export default function LandingPage() {
                 </div>
               </div>
             </div>
+            <LandingComparisonSection />
             <LandingIntegrationsShowcase />
           </section>
 

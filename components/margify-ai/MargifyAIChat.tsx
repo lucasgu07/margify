@@ -296,7 +296,10 @@ export function MargifyAIChat({ storageKey }: MargifyAIChatProps) {
             </p>
           </div>
         ) : (
-          <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4 md:px-6 md:py-5">
+          <div
+            className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4 md:px-6 md:py-5"
+            data-lenis-prevent
+          >
             {messages.map((m) => (
               <div
                 key={m.id}

@@ -1,7 +1,22 @@
 "use client";
 
-import { createContext, useContext, useMemo, useState } from "react";
-import type { AdsPlatformScope, DateRangeKey, Order, StorePlatform } from "@/types";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import type {
+  AdsPlatformScope,
+  Campaign,
+  CostsConfig,
+  DateRangeKey,
+  Order,
+  Plan,
+  StorePlatform,
+} from "@/types";
 import {
   DATE_RANGE_LABELS,
   filterOrdersByRange,
@@ -13,35 +28,52 @@ import {
 import {
   applyStarterMonthlyOrderCap,
   buildRevenueChartSeries,
+  countCompletedOrdersInCurrentMonth,
+  mockCampaigns,
+  mockCostsConfig,
   mockOrders,
-  mockStores,
   mockUser,
-  storeShortLabel,
 } from "@/lib/mock-data";
 import type { RevenueChartRow } from "@/types";
+import { useDemoMode } from "@/components/dashboard/DemoModeContext";
 
 export type StoreScope = "all" | string;
+
+type ConnectedStoreOption = {
+  id: string;
+  label: string;
+  platform: StorePlatform;
+};
 
 type Ctx = {
   dateRange: DateRangeKey;
   setDateRange: (r: DateRangeKey) => void;
   customRange: CustomDateBounds;
   setCustomRange: (c: CustomDateBounds) => void;
-  /** Texto para títulos de gráficos (incluye fechas si el rango es personalizado). */
   rangeDisplayLabel: string;
   storeScope: StoreScope;
   setStoreScope: (s: StoreScope) => void;
-  /** Meta / TikTok / Google Ads (pantalla Campañas). */
   adsPlatform: AdsPlatformScope;
   setAdsPlatform: (p: AdsPlatformScope) => void;
-  connectedStores: { id: string; label: string; platform: StorePlatform }[];
+  connectedStores: ConnectedStoreOption[];
   filteredOrders: Order[];
+  /** Órdenes sin filtro de rango (para cupo Starter). */
+  sourceOrders: Order[];
+  allCampaigns: Campaign[];
   chartSeries: RevenueChartRow[];
+  starterOrdersThisMonth: number;
+  plan: Plan;
+  costsConfig: CostsConfig;
+  loadingLive: boolean;
+  liveReady: boolean;
+  refreshBootstrap: () => Promise<void>;
 };
 
 const DashboardContext = createContext<Ctx | null>(null);
 
 export function DashboardProvider({ children }: { children: React.ReactNode }) {
+  const isDemo = useDemoMode();
+
   const [dateRange, setDateRange] = useState<DateRangeKey>("30d");
   const [customRange, setCustomRange] = useState<CustomDateBounds>(() => {
     const b = getDateRangeBounds("30d");
@@ -50,26 +82,85 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   const [storeScope, setStoreScope] = useState<StoreScope>("all");
   const [adsPlatform, setAdsPlatform] = useState<AdsPlatformScope>("meta");
 
-  const connectedStores = useMemo(
-    () =>
-      mockStores
-        .filter((s) => s.status === "connected")
-        .map((s) => ({ id: s.id, label: storeShortLabel(s), platform: s.platform })),
-    []
-  );
+  const [liveOrders, setLiveOrders] = useState<Order[]>([]);
+  const [liveCampaigns, setLiveCampaigns] = useState<Campaign[]>([]);
+  const [liveStores, setLiveStores] = useState<ConnectedStoreOption[]>([]);
+  const [plan, setPlan] = useState<Plan>(mockUser.plan);
+  const [costsConfig, setCostsConfig] = useState<CostsConfig>(mockCostsConfig);
+  const [loadingLive, setLoadingLive] = useState(false);
+  const [liveReady, setLiveReady] = useState(false);
+
+  const refreshBootstrap = useCallback(async () => {
+    if (isDemo) return;
+    setLoadingLive(true);
+    try {
+      const res = await fetch("/api/dashboard/bootstrap", { cache: "no-store" });
+      if (!res.ok) {
+        setLiveReady(false);
+        return;
+      }
+      const data = (await res.json()) as {
+        orders: Order[];
+        campaigns: Campaign[];
+        connectedStores: ConnectedStoreOption[];
+        plan: Plan;
+        costsConfig: CostsConfig;
+      };
+      setLiveOrders(data.orders ?? []);
+      setLiveCampaigns(data.campaigns ?? []);
+      setLiveStores(data.connectedStores ?? []);
+      setPlan(data.plan ?? "starter");
+      setCostsConfig(data.costsConfig ?? mockCostsConfig);
+      setLiveReady(true);
+    } catch {
+      setLiveReady(false);
+    } finally {
+      setLoadingLive(false);
+    }
+  }, [isDemo]);
+
+  useEffect(() => {
+    if (isDemo) {
+      setLiveReady(false);
+      return;
+    }
+    void refreshBootstrap();
+  }, [isDemo, refreshBootstrap]);
+
+  useEffect(() => {
+    if (isDemo) return;
+    const onFocus = () => void refreshBootstrap();
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [isDemo, refreshBootstrap]);
+
+  const connectedStores = useMemo(() => {
+    if (isDemo) {
+      return [
+        { id: "store-tn-1", label: "Tienda Nube (mitienda.mitiendanube.com)", platform: "tiendanube" as const },
+        { id: "store-sh-1", label: "Shopify (mi-marca.myshopify.com)", platform: "shopify" as const },
+        { id: "store-ml-1", label: "Mercado Libre", platform: "mercadolibre" as const },
+      ];
+    }
+    return liveStores;
+  }, [isDemo, liveStores]);
 
   const rangeDisplayLabel = useMemo(() => {
     if (dateRange !== "custom") return DATE_RANGE_LABELS[dateRange];
     return formatCustomRangeLabel(getDateRangeBounds("custom", customRange));
   }, [dateRange, customRange]);
 
+  const allOrders = isDemo ? mockOrders : liveOrders;
+  const allCampaigns = isDemo ? mockCampaigns : liveCampaigns;
+  const effectivePlan = isDemo ? mockUser.plan : plan;
+
   const value = useMemo(() => {
     const customArg = dateRange === "custom" ? customRange : undefined;
     const storeFiltered = filterOrdersByStore(
-      mockOrders,
+      allOrders,
       storeScope === "all" ? null : storeScope
     );
-    const cappedForPlan = applyStarterMonthlyOrderCap(storeFiltered, mockUser.plan);
+    const cappedForPlan = applyStarterMonthlyOrderCap(storeFiltered, effectivePlan);
     const filteredOrders = filterOrdersByRange(cappedForPlan, dateRange, customArg);
     const seriesStoreId = storeScope === "all" ? null : storeScope;
     const chartSeries = buildRevenueChartSeries(
@@ -78,6 +169,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       customArg,
       filteredOrders
     );
+    const starterOrdersThisMonth = countCompletedOrdersInCurrentMonth(allOrders);
     return {
       dateRange,
       setDateRange,
@@ -90,9 +182,31 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       setAdsPlatform,
       connectedStores,
       filteredOrders,
+      sourceOrders: allOrders,
+      allCampaigns,
       chartSeries,
+      starterOrdersThisMonth,
+      plan: effectivePlan,
+      costsConfig,
+      loadingLive,
+      liveReady,
+      refreshBootstrap,
     };
-  }, [dateRange, customRange, storeScope, adsPlatform, connectedStores, rangeDisplayLabel]);
+  }, [
+    dateRange,
+    customRange,
+    storeScope,
+    adsPlatform,
+    connectedStores,
+    rangeDisplayLabel,
+    allOrders,
+    allCampaigns,
+    effectivePlan,
+    costsConfig,
+    loadingLive,
+    liveReady,
+    refreshBootstrap,
+  ]);
 
   return (
     <DashboardContext.Provider value={value}>{children}</DashboardContext.Provider>

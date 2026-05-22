@@ -15,16 +15,63 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-padding-top: 8rem;
+}
+
+/* Lenis controla el scroll; evita doble interpolación con scroll-behavior nativo */
+html.lenis {
+  scroll-behavior: auto !important;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.lenis) {
+    scroll-behavior: smooth;
+  }
 }
 
 body {
   @apply min-h-screen bg-margify-bg font-sans text-margify-text antialiased;
 }
 
+/* Scroll suave en paneles internos (tablas, sidebar, chat) */
+@media (prefers-reduced-motion: no-preference) {
+  [data-lenis-prevent],
+  .overflow-y-auto,
+  .overflow-auto,
+  .overflow-x-auto {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
 ::selection {
   background: rgba(100, 223, 223, 0.25);
   color: #fff;
+}
+
+@layer utilities {
+  /** Capa GPU para animaciones de transform (mismo aspecto, menos jank). */
+  .motion-gpu {
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    will-change: transform;
+  }
+
+  .contain-paint {
+    contain: paint;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee-x-left,
+  .animate-marquee-x-right,
+  .animate-marquee-y {
+    animation: none !important;
+  }
+
+  .motion-gpu {
+    will-change: auto;
+  }
 }
 
 /* react-international-phone — tema Margify (registro) */

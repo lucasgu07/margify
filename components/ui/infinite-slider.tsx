@@ -88,9 +88,9 @@ export function InfiniteSlider({
     : {};
 
   return (
-    <div className={cn("overflow-hidden", className)}>
+    <div className={cn("overflow-hidden contain-paint", className)}>
       <motion.div
-        className="flex w-max"
+        className="flex w-max motion-gpu"
         style={{
           ...(direction === "horizontal" ? { x: translation } : { y: translation }),
           gap: `${gap}px`,

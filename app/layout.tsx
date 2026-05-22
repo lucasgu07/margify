@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { SmoothScroll } from "@/components/SmoothScroll";
+import { cn } from "@/lib/utils";
 import { WhatsAppFloatButton } from "@/components/landing/WhatsAppFloatButton";
 import { getWhatsAppChatUrl } from "@/lib/whatsapp";
 import "./globals.css";
@@ -23,8 +25,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const whatsappUrl = getWhatsAppChatUrl();
 
   return (
-    <html lang="es" className={inter.variable}>
+    <html lang="es" className={cn(inter.variable, "scroll-smooth")}>
       <body className="font-sans">
+        <SmoothScroll />
         {children}
         {whatsappUrl ? <WhatsAppFloatButton href={whatsappUrl} /> : null}
       </body>

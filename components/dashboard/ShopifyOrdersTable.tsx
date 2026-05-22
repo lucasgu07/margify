@@ -7,6 +7,12 @@ import { Button, buttonClassName } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
 import { DataTable, type Column } from "@/components/ui/Table";
+import { useDemoMode } from "@/components/dashboard/DemoModeContext";
+import {
+  DEMO_SHOPIFY_SHOP,
+  demoShopifyMetrics,
+  demoShopifyOrders,
+} from "@/lib/demo-store-orders";
 import type { ShopifyMetrics, ShopifyOrder } from "@/lib/shopify-auth";
 
 type SyncResponse =
@@ -57,6 +63,7 @@ function formatDate(iso: string): string {
 }
 
 export function ShopifyOrdersTable() {
+  const isDemo = useDemoMode();
   const [rows, setRows] = useState<ShopifyOrder[] | null>(null);
   const [metrics, setMetrics] = useState<ShopifyMetrics | null>(null);
   const [shop, setShop] = useState<string | null>(null);
@@ -92,6 +99,17 @@ export function ShopifyOrdersTable() {
   }, []);
 
   const syncNow = useCallback(async () => {
+    if (isDemo) {
+      setSyncing(true);
+      setError(null);
+      try {
+        await new Promise((r) => setTimeout(r, 400));
+        setLastSyncedAt(Date.now());
+      } finally {
+        setSyncing(false);
+      }
+      return;
+    }
     setSyncing(true);
     setError(null);
     try {
@@ -113,11 +131,22 @@ export function ShopifyOrdersTable() {
     } finally {
       setSyncing(false);
     }
-  }, []);
+  }, [isDemo]);
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      if (isDemo) {
+        setLoading(true);
+        setError(null);
+        setConnected(true);
+        setShop(DEMO_SHOPIFY_SHOP);
+        setRows(demoShopifyOrders);
+        setMetrics(demoShopifyMetrics);
+        setLastSyncedAt(Date.now() - 1000 * 60 * 45);
+        if (!cancelled) setLoading(false);
+        return;
+      }
       setLoading(true);
       const isConnected = await loadStatus();
       if (cancelled) return;
@@ -127,7 +156,7 @@ export function ShopifyOrdersTable() {
     return () => {
       cancelled = true;
     };
-  }, [loadStatus, syncNow]);
+  }, [isDemo, loadStatus, syncNow]);
 
   const columns: Column<ShopifyOrder>[] = [
     {

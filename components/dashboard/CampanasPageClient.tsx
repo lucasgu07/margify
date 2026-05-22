@@ -7,6 +7,7 @@ import { AIAdvisor } from "@/components/dashboard/AIAdvisor";
 import { CampaignsDataTable } from "@/components/dashboard/CampaignsDataTable";
 import { GoogleAdsCampaignsTable } from "@/components/dashboard/GoogleAdsCampaignsTable";
 import { MetaAdsCampaignsTable } from "@/components/dashboard/MetaAdsCampaignsTable";
+import { useDemoMode } from "@/components/dashboard/DemoModeContext";
 import { useDashboardIdentity } from "@/components/dashboard/DemoModeContext";
 import { useDashboard } from "@/components/dashboard/DashboardContext";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
@@ -75,11 +76,14 @@ function importantNote(adsPlatform: AdsPlatformScope) {
 
 export function CampanasPageClient({ hideHeader = false }: { hideHeader?: boolean }) {
   const { full_name } = useDashboardIdentity();
-  const { storeScope, adsPlatform } = useDashboard();
+  const isDemo = useDemoMode();
+  const { storeScope, adsPlatform, allCampaigns } = useDashboard();
+
+  const campaignSource = isDemo ? mockCampaigns : allCampaigns;
 
   const baseCampaigns = useMemo(
-    () => filterCampaignsByStoreAndAds(mockCampaigns, storeScope, adsPlatform),
-    [storeScope, adsPlatform]
+    () => filterCampaignsByStoreAndAds(campaignSource, storeScope, adsPlatform),
+    [campaignSource, storeScope, adsPlatform]
   );
 
   const [rows, setRows] = useState<Campaign[]>(() =>
@@ -112,8 +116,8 @@ export function CampanasPageClient({ hideHeader = false }: { hideHeader?: boolea
   }, []);
 
   const advisorInsights = useMemo(
-    () => buildCampanasAdvisorInsights(storeScope, adsPlatform),
-    [storeScope, adsPlatform]
+    () => buildCampanasAdvisorInsights(storeScope, adsPlatform, campaignSource),
+    [storeScope, adsPlatform, campaignSource]
   );
 
   return (
