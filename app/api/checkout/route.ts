@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAllowedDodoProductId } from "@/lib/dodo-products";
+import { getAuthUser } from "@/lib/server/auth-user";
 import {
   getDodoCheckoutCancelUrl,
   getDodoCheckoutReturnUrl,
@@ -34,14 +35,22 @@ export async function POST(request: Request) {
   }
 
   try {
+    const user = await getAuthUser();
     const client = getDodoPaymentsClient();
     const session = await client.checkoutSessions.create({
       product_cart: [{ product_id: productId, quantity: 1 }],
       return_url: getDodoCheckoutReturnUrl(),
       cancel_url: getDodoCheckoutCancelUrl(),
+      customer: user
+        ? {
+            email: user.email,
+            name: user.full_name,
+          }
+        : undefined,
       metadata: {
         product_id: productId,
         source: "margify_pricing",
+        ...(user ? { supabase_user_id: user.id } : {}),
       },
       customization: {
         force_language: "es",

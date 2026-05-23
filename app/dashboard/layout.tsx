@@ -1,4 +1,7 @@
 import { cookies } from "next/headers";
+import { Suspense } from "react";
+import { BillingStatusBanner } from "@/components/dashboard/BillingStatusBanner";
+import { CheckoutReturnHandler } from "@/components/dashboard/CheckoutReturnHandler";
 import { DashboardProvider } from "@/components/dashboard/DashboardContext";
 import { DemoModeProvider } from "@/components/dashboard/DemoModeContext";
 import { DashboardStarfieldBackground } from "@/components/dashboard/DashboardStarfieldBackground";
@@ -49,6 +52,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <DashboardStarfieldBackground />
           <Sidebar userName={full_name} userEmail={email} alertCount={alertCount} />
           <main className="relative z-[1] min-h-screen min-w-0 flex-1 bg-transparent px-4 pb-12 pt-[4.5rem] md:ml-60 md:px-8 md:pt-8">
+            <Suspense fallback={null}>
+              <CheckoutReturnHandler />
+            </Suspense>
+            <BillingStatusBanner />
             <StarterPlanUsageGate />
             {children}
           </main>

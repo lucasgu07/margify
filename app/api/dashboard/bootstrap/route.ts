@@ -21,6 +21,7 @@ export async function GET() {
     return NextResponse.json({
       ok: true,
       plan: user.plan,
+      billing: user.billing,
       costsConfig: toCostsConfig(user.id, live.costsConfig),
       orders: live.orders,
       campaigns: live.campaigns,

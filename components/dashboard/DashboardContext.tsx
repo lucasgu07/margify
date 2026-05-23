@@ -8,6 +8,7 @@ import {
   useMemo,
   useState,
 } from "react";
+import type { UserBillingMeta } from "@/lib/dodo-billing";
 import type {
   AdsPlatformScope,
   Campaign,
@@ -63,6 +64,7 @@ type Ctx = {
   chartSeries: RevenueChartRow[];
   starterOrdersThisMonth: number;
   plan: Plan;
+  billing: UserBillingMeta;
   costsConfig: CostsConfig;
   loadingLive: boolean;
   liveReady: boolean;
@@ -86,6 +88,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   const [liveCampaigns, setLiveCampaigns] = useState<Campaign[]>([]);
   const [liveStores, setLiveStores] = useState<ConnectedStoreOption[]>([]);
   const [plan, setPlan] = useState<Plan>(mockUser.plan);
+  const [billing, setBilling] = useState<UserBillingMeta>({});
   const [costsConfig, setCostsConfig] = useState<CostsConfig>(mockCostsConfig);
   const [loadingLive, setLoadingLive] = useState(false);
   const [liveReady, setLiveReady] = useState(false);
@@ -104,12 +107,14 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         campaigns: Campaign[];
         connectedStores: ConnectedStoreOption[];
         plan: Plan;
+        billing?: UserBillingMeta;
         costsConfig: CostsConfig;
       };
       setLiveOrders(data.orders ?? []);
       setLiveCampaigns(data.campaigns ?? []);
       setLiveStores(data.connectedStores ?? []);
       setPlan(data.plan ?? "starter");
+      setBilling(data.billing ?? {});
       setCostsConfig(data.costsConfig ?? mockCostsConfig);
       setLiveReady(true);
     } catch {
@@ -187,6 +192,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       chartSeries,
       starterOrdersThisMonth,
       plan: effectivePlan,
+      billing: isDemo ? {} : billing,
       costsConfig,
       loadingLive,
       liveReady,
@@ -202,6 +208,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     allOrders,
     allCampaigns,
     effectivePlan,
+    billing,
     costsConfig,
     loadingLive,
     liveReady,
