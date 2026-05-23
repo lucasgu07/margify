@@ -261,7 +261,14 @@ function OnboardingPageContent() {
               {selected.includes("mercadolibre") ? (
                 <div className="rounded-card border border-margify-border bg-margify-cardAlt p-4">
                   <p className="text-sm font-semibold text-margify-cyan">MercadoLibre</p>
-                  <Button type="button" variant="secondary" className="mt-3">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="mt-3"
+                    onClick={() => {
+                      window.location.href = "/api/auth/mercadolibre";
+                    }}
+                  >
                     Conectar con MercadoLibre (OAuth)
                   </Button>
                 </div>

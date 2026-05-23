@@ -21,6 +21,10 @@ export function getProDodoProductId(billingAnnual: boolean): string {
   return billingAnnual ? DODO_PRODUCT_IDS.pro.annual : DODO_PRODUCT_IDS.pro.monthly;
 }
 
+export function getScaleDodoProductId(billingAnnual: boolean): string {
+  return billingAnnual ? DODO_PRODUCT_IDS.scale.annual : DODO_PRODUCT_IDS.scale.monthly;
+}
+
 export function isAllowedDodoProductId(productId: string): boolean {
   return ALLOWED.has(productId);
 }

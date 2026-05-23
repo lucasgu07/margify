@@ -10,6 +10,7 @@ import {
   verifyTiendanubeHmac,
   type TiendanubeSession,
 } from "@/lib/tiendanube-auth";
+import { persistOAuthSession } from "@/lib/server/persist-oauth";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -148,6 +149,8 @@ export async function GET(request: Request) {
     maxAge: 60 * 60 * 24 * 400,
     secure: process.env.NODE_ENV === "production",
   });
+
+  await persistOAuthSession("tiendanube", session as unknown as Record<string, unknown>);
 
   return back({ tiendanube: "connected" });
 }

@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
 import { loadLiveDashboardData } from "@/lib/integrations/load-live-data";
+import {
+  filterCampaignsByPlanHistory,
+  filterOrdersByPlanHistory,
+} from "@/lib/plan-features";
+import { getAiUsageStatus } from "@/lib/server/ai-usage";
 import { getAuthUser } from "@/lib/server/auth-user";
 import { toCostsConfig } from "@/lib/server/user-costs";
 
@@ -18,13 +23,18 @@ export async function GET() {
 
   try {
     const live = await loadLiveDashboardData(user.id);
+    const orders = filterOrdersByPlanHistory(live.orders, user.plan);
+    const campaigns = filterCampaignsByPlanHistory(live.campaigns, user.plan);
+    const aiUsage = await getAiUsageStatus(user.id, user.plan);
+
     return NextResponse.json({
       ok: true,
       plan: user.plan,
       billing: user.billing,
+      aiUsage,
       costsConfig: toCostsConfig(user.id, live.costsConfig),
-      orders: live.orders,
-      campaigns: live.campaigns,
+      orders,
+      campaigns,
       connectedStores: live.connectedStores,
       integrations: live.integrations,
       syncedAt: Date.now(),

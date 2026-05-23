@@ -14,7 +14,7 @@ import {
 } from "@/lib/landing-glass-styles";
 import { multiTouchClusterClasses } from "@/lib/multi-touch-cluster";
 import { startDodoCheckout } from "@/lib/dodo-checkout";
-import { getProDodoProductId } from "@/lib/dodo-products";
+import { getProDodoProductId, getScaleDodoProductId } from "@/lib/dodo-products";
 import { getWhatsAppChatUrl } from "@/lib/whatsapp";
 
 /** Pro: anual USD/mes (principal) vs mensual de referencia. */
@@ -177,6 +177,17 @@ export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansConte
     }
   }
 
+  async function handleScaleCheckout() {
+    setCheckoutError(null);
+    setCheckoutLoading(true);
+    try {
+      await startDodoCheckout(getScaleDodoProductId(annual));
+    } catch {
+      setCheckoutError("No pudimos abrir el checkout. Intentá de nuevo en un momento.");
+      setCheckoutLoading(false);
+    }
+  }
+
   function cta(
     plan: SelectedPlanId,
     label: string,
@@ -218,10 +229,15 @@ export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansConte
       "mt-auto w-full px-4 py-2.5 text-sm font-semibold max-md:mt-3 disabled:cursor-not-allowed disabled:opacity-60"
     );
 
-    if (isOnboarding && onSelectPlan) {
+    if (isOnboarding) {
       return (
-        <button type="button" className={classes} onClick={() => onSelectPlan({ plan: "pro", annual })}>
-          Probar gratis 7 días
+        <button
+          type="button"
+          className={classes}
+          disabled={checkoutLoading}
+          onClick={() => void handleProCheckout()}
+        >
+          {checkoutLoading ? "Abriendo checkout…" : "Probar gratis 7 días"}
         </button>
       );
     }
@@ -238,7 +254,35 @@ export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansConte
     );
   }
 
-  const whatsappUrl = getWhatsAppChatUrl();
+  function scaleCheckoutCta() {
+    const waUrl = getWhatsAppChatUrl();
+    const primaryClasses = buttonClassName(
+      "primary",
+      "mt-auto w-full px-4 py-2.5 text-sm font-semibold max-md:mt-3 disabled:cursor-not-allowed disabled:opacity-60"
+    );
+    const secondaryClasses = buttonClassName(
+      "secondary",
+      "mt-2 w-full px-4 py-2 text-sm font-semibold max-md:mt-2"
+    );
+
+    return (
+      <div className="mt-auto flex w-full flex-col">
+        <button
+          type="button"
+          className={primaryClasses}
+          disabled={checkoutLoading}
+          onClick={() => void handleScaleCheckout()}
+        >
+          {checkoutLoading ? "Abriendo checkout…" : "Probar Scale 7 días"}
+        </button>
+        {waUrl ? (
+          <a href={waUrl} target="_blank" rel="noopener noreferrer" className={secondaryClasses}>
+            Hablar con ventas
+          </a>
+        ) : null}
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-6xl px-4 md:px-6">
@@ -340,7 +384,7 @@ export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansConte
             billingAnnual={annual}
           />
           <FeatureList items={scaleFeatures} emphasisFirst className={paidFeaturesClass} />
-          {cta("scale", "Hablar con ventas", "secondary", whatsappUrl ?? "/auth/register")}
+          {scaleCheckoutCta()}
         </Card>
       </div>
     </div>

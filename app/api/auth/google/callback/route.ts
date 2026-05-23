@@ -9,6 +9,7 @@ import {
   normalizeCustomerId,
 } from "@/lib/google-ads";
 import { GoogleAdsApi } from "google-ads-api";
+import { persistOAuthSession } from "@/lib/server/persist-oauth";
 
 function redirectToConfig(query: Record<string, string>) {
   const u = new URL(`${getAppOrigin()}/dashboard/configuracion`);
@@ -129,6 +130,8 @@ export async function GET(request: Request) {
     maxAge: 60 * 60 * 24 * 30,
     secure: process.env.NODE_ENV === "production",
   });
+
+  await persistOAuthSession("google_ads", session);
 
   return redirectToConfig({ ga: "connected" });
 }

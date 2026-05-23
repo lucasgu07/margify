@@ -25,3 +25,22 @@ export function getMercadoLibreAuthBase(): string {
 
 export const ML_TOKEN_COOKIE = "ml_oauth_session";
 export const ML_STATE_COOKIE = "ml_oauth_state";
+
+export type MlSession = {
+  access_token: string;
+  refresh_token?: string | null;
+  user_id?: number | null;
+  expires_in?: number | null;
+  obtained_at?: number;
+};
+
+export function parseMlSession(raw: string | undefined | null): MlSession | null {
+  if (!raw) return null;
+  try {
+    const s = JSON.parse(raw) as MlSession;
+    if (!s.access_token) return null;
+    return s;
+  } catch {
+    return null;
+  }
+}

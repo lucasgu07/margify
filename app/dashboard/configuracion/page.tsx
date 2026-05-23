@@ -14,8 +14,11 @@ import { ShopifyIntegrationCard } from "@/components/dashboard/ShopifyIntegratio
 import { TiendanubeIntegrationCard } from "@/components/dashboard/TiendanubeIntegrationCard";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
 import type { IntegrationBrandId } from "@/lib/integration-brands";
+import { daysUntil } from "@/lib/dodo-billing";
+import { planDisplayName } from "@/lib/plan-features";
 import { mockCostsConfig } from "@/lib/mock-data";
 import { createClient } from "@/lib/supabase";
+import Link from "next/link";
 
 function IntegrationCard({
   brand,
@@ -52,7 +55,9 @@ function IntegrationCard({
 export default function ConfiguracionPage() {
   const identity = useDashboardIdentity();
   const isDemo = useDemoMode();
-  const { costsConfig, refreshBootstrap } = useDashboard();
+  const { costsConfig, refreshBootstrap, plan, billing } = useDashboard();
+  const [password, setPassword] = useState("");
+  const [deleting, setDeleting] = useState(false);
   const [name, setName] = useState(identity.full_name);
   const [email, setEmail] = useState(identity.email);
   const [costs, setCosts] = useState({
@@ -158,15 +163,43 @@ export default function ConfiguracionPage() {
           </div>
           <div className="md:col-span-2">
             <Label>Nueva contraseña</Label>
-            <Input type="password" placeholder="••••••••" autoComplete="new-password" />
+            <Input
+              type="password"
+              placeholder="••••••••"
+              autoComplete="new-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
           </div>
-          <div className="md:col-span-2">
+          <div className="md:col-span-2 flex flex-wrap gap-3">
+            <Button type="button" disabled={isDemo || savingAccount} onClick={() => void saveAccount()}>
+              {savingAccount ? "Guardando…" : "Guardar cuenta"}
+            </Button>
             <Button
               type="button"
-              disabled={isDemo || savingAccount}
-              onClick={() => void saveAccount()}
+              variant="secondary"
+              disabled={isDemo || savingAccount || !password.trim()}
+              onClick={async () => {
+                if (isDemo || !password.trim()) return;
+                setSavingAccount(true);
+                setSaveErr(null);
+                const supabase = createClient();
+                if (!supabase) {
+                  setSaveErr("Supabase no configurado.");
+                  setSavingAccount(false);
+                  return;
+                }
+                const { error } = await supabase.auth.updateUser({ password: password.trim() });
+                setSavingAccount(false);
+                if (error) {
+                  setSaveErr(error.message);
+                  return;
+                }
+                setPassword("");
+                setSaveMsg("Contraseña actualizada.");
+              }}
             >
-              {savingAccount ? "Guardando…" : "Guardar cuenta"}
+              Cambiar contraseña
             </Button>
           </div>
         </Card>
@@ -272,11 +305,21 @@ export default function ConfiguracionPage() {
       <section className="mt-10 space-y-4">
         <h2 className="text-lg font-semibold text-margify-cyan">Plan actual</h2>
         <Card glass>
-          <CardTitle>Pro — USD 26 / mes</CardTitle>
-          <CardDescription>Renovación estimada: 12/05/2026.</CardDescription>
-          <Button type="button" className="mt-4" variant="secondary">
-            Cambiar plan
-          </Button>
+          <CardTitle>{planDisplayName(plan)}</CardTitle>
+          <CardDescription>
+            {billing.billing_status === "trialing" && billing.trial_ends_at
+              ? `Periodo de prueba — termina en ${daysUntil(billing.trial_ends_at) ?? "?"} días.`
+              : billing.billing_status === "active"
+                ? "Suscripción activa."
+                : plan === "starter"
+                  ? "Plan gratuito (30 órdenes/mes, historial 1 mes)."
+                  : "Estado de facturación pendiente de sincronizar."}
+          </CardDescription>
+          <Link href="/#planes" className="mt-4 inline-block">
+            <Button type="button" variant="secondary">
+              Cambiar plan
+            </Button>
+          </Link>
         </Card>
       </section>
 
@@ -287,8 +330,29 @@ export default function ConfiguracionPage() {
           <CardDescription>
             Esta acción es irreversible. Vas a perder históricos, integraciones y alertas.
           </CardDescription>
-          <Button type="button" variant="danger" className="mt-4">
-            Eliminar cuenta
+          <Button
+            type="button"
+            variant="danger"
+            className="mt-4"
+            disabled={isDemo || deleting}
+            onClick={async () => {
+              if (isDemo || !window.confirm("¿Eliminar tu cuenta de forma permanente?")) return;
+              setDeleting(true);
+              try {
+                const res = await fetch("/api/account", { method: "DELETE" });
+                if (res.ok) {
+                  window.location.href = "/";
+                  return;
+                }
+                setSaveErr("No se pudo eliminar la cuenta.");
+              } catch {
+                setSaveErr("Error al eliminar la cuenta.");
+              } finally {
+                setDeleting(false);
+              }
+            }}
+          >
+            {deleting ? "Eliminando…" : "Eliminar cuenta"}
           </Button>
         </Card>
       </section>

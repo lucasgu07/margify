@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { buildAlertasAdvisorInsights } from "@/lib/ai-advisor-insights";
 import { AIAdvisor } from "@/components/dashboard/AIAdvisor";
+import { useDemoMode } from "@/components/dashboard/DemoModeContext";
 import { Button } from "@/components/ui/Button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
 import { DataTable, type Column } from "@/components/ui/Table";
@@ -10,7 +11,7 @@ import { useDashboardIdentity } from "@/components/dashboard/DemoModeContext";
 import { Header } from "@/components/ui/Header";
 import { Input, Label } from "@/components/ui/Input";
 import { mockAlertsHistory } from "@/lib/mock-data";
-import type { AlertChannel } from "@/types";
+import type { AlertChannel, AlertType } from "@/types";
 import { formatDate } from "@/lib/utils";
 
 type AlertRow = {
@@ -20,11 +21,21 @@ type AlertRow = {
   threshold: number;
   channel: AlertChannel;
   active: boolean;
+  alert_type: AlertType;
+};
+
+type HistoryRow = {
+  id: string;
+  alert_type: string;
+  message: string;
+  triggered_at: string;
+  read: boolean;
 };
 
 const defaults: AlertRow[] = [
   {
     id: "a1",
+    alert_type: "roas_drop",
     title: "ROAS real bajo",
     description: "Se dispara cuando el ROAS real cae por debajo del umbral.",
     threshold: 1.5,
@@ -33,41 +44,19 @@ const defaults: AlertRow[] = [
   },
   {
     id: "a2",
+    alert_type: "margin_drop",
     title: "Margen neto bajo",
     description: "Alerta si tu margen neto promedio cae por debajo del umbral.",
     threshold: 10,
-    channel: "whatsapp",
-    active: true,
-  },
-  {
-    id: "a3",
-    title: "Cashflow negativo proyectado",
-    description: "Si el cashflow proyectado es negativo en los próximos N días.",
-    threshold: 7,
-    channel: "both",
-    active: true,
-  },
-  {
-    id: "a4",
-    title: "Campaña sin conversiones",
-    description: "Campaña con gasto activo y sin conversiones verificadas por más de N días.",
-    threshold: 3,
     channel: "email",
     active: true,
   },
   {
-    id: "a5",
-    title: "Producto vendido sin ganancia",
-    description: "Detecta ventas con margen ≤ 0 en ventana móvil.",
-    threshold: 0,
-    channel: "both",
-    active: true,
-  },
-  {
-    id: "a6",
-    title: "Resumen semanal de rentabilidad",
-    description: "Envío programado con KPIs clave de la semana.",
-    threshold: 1,
+    id: "a3",
+    alert_type: "cashflow_negative",
+    title: "Cashflow negativo proyectado",
+    description: "Si el cashflow proyectado es negativo en los próximos N días.",
+    threshold: 7,
     channel: "email",
     active: true,
   },
@@ -75,12 +64,59 @@ const defaults: AlertRow[] = [
 
 export default function AlertasPage() {
   const { full_name } = useDashboardIdentity();
+  const isDemo = useDemoMode();
   const advisorInsights = useMemo(() => buildAlertasAdvisorInsights(), []);
   const [rows, setRows] = useState(defaults);
-  const [wa, setWa] = useState("+5491122334455");
-  const [waConnected, setWaConnected] = useState(false);
+  const [history, setHistory] = useState<HistoryRow[]>([]);
+  const [wa, setWa] = useState("");
+  const [whatsappAllowed, setWhatsappAllowed] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [testingWa, setTestingWa] = useState(false);
+  const [saveMsg, setSaveMsg] = useState<string | null>(null);
 
-  const historyCols: Column<(typeof mockAlertsHistory)[number]>[] = [
+  const load = useCallback(async () => {
+    if (isDemo) return;
+    const res = await fetch("/api/alerts", { cache: "no-store" });
+    if (!res.ok) return;
+    const data = (await res.json()) as {
+      configs: AlertRow[];
+      history: HistoryRow[];
+      whatsappAllowed: boolean;
+    };
+    if (data.configs?.length) setRows(data.configs);
+    setHistory(data.history ?? []);
+    setWhatsappAllowed(Boolean(data.whatsappAllowed));
+  }, [isDemo]);
+
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  async function saveAlerts() {
+    if (isDemo) return;
+    setSaving(true);
+    setSaveMsg(null);
+    try {
+      const res = await fetch("/api/alerts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ configs: rows, whatsapp_number: wa }),
+      });
+      if (!res.ok) {
+        const err = (await res.json()) as { message?: string };
+        setSaveMsg(err.message ?? "No se pudieron guardar las alertas.");
+        return;
+      }
+      setSaveMsg("Alertas guardadas. Se evalúan cada hora automáticamente.");
+      await load();
+    } catch {
+      setSaveMsg("Error de red al guardar.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const historyCols: Column<HistoryRow>[] = [
     {
       key: "triggered_at",
       header: "Fecha",
@@ -97,10 +133,18 @@ export default function AlertasPage() {
     },
   ];
 
+  const displayHistory = isDemo ? mockAlertsHistory : history;
+
   return (
     <>
       <Header userName={full_name} showDateRange={false} />
       <h1 className="mb-6 text-2xl font-bold text-white">Alertas</h1>
+
+      {saveMsg ? (
+        <p className="mb-4 text-sm text-margify-cyan" role="status">
+          {saveMsg}
+        </p>
+      ) : null}
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-1 md:gap-4">
         {rows.map((r) => (
@@ -113,6 +157,7 @@ export default function AlertasPage() {
                 <input
                   type="checkbox"
                   checked={r.active}
+                  disabled={isDemo}
                   onChange={(e) =>
                     setRows((x) =>
                       x.map((row) => (row.id === r.id ? { ...row, active: e.target.checked } : row))
@@ -134,6 +179,7 @@ export default function AlertasPage() {
                     className="w-28 max-md:w-full"
                     type="number"
                     step={0.1}
+                    disabled={isDemo}
                     value={r.threshold}
                     onChange={(e) =>
                       setRows((x) =>
@@ -149,6 +195,7 @@ export default function AlertasPage() {
                   <select
                     className="mt-1.5 w-40 max-md:w-full rounded-control border border-margify-border bg-margify-cardAlt px-2 py-2 text-sm text-white"
                     value={r.channel}
+                    disabled={isDemo}
                     onChange={(e) =>
                       setRows((x) =>
                         x.map((row) =>
@@ -160,8 +207,12 @@ export default function AlertasPage() {
                     }
                   >
                     <option value="email">Email</option>
-                    <option value="whatsapp">WhatsApp</option>
-                    <option value="both">Ambos</option>
+                    <option value="whatsapp" disabled={!whatsappAllowed}>
+                      WhatsApp{whatsappAllowed ? "" : " (Pro+)"}
+                    </option>
+                    <option value="both" disabled={!whatsappAllowed}>
+                      Ambos{whatsappAllowed ? "" : " (Pro+)"}
+                    </option>
                   </select>
                 </div>
               </div>
@@ -170,29 +221,68 @@ export default function AlertasPage() {
         ))}
       </div>
 
+      {!isDemo ? (
+        <Button type="button" className="mt-6" disabled={saving} onClick={() => void saveAlerts()}>
+          {saving ? "Guardando…" : "Guardar alertas"}
+        </Button>
+      ) : null}
+
       <Card glass className="mt-10">
         <CardTitle>WhatsApp</CardTitle>
-        <CardDescription>Conectá tu número para recibir alertas críticas al instante.</CardDescription>
+        <CardDescription>
+          Número para alertas críticas{whatsappAllowed ? "" : " (requiere plan Pro o Scale)"}.
+        </CardDescription>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end">
           <div className="flex-1">
             <Label>Número con código de país</Label>
-            <Input value={wa} onChange={(e) => setWa(e.target.value)} placeholder="+54…" />
+            <Input
+              value={wa}
+              disabled={isDemo || !whatsappAllowed}
+              onChange={(e) => setWa(e.target.value)}
+              placeholder="+54911…"
+            />
           </div>
-          <Button type="button" onClick={() => setWaConnected(true)}>
-            Verificar número
-          </Button>
+          {whatsappAllowed && !isDemo ? (
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={testingWa || !wa.trim()}
+              onClick={async () => {
+                setTestingWa(true);
+                setSaveMsg(null);
+                try {
+                  const saveRes = await fetch("/api/alerts", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ configs: rows, whatsapp_number: wa }),
+                  });
+                  if (!saveRes.ok) {
+                    setSaveMsg("Guardá el número antes de probar.");
+                    return;
+                  }
+                  const res = await fetch("/api/alerts/test-whatsapp", { method: "POST" });
+                  const data = (await res.json()) as { message?: string };
+                  if (!res.ok) {
+                    setSaveMsg(data.message ?? "No se pudo enviar la prueba.");
+                    return;
+                  }
+                  setSaveMsg("WhatsApp de prueba enviado. Revisá tu celular.");
+                } catch {
+                  setSaveMsg("Error al enviar prueba de WhatsApp.");
+                } finally {
+                  setTestingWa(false);
+                }
+              }}
+            >
+              {testingWa ? "Enviando…" : "Enviar prueba"}
+            </Button>
+          ) : null}
         </div>
-        <p className="mt-3 text-sm text-margify-muted">
-          Estado:{" "}
-          <span className={waConnected ? "text-margify-cyan" : "text-margify-negative"}>
-            {waConnected ? "Conectado" : "No conectado"}
-          </span>
-        </p>
       </Card>
 
       <div className="mt-10">
         <h2 className="mb-4 text-lg font-semibold text-white">Historial reciente</h2>
-        <DataTable columns={historyCols} data={mockAlertsHistory} pageSize={5} />
+        <DataTable columns={historyCols} data={displayHistory} pageSize={5} />
       </div>
 
       <div className="mt-10">

@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import type { UserBillingMeta } from "@/lib/dodo-billing";
+import type { AiUsageStatus } from "@/lib/server/ai-usage";
 import type {
   AdsPlatformScope,
   Campaign,
@@ -65,6 +66,7 @@ type Ctx = {
   starterOrdersThisMonth: number;
   plan: Plan;
   billing: UserBillingMeta;
+  aiUsage: AiUsageStatus | null;
   costsConfig: CostsConfig;
   loadingLive: boolean;
   liveReady: boolean;
@@ -89,6 +91,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
   const [liveStores, setLiveStores] = useState<ConnectedStoreOption[]>([]);
   const [plan, setPlan] = useState<Plan>(mockUser.plan);
   const [billing, setBilling] = useState<UserBillingMeta>({});
+  const [aiUsage, setAiUsage] = useState<AiUsageStatus | null>(null);
   const [costsConfig, setCostsConfig] = useState<CostsConfig>(mockCostsConfig);
   const [loadingLive, setLoadingLive] = useState(false);
   const [liveReady, setLiveReady] = useState(false);
@@ -108,6 +111,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
         connectedStores: ConnectedStoreOption[];
         plan: Plan;
         billing?: UserBillingMeta;
+        aiUsage?: AiUsageStatus;
         costsConfig: CostsConfig;
       };
       setLiveOrders(data.orders ?? []);
@@ -115,6 +119,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       setLiveStores(data.connectedStores ?? []);
       setPlan(data.plan ?? "starter");
       setBilling(data.billing ?? {});
+      setAiUsage(data.aiUsage ?? null);
       setCostsConfig(data.costsConfig ?? mockCostsConfig);
       setLiveReady(true);
     } catch {
@@ -193,6 +198,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
       starterOrdersThisMonth,
       plan: effectivePlan,
       billing: isDemo ? {} : billing,
+      aiUsage: isDemo ? null : aiUsage,
       costsConfig,
       loadingLive,
       liveReady,
@@ -209,6 +215,7 @@ export function DashboardProvider({ children }: { children: React.ReactNode }) {
     allCampaigns,
     effectivePlan,
     billing,
+    aiUsage,
     costsConfig,
     loadingLive,
     liveReady,

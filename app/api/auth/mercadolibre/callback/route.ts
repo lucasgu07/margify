@@ -6,6 +6,7 @@ import {
   ML_STATE_COOKIE,
   ML_TOKEN_COOKIE,
 } from "@/lib/mercadolibre-auth";
+import { persistOAuthSession } from "@/lib/server/persist-oauth";
 
 function redirectToConfig(query: Record<string, string>) {
   const u = new URL(`${getAppOrigin()}/dashboard/configuracion`);
@@ -94,6 +95,8 @@ export async function GET(request: NextRequest) {
     path: "/",
     maxAge: 60 * 60 * 24 * 30,
   });
+
+  await persistOAuthSession("mercadolibre", JSON.parse(payload) as Record<string, unknown>);
 
   return redirectToConfig({ ml: "connected" });
 }

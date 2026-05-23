@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import type { CostsConfig } from "@/types";
 import { mockCostsConfig } from "@/lib/mock-data";
+import { readCostsFromDb, writeCostsToDb } from "@/lib/server/user-costs-db";
 
 export const MARGIFY_COSTS_COOKIE = "margify_user_costs";
 
@@ -33,6 +34,11 @@ export function defaultCostsInput(): CostsConfigInput {
 }
 
 export function readCostsForUser(userId: string): CostsConfigInput {
+  return readCostsForUserSync(userId);
+}
+
+/** Sync read from cookie only (legacy). Prefer `readCostsForUserAsync`. */
+export function readCostsForUserSync(userId: string): CostsConfigInput {
   const store = parseStore(cookies().get(MARGIFY_COSTS_COOKIE)?.value);
   const row = store[userId];
   if (!row) return defaultCostsInput();
@@ -45,6 +51,13 @@ export function readCostsForUser(userId: string): CostsConfigInput {
   };
 }
 
+/** Lee costos: Supabase primero, cookie como respaldo. */
+export async function readCostsForUserAsync(userId: string): Promise<CostsConfigInput> {
+  const fromDb = await readCostsFromDb(userId);
+  if (fromDb) return fromDb;
+  return readCostsForUserSync(userId);
+}
+
 export function toCostsConfig(userId: string, input: CostsConfigInput): CostsConfig {
   return {
     id: `costs-${userId}`,
@@ -54,13 +67,14 @@ export function toCostsConfig(userId: string, input: CostsConfigInput): CostsCon
 }
 
 export function writeCostsForUser(userId: string, input: CostsConfigInput): void {
-  const store = parseStore(cookies().get(MARGIFY_COSTS_COOKIE)?.value);
-  store[userId] = {
+  const normalized = {
     product_cost_percent: Math.min(100, Math.max(0, input.product_cost_percent)),
     payment_commission_percent: Math.min(100, Math.max(0, input.payment_commission_percent)),
     shipping_cost_fixed: Math.max(0, input.shipping_cost_fixed),
     agency_fee_percent: Math.min(100, Math.max(0, input.agency_fee_percent)),
   };
+  const store = parseStore(cookies().get(MARGIFY_COSTS_COOKIE)?.value);
+  store[userId] = normalized;
   cookies().set(MARGIFY_COSTS_COOKIE, JSON.stringify(store), {
     httpOnly: true,
     sameSite: "lax",
@@ -68,4 +82,5 @@ export function writeCostsForUser(userId: string, input: CostsConfigInput): void
     maxAge: 60 * 60 * 24 * 400,
     secure: process.env.NODE_ENV === "production",
   });
+  void writeCostsToDb(userId, normalized);
 }

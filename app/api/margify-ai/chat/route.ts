@@ -5,6 +5,8 @@ import {
   buildMargifyAIContextBlock,
   buildMargifyAIContextForUser,
 } from "@/lib/margify-ai/build-context";
+import { canUseMargifyAI } from "@/lib/plan-features";
+import { getAiUsageStatus, incrementAiUsage } from "@/lib/server/ai-usage";
 import { getAuthUser } from "@/lib/server/auth-user";
 import { MARGIFY_AI_SYSTEM_PROMPT } from "@/lib/margify-ai/system-prompt";
 import type { MargifyAIApiMessage } from "@/lib/margify-ai/types";
@@ -74,6 +76,26 @@ export async function POST(req: Request) {
   }
 
   const authUser = await getAuthUser();
+  if (authUser && !canUseMargifyAI(authUser.plan)) {
+    return NextResponse.json(
+      {
+        error: "Margify AI está disponible en plan Pro o Scale.",
+      },
+      { status: 403 }
+    );
+  }
+  if (authUser) {
+    const usage = await getAiUsageStatus(authUser.id, authUser.plan);
+    if (!usage.allowed) {
+      return NextResponse.json(
+        {
+          error: `Alcanzaste el límite de ${usage.limit} consultas este mes. Mejorá a Scale para consultas ilimitadas.`,
+        },
+        { status: 429 }
+      );
+    }
+  }
+
   const contextBlock = authUser
     ? await buildMargifyAIContextForUser(authUser.id, authUser.plan)
     : buildMargifyAIContextBlock();
@@ -102,6 +124,10 @@ ${contextBlock}`;
     const text = completion.choices[0]?.message?.content?.trim();
     if (!text) {
       return NextResponse.json({ error: "Respuesta vacía del modelo" }, { status: 502 });
+    }
+
+    if (authUser) {
+      await incrementAiUsage(authUser.id);
     }
 
     return NextResponse.json({ message: text });

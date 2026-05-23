@@ -4,25 +4,30 @@ import {
   metaRowsToCampaigns,
 } from "@/lib/integrations/campaigns-from-ads";
 import { fetchGoogleCampaigns } from "@/lib/integrations/google-campaigns";
+import { fetchMercadoLibreOrders } from "@/lib/integrations/mercadolibre-orders";
 import { fetchMetaCampaigns } from "@/lib/integrations/meta-campaigns";
 import {
+  mercadolibreOrdersToMargify,
   shopifyOrdersToMargify,
   tiendanubeOrdersToMargify,
 } from "@/lib/integrations/normalize-orders";
 import { fetchShopifyOrders } from "@/lib/integrations/shopify-orders";
 import { fetchTiendanubeOrders } from "@/lib/integrations/tiendanube-orders";
-import { GOOGLE_ADS_COOKIE, parseGoogleAdsSession } from "@/lib/google-ads";
-import { META_COOKIE, parseMetaSession } from "@/lib/meta-auth";
 import {
-  readCostsForUser,
+  resolveGoogleAdsSession,
+  resolveMetaSession,
+  resolveMlSession,
+  resolveShopifySession,
+  resolveTiendanubeSession,
+} from "@/lib/server/integration-sessions";
+import { historyDaysLimit } from "@/lib/plan-features";
+import { getAuthUser } from "@/lib/server/auth-user";
+import {
+  readCostsForUserAsync,
   type CostsConfigInput,
 } from "@/lib/server/user-costs";
-import {
-  SHOPIFY_SESSION_COOKIE,
-  parseShopifySession,
-} from "@/lib/shopify-auth";
-import { TN_SESSION_COOKIE, parseTiendanubeSession } from "@/lib/tiendanube-auth";
 import type { Campaign, Order, Store, StorePlatform } from "@/types";
+import type { Plan } from "@/types";
 
 export type LiveConnectedStore = {
   id: string;
@@ -39,6 +44,7 @@ export type LiveDashboardPayload = {
   integrations: {
     shopify: boolean;
     tiendanube: boolean;
+    mercadolibre: boolean;
     meta: boolean;
     google: boolean;
   };
@@ -62,20 +68,25 @@ function storeLabel(platform: StorePlatform, url: string): string {
 }
 
 /**
- * Agrega pedidos y campañas desde cookies OAuth del usuario (sin mocks).
+ * Agrega pedidos y campañas desde OAuth persistido (Supabase + cookies).
  */
 export async function loadLiveDashboardData(userId: string): Promise<LiveDashboardPayload> {
   const cookieStore = cookies();
-  const costsConfig = readCostsForUser(userId);
+  const authUser = await getAuthUser();
+  const plan: Plan = authUser?.id === userId ? authUser.plan : "starter";
+  const historyDays = historyDaysLimit(plan) ?? 90;
+
+  const costsConfig = await readCostsForUserAsync(userId);
 
   const orders: Order[] = [];
   const connectedStores: LiveConnectedStore[] = [];
   const campaigns: Campaign[] = [];
 
-  const shopifySession = parseShopifySession(cookieStore.get(SHOPIFY_SESSION_COOKIE)?.value);
-  const tnSession = parseTiendanubeSession(cookieStore.get(TN_SESSION_COOKIE)?.value);
-  const metaSession = parseMetaSession(cookieStore.get(META_COOKIE)?.value);
-  const googleSession = parseGoogleAdsSession(cookieStore.get(GOOGLE_ADS_COOKIE)?.value);
+  const shopifySession = await resolveShopifySession(userId, cookieStore);
+  const tnSession = await resolveTiendanubeSession(userId, cookieStore);
+  const mlSession = await resolveMlSession(userId, cookieStore);
+  const metaSession = await resolveMetaSession(userId, cookieStore);
+  const googleSession = await resolveGoogleAdsSession(userId, cookieStore);
 
   const storeTasks: Promise<void>[] = [];
 
@@ -90,7 +101,7 @@ export async function loadLiveDashboardData(userId: string): Promise<LiveDashboa
           platform: "shopify",
           store_url: url,
         });
-        const res = await fetchShopifyOrders(shopifySession);
+        const res = await fetchShopifyOrders(shopifySession, historyDays);
         if (res.ok) {
           orders.push(...shopifyOrdersToMargify(res.orders, storeId, costsConfig));
         }
@@ -113,6 +124,26 @@ export async function loadLiveDashboardData(userId: string): Promise<LiveDashboa
         const res = await fetchTiendanubeOrders(tnSession);
         if (res.ok) {
           orders.push(...tiendanubeOrdersToMargify(res.orders, storeId, costsConfig));
+        }
+      })()
+    );
+  }
+
+  if (mlSession) {
+    storeTasks.push(
+      (async () => {
+        const mlUserId = mlSession.user_id ?? "unknown";
+        const storeId = `store-ml-${mlUserId}`;
+        const url = `https://www.mercadolibre.com.ar/perfil/${mlUserId}`;
+        connectedStores.push({
+          id: storeId,
+          label: storeLabel("mercadolibre", url),
+          platform: "mercadolibre",
+          store_url: url,
+        });
+        const res = await fetchMercadoLibreOrders(mlSession, historyDays);
+        if (res.ok) {
+          orders.push(...mercadolibreOrdersToMargify(res.orders, storeId, costsConfig));
         }
       })()
     );
@@ -157,7 +188,6 @@ export async function loadLiveDashboardData(userId: string): Promise<LiveDashboa
 
   await Promise.all(adsTasks);
 
-  // Atribución simple de gasto ads a órdenes (proporcional al revenue del período)
   const totalAdSpend = campaigns.reduce((a, c) => a + c.spend, 0);
   const totalRevenue = orders.reduce((a, o) => a + o.revenue, 0);
   if (totalAdSpend > 0 && totalRevenue > 0) {
@@ -181,6 +211,7 @@ export async function loadLiveDashboardData(userId: string): Promise<LiveDashboa
     integrations: {
       shopify: Boolean(shopifySession),
       tiendanube: Boolean(tnSession),
+      mercadolibre: Boolean(mlSession),
       meta: Boolean(metaSession),
       google: Boolean(googleSession?.refresh_token),
     },

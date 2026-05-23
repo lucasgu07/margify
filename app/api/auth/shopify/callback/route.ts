@@ -11,6 +11,7 @@ import {
   verifyShopifyHmac,
   type ShopifySession,
 } from "@/lib/shopify-auth";
+import { persistOAuthSession } from "@/lib/server/persist-oauth";
 
 export const dynamic = "force-dynamic";
 
@@ -116,6 +117,8 @@ export async function GET(request: Request) {
     maxAge: 60 * 60 * 24 * 400,
     secure: process.env.NODE_ENV === "production",
   });
+
+  await persistOAuthSession("shopify", session as unknown as Record<string, unknown>);
 
   return back({ shopify: "connected" });
 }

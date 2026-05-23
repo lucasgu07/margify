@@ -1,6 +1,7 @@
 import type { CostsConfigInput } from "@/lib/server/user-costs";
 import type { ShopifyOrder } from "@/lib/shopify-auth";
 import type { TiendanubeOrder } from "@/lib/tiendanube-auth";
+import type { MlOrder } from "@/lib/integrations/mercadolibre-orders";
 import type { Order, OrderChannel } from "@/types";
 
 function applyCosts(revenue: number, costs: CostsConfigInput) {
@@ -78,4 +79,32 @@ export function tiendanubeOrdersToMargify(
         status: "completed",
       };
     });
+}
+
+export function mercadolibreOrdersToMargify(
+  orders: MlOrder[],
+  storeId: string,
+  costs: CostsConfigInput
+): Order[] {
+  return orders.map((o) => {
+    const revenue = o.total_amount;
+    const c = applyCosts(revenue, costs);
+    const lineItems = (o.order_items ?? []).map((li) => ({
+      title: li.item?.title ?? "Producto ML",
+      quantity: li.quantity,
+    }));
+    return {
+      id: `ml-${o.id}`,
+      store_id: storeId,
+      external_id: String(o.id),
+      date: o.date_created.slice(0, 10),
+      revenue,
+      product_name: lineItemLabel(lineItems, `Orden ML #${o.id}`),
+      product_cost: c.product_cost,
+      shipping_cost: c.shipping_cost,
+      payment_commission: c.payment_commission,
+      channel: "MercadoLibre" as OrderChannel,
+      status: "completed",
+    };
+  });
 }

@@ -1,12 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAuthUser } from "@/lib/server/auth-user";
-import {
-  defaultCostsInput,
-  readCostsForUser,
-  toCostsConfig,
-  writeCostsForUser,
-  type CostsConfigInput,
-} from "@/lib/server/user-costs";
+import { readCostsForUserAsync, toCostsConfig, writeCostsForUser, type CostsConfigInput } from "@/lib/server/user-costs";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,7 +10,7 @@ export async function GET() {
   if (!user) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
-  const input = readCostsForUser(user.id);
+  const input = await readCostsForUserAsync(user.id);
   return NextResponse.json({ costsConfig: toCostsConfig(user.id, input) });
 }
 
@@ -33,7 +27,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "invalid_body" }, { status: 400 });
   }
 
-  const current = readCostsForUser(user.id);
+  const current = await readCostsForUserAsync(user.id);
   const next: CostsConfigInput = {
     product_cost_percent: Number(body.product_cost_percent ?? current.product_cost_percent),
     payment_commission_percent: Number(

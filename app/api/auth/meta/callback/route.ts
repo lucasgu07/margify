@@ -10,6 +10,7 @@ import {
   type MetaAdAccount,
   type MetaSession,
 } from "@/lib/meta-auth";
+import { persistOAuthSession } from "@/lib/server/persist-oauth";
 
 function redirectToConfig(query: Record<string, string>) {
   const u = new URL(`${getAppOrigin()}/dashboard/configuracion`);
@@ -170,6 +171,8 @@ export async function GET(request: Request) {
     maxAge: 60 * 60 * 24 * 55,
     secure: process.env.NODE_ENV === "production",
   });
+
+  await persistOAuthSession("meta", session as unknown as Record<string, unknown>);
 
   return redirectToConfig({ meta: "connected" });
 }
