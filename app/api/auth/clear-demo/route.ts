@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-
-const DEMO_COOKIE = "margify_demo";
+import { DEMO_COOKIE } from "@/lib/demo-cookie";
 
 /**
  * Quita la cookie de modo demo tras login/registro para que el usuario real

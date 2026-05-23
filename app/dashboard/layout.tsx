@@ -4,6 +4,7 @@ import { DemoModeProvider } from "@/components/dashboard/DemoModeContext";
 import { DashboardStarfieldBackground } from "@/components/dashboard/DashboardStarfieldBackground";
 import { StarterPlanUsageGate } from "@/components/dashboard/StarterPlanUsageGate";
 import { Sidebar } from "@/components/ui/Sidebar";
+import { DEMO_COOKIE, isDemoCookieActive } from "@/lib/demo-cookie";
 import { DEMO_USER_LABEL } from "@/lib/demo-user";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { mockAlertsHistory } from "@/lib/mock-data";
@@ -15,12 +16,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const supabase = createServerSupabaseClient();
   const { data: authData } = supabase ? await supabase.auth.getUser() : { data: { user: null } };
   const user = authData.user;
+  const demoCookie = cookies().get(DEMO_COOKIE)?.value;
 
   /**
-   * Demo = sin sesión real: datos ficticios en dashboard (campañas, KPIs, etc.).
-   * La cookie `margify_demo` marca el ingreso por "Ver demo"; la UI demo aplica a todo visitante sin login.
+   * Demo = ingreso explícito desde la landing (`?demo=1` / cookie), sin sesión.
+   * Usuario registrado siempre ve datos reales (vacíos hasta conectar integraciones).
    */
-  const isDemo = !user;
+  const isDemo = !user && isDemoCookieActive(demoCookie);
 
   let full_name: string;
   let email: string;

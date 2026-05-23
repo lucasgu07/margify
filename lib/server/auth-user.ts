@@ -9,6 +9,7 @@ export type AuthUser = {
 };
 
 function mapPlan(raw: unknown): Plan {
+  if (raw === "free") return "starter";
   if (raw === "pro" || raw === "growth") return "growth";
   if (raw === "scale") return "scale";
   if (raw === "agency") return "agency";

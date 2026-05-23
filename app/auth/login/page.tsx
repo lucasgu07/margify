@@ -1,15 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
 import { AuthShell } from "@/components/auth/AuthShell";
 import { Button } from "@/components/ui/Button";
 import { Input, Label } from "@/components/ui/Input";
 import { createClient } from "@/lib/supabase";
 
-export default function LoginPage() {
+function safeAuthRedirect(next: string | null): string {
+  if (!next || !next.startsWith("/")) return "/dashboard";
+  if (next.startsWith("/dashboard") || next.startsWith("/onboarding")) return next;
+  return "/dashboard";
+}
+
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -36,7 +44,7 @@ export default function LoginPage() {
     } catch {
       /* no bloquear login */
     }
-    router.push("/dashboard");
+    router.push(safeAuthRedirect(next));
     router.refresh();
   }
 
@@ -90,5 +98,22 @@ export default function LoginPage() {
         </p>
       </div>
     </AuthShell>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <AuthShell quote="Tu negocio no debería depender de un ROAS que no refleja la realidad de tu bolsillo. Margify te muestra la verdad.">
+          <div className="rounded-card border border-margify-border bg-margify-card p-6 md:p-8 animate-pulse">
+            <div className="h-8 w-48 rounded bg-margify-border" />
+            <div className="mt-8 h-40 rounded bg-margify-border/60" />
+          </div>
+        </AuthShell>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }
