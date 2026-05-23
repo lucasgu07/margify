@@ -4,9 +4,11 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState } from "react";
 import { AuthShell } from "@/components/auth/AuthShell";
+import { ConfirmEmailPanel } from "@/components/auth/ConfirmEmailPanel";
 import { Button } from "@/components/ui/Button";
 import { Input, Label } from "@/components/ui/Input";
 import { createClient } from "@/lib/supabase";
+import { isEmailNotConfirmedError, translateSupabaseAuthError } from "@/lib/supabase-auth-errors";
 
 function safeAuthRedirect(next: string | null): string {
   if (!next || !next.startsWith("/")) return "/dashboard";
@@ -18,14 +20,25 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = searchParams.get("next");
+  const callbackError = searchParams.get("error");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(() => {
+    if (callbackError === "auth_callback") {
+      return "No pudimos validar el link de confirmación. Probá reenviar el email o iniciá sesión.";
+    }
+    if (callbackError === "supabase_config") {
+      return "Falta configurar Supabase (variables NEXT_PUBLIC_SUPABASE_*).";
+    }
+    return null;
+  });
+  const [needsEmailConfirm, setNeedsEmailConfirm] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    setNeedsEmailConfirm(false);
     setLoading(true);
     const supabase = createClient();
     if (!supabase) {
@@ -36,7 +49,10 @@ function LoginForm() {
     const { error: err } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (err) {
-      setError(err.message);
+      setError(translateSupabaseAuthError(err));
+      if (isEmailNotConfirmedError(err)) {
+        setNeedsEmailConfirm(true);
+      }
       return;
     }
     try {
@@ -46,6 +62,33 @@ function LoginForm() {
     }
     router.push(safeAuthRedirect(next));
     router.refresh();
+  }
+
+  if (needsEmailConfirm && email.trim()) {
+    return (
+      <AuthShell quote="Tu negocio no debería depender de un ROAS que no refleja la realidad de tu bolsillo. Margify te muestra la verdad.">
+        <div className="rounded-card border border-margify-border bg-margify-card p-6 md:p-8">
+          {error ? (
+            <p className="mb-4 rounded-control border border-margify-negative/40 bg-margify-negative/10 px-3 py-2 text-sm text-margify-negative">
+              {error}
+            </p>
+          ) : null}
+          <ConfirmEmailPanel
+            email={email.trim()}
+            next={safeAuthRedirect(next)}
+            showInitialHint={false}
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            className="mt-4 w-full"
+            onClick={() => setNeedsEmailConfirm(false)}
+          >
+            Volver al login
+          </Button>
+        </div>
+      </AuthShell>
+    );
   }
 
   return (
