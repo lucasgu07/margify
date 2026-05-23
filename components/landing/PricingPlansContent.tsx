@@ -13,6 +13,8 @@ import {
   landingGlassPricingToggle,
 } from "@/lib/landing-glass-styles";
 import { multiTouchClusterClasses } from "@/lib/multi-touch-cluster";
+import { startDodoCheckout } from "@/lib/dodo-checkout";
+import { getProDodoProductId } from "@/lib/dodo-products";
 import { getWhatsAppChatUrl } from "@/lib/whatsapp";
 
 /** Pro: anual USD/mes (principal) vs mensual de referencia. */
@@ -159,8 +161,21 @@ type PricingPlansContentProps = {
  */
 export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansContentProps) {
   const [annual, setAnnual] = useState(true);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const isOnboarding = variant === "onboarding";
   const glassCard = !isOnboarding ? cn(landingGlassPanel, landingGlassPanelHover) : undefined;
+
+  async function handleProCheckout() {
+    setCheckoutError(null);
+    setCheckoutLoading(true);
+    try {
+      await startDodoCheckout(getProDodoProductId(annual));
+    } catch {
+      setCheckoutError("No pudimos abrir el checkout. Intentá de nuevo en un momento.");
+      setCheckoutLoading(false);
+    }
+  }
 
   function cta(
     plan: SelectedPlanId,
@@ -194,6 +209,32 @@ export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansConte
       <Link href={href} className={classes}>
         {label}
       </Link>
+    );
+  }
+
+  function proCheckoutCta() {
+    const classes = buttonClassName(
+      "primary",
+      "mt-auto w-full px-4 py-2.5 text-sm font-semibold max-md:mt-3 disabled:cursor-not-allowed disabled:opacity-60"
+    );
+
+    if (isOnboarding && onSelectPlan) {
+      return (
+        <button type="button" className={classes} onClick={() => onSelectPlan({ plan: "pro", annual })}>
+          Probar gratis 7 días
+        </button>
+      );
+    }
+
+    return (
+      <button
+        type="button"
+        className={classes}
+        disabled={checkoutLoading}
+        onClick={() => void handleProCheckout()}
+      >
+        {checkoutLoading ? "Abriendo checkout…" : "Probar gratis 7 días"}
+      </button>
     );
   }
 
@@ -276,7 +317,12 @@ export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansConte
             featured
           />
           <FeatureList items={proFeatures} emphasisFirst className={paidFeaturesClass} />
-          {cta("pro", "Probar gratis 7 días", "primary", "/auth/register", true)}
+          {proCheckoutCta()}
+          {checkoutError ? (
+            <p className="mt-2 text-center text-xs text-red-400" role="alert">
+              {checkoutError}
+            </p>
+          ) : null}
         </Card>
 
         <Card
