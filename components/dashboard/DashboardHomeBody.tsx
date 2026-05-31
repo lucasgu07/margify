@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { BarChart3, DollarSign, Package, Percent, Receipt, ShoppingBag, Target, Wallet } from "lucide-react";
-import { AIAdvisor } from "@/components/dashboard/AIAdvisor";
+import { AIAdvisorPanel } from "@/components/dashboard/AIAdvisorPanel";
 import { useDashboard } from "@/components/dashboard/DashboardContext";
 import { buildDashboardAdvisorInsights } from "@/lib/ai-advisor-insights";
 import { OrdersTable } from "@/components/dashboard/OrdersTable";
@@ -20,6 +20,7 @@ export function DashboardHomeBody({ variant = "default" }: { variant?: "default"
     storeScope,
     rangeDisplayLabel,
     allCampaigns,
+    customRange,
   } = useDashboard();
   const roasScope = storeScope === "all" ? null : storeScope;
   const m = getDashboardMetrics(filteredOrders, roasScope, allCampaigns);
@@ -137,7 +138,13 @@ export function DashboardHomeBody({ variant = "default" }: { variant?: "default"
               <h2 className="mb-4 text-lg font-semibold text-white">Órdenes recientes</h2>
               <OrdersTable orders={filteredOrders} />
             </div>
-            <AIAdvisor insights={advisorInsights} />
+            <AIAdvisorPanel
+              page="dashboard"
+              fallbackInsights={advisorInsights}
+              storeScope={storeScope}
+              dateRange={dateRange}
+              customRange={customRange}
+            />
           </>
         ) : null}
       </div>

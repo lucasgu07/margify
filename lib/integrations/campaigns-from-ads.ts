@@ -1,5 +1,6 @@
 import type { MetaCampaignRow } from "@/lib/meta-auth";
 import type { GoogleAdsCampaignRow } from "@/lib/google-ads";
+import type { TikTokCampaignRow } from "@/lib/tiktok-auth";
 import type { AdsPlatformScope, Campaign } from "@/types";
 
 const DEFAULT_STORE = "store-ads-all";
@@ -50,6 +51,30 @@ export function googleRowsToCampaigns(
       roas_platform: spend > 0 && r.conversions > 0 ? attributed / spend : 0,
       roas_real: spend > 0 && r.conversions > 0 ? attributed / spend : 0,
       status: googleStatusToCampaign(r.status),
+      date: today,
+      conversions: Math.round(r.conversions),
+    };
+  });
+}
+
+function tikTokStatusToCampaign(s: TikTokCampaignRow["status"]): Campaign["status"] {
+  return s === "ENABLE" ? "active" : "paused";
+}
+
+export function tikTokRowsToCampaigns(rows: TikTokCampaignRow[], storeId = DEFAULT_STORE): Campaign[] {
+  const today = new Date().toISOString().slice(0, 10);
+  return rows.map((r) => {
+    const attributed = r.conversion_value;
+    return {
+      id: `tiktok-${r.id}`,
+      store_id: storeId,
+      platform: "tiktok",
+      campaign_name: r.name,
+      spend: r.spend,
+      attributed_revenue: attributed,
+      roas_platform: r.roas,
+      roas_real: r.spend > 0 ? attributed / r.spend : 0,
+      status: tikTokStatusToCampaign(r.status),
       date: today,
       conversions: Math.round(r.conversions),
     };

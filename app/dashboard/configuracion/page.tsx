@@ -12,10 +12,11 @@ import { MercadoLibreIntegrationCard } from "@/components/dashboard/MercadoLibre
 import { MetaIntegrationCard } from "@/components/dashboard/MetaIntegrationCard";
 import { ShopifyIntegrationCard } from "@/components/dashboard/ShopifyIntegrationCard";
 import { TiendanubeIntegrationCard } from "@/components/dashboard/TiendanubeIntegrationCard";
+import { TikTokIntegrationCard } from "@/components/dashboard/TikTokIntegrationCard";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
 import type { IntegrationBrandId } from "@/lib/integration-brands";
 import { daysUntil } from "@/lib/dodo-billing";
-import { planDisplayName } from "@/lib/plan-features";
+import { canUseApiAccess, planDisplayName } from "@/lib/plan-features";
 import { mockCostsConfig } from "@/lib/mock-data";
 import { createClient } from "@/lib/supabase";
 import Link from "next/link";
@@ -58,6 +59,8 @@ export default function ConfiguracionPage() {
   const { costsConfig, refreshBootstrap, plan, billing } = useDashboard();
   const [password, setPassword] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const [apiKeyMsg, setApiKeyMsg] = useState<string | null>(null);
+  const [generatingKey, setGeneratingKey] = useState(false);
   const [name, setName] = useState(identity.full_name);
   const [email, setEmail] = useState(identity.email);
   const [costs, setCosts] = useState({
@@ -252,7 +255,9 @@ export default function ConfiguracionPage() {
         >
           <GoogleAdsIntegrationCard />
         </Suspense>
-        <IntegrationCard brand="tiktok" name="TikTok Ads" status="Desconectada" soon />
+        <Suspense fallback={<Card glass className="p-4 text-sm text-margify-muted">Cargando TikTok…</Card>}>
+          <TikTokIntegrationCard />
+        </Suspense>
       </section>
 
       <section className="mt-10 space-y-4">
@@ -299,6 +304,51 @@ export default function ConfiguracionPage() {
               {savingCosts ? "Guardando…" : "Guardar cambios"}
             </Button>
           </div>
+        </Card>
+      </section>
+
+      <section className="mt-10 space-y-4">
+        <h2 className="text-lg font-semibold text-margify-cyan">API (plan Pro+)</h2>
+        <Card glass>
+          <CardTitle>Clave de API</CardTitle>
+          <CardDescription>
+            Accedé a métricas con GET /api/v1/metrics y Authorization: Bearer mfy_...
+          </CardDescription>
+          {apiKeyMsg ? (
+            <p className="mt-3 break-all text-sm text-margify-cyan" role="status">
+              {apiKeyMsg}
+            </p>
+          ) : null}
+          <Button
+            type="button"
+            className="mt-4"
+            variant="secondary"
+            disabled={isDemo || generatingKey || !canUseApiAccess(plan)}
+            onClick={async () => {
+              setGeneratingKey(true);
+              setApiKeyMsg(null);
+              try {
+                const res = await fetch("/api/account/api-key", { method: "POST" });
+                const data = (await res.json()) as { api_key?: string; message?: string; error?: string };
+                if (!res.ok) {
+                  setApiKeyMsg(data.message ?? "No se pudo generar la clave.");
+                  return;
+                }
+                setApiKeyMsg(
+                  `Clave (copiala ahora, no se vuelve a mostrar): ${data.api_key ?? ""}`
+                );
+              } catch {
+                setApiKeyMsg("Error de red.");
+              } finally {
+                setGeneratingKey(false);
+              }
+            }}
+          >
+            {generatingKey ? "Generando…" : "Generar clave API"}
+          </Button>
+          {!canUseApiAccess(plan) && !isDemo ? (
+            <p className="mt-2 text-xs text-margify-muted">Disponible en plan Pro o Scale.</p>
+          ) : null}
         </Card>
       </section>
 

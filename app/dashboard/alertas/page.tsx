@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { buildAlertasAdvisorInsights } from "@/lib/ai-advisor-insights";
-import { AIAdvisor } from "@/components/dashboard/AIAdvisor";
+import { AIAdvisorPanel } from "@/components/dashboard/AIAdvisorPanel";
 import { useDemoMode } from "@/components/dashboard/DemoModeContext";
 import { Button } from "@/components/ui/Button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
@@ -57,6 +57,33 @@ const defaults: AlertRow[] = [
     title: "Cashflow negativo proyectado",
     description: "Si el cashflow proyectado es negativo en los próximos N días.",
     threshold: 7,
+    channel: "email",
+    active: true,
+  },
+  {
+    id: "a4",
+    alert_type: "campaign_no_conversions",
+    title: "Campaña sin conversiones",
+    description: "Campaña con gasto activo y sin conversiones verificadas.",
+    threshold: 3,
+    channel: "email",
+    active: true,
+  },
+  {
+    id: "a5",
+    alert_type: "product_no_profit",
+    title: "Producto vendido sin ganancia",
+    description: "Detecta ventas con margen ≤ 0.",
+    threshold: 0,
+    channel: "email",
+    active: true,
+  },
+  {
+    id: "a6",
+    alert_type: "weekly_summary",
+    title: "Resumen semanal de rentabilidad",
+    description: "Envío programado con KPIs clave (lunes).",
+    threshold: 1,
     channel: "email",
     active: true,
   },
@@ -286,7 +313,7 @@ export default function AlertasPage() {
       </div>
 
       <div className="mt-10">
-        <AIAdvisor insights={advisorInsights} />
+        <AIAdvisorPanel page="alertas" fallbackInsights={advisorInsights} />
       </div>
     </>
   );

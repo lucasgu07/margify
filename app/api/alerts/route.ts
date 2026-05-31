@@ -51,6 +51,33 @@ function defaultConfigs(): AlertPayload[] {
       channel: "email",
       active: true,
     },
+    {
+      id: "a4",
+      alert_type: "campaign_no_conversions",
+      title: "Campaña sin conversiones",
+      description: "Campaña con gasto activo y sin conversiones verificadas.",
+      threshold: 3,
+      channel: "email",
+      active: true,
+    },
+    {
+      id: "a5",
+      alert_type: "product_no_profit",
+      title: "Producto vendido sin ganancia",
+      description: "Detecta ventas con margen ≤ 0.",
+      threshold: 0,
+      channel: "email",
+      active: true,
+    },
+    {
+      id: "a6",
+      alert_type: "weekly_summary",
+      title: "Resumen semanal de rentabilidad",
+      description: "Envío programado con KPIs clave (lunes).",
+      threshold: 1,
+      channel: "email",
+      active: true,
+    },
   ];
 }
 

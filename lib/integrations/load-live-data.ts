@@ -2,10 +2,12 @@ import { cookies } from "next/headers";
 import {
   googleRowsToCampaigns,
   metaRowsToCampaigns,
+  tikTokRowsToCampaigns,
 } from "@/lib/integrations/campaigns-from-ads";
 import { fetchGoogleCampaigns } from "@/lib/integrations/google-campaigns";
 import { fetchMercadoLibreOrders } from "@/lib/integrations/mercadolibre-orders";
 import { fetchMetaCampaigns } from "@/lib/integrations/meta-campaigns";
+import { fetchTikTokCampaigns } from "@/lib/integrations/tiktok-campaigns";
 import {
   mercadolibreOrdersToMargify,
   shopifyOrdersToMargify,
@@ -19,6 +21,7 @@ import {
   resolveMlSession,
   resolveShopifySession,
   resolveTiendanubeSession,
+  resolveTikTokSession,
 } from "@/lib/server/integration-sessions";
 import { historyDaysLimit } from "@/lib/plan-features";
 import { getAuthUser } from "@/lib/server/auth-user";
@@ -47,6 +50,7 @@ export type LiveDashboardPayload = {
     mercadolibre: boolean;
     meta: boolean;
     google: boolean;
+    tiktok: boolean;
   };
 };
 
@@ -87,6 +91,7 @@ export async function loadLiveDashboardData(userId: string): Promise<LiveDashboa
   const mlSession = await resolveMlSession(userId, cookieStore);
   const metaSession = await resolveMetaSession(userId, cookieStore);
   const googleSession = await resolveGoogleAdsSession(userId, cookieStore);
+  const tiktokSession = await resolveTikTokSession(userId, cookieStore);
 
   const storeTasks: Promise<void>[] = [];
 
@@ -186,6 +191,23 @@ export async function loadLiveDashboardData(userId: string): Promise<LiveDashboa
     );
   }
 
+  if (tiktokSession) {
+    adsTasks.push(
+      (async () => {
+        const res = await fetchTikTokCampaigns(tiktokSession, historyDays);
+        if (res.ok) {
+          campaigns.push(
+            ...tikTokRowsToCampaigns(res.rows, adsStoreId).map((c) => ({
+              ...c,
+              attributed_revenue: (c.conversions ?? 0) * aov,
+              roas_real: c.spend > 0 ? ((c.conversions ?? 0) * aov) / c.spend : 0,
+            }))
+          );
+        }
+      })()
+    );
+  }
+
   await Promise.all(adsTasks);
 
   const totalAdSpend = campaigns.reduce((a, c) => a + c.spend, 0);
@@ -214,6 +236,7 @@ export async function loadLiveDashboardData(userId: string): Promise<LiveDashboa
       mercadolibre: Boolean(mlSession),
       meta: Boolean(metaSession),
       google: Boolean(googleSession?.refresh_token),
+      tiktok: Boolean(tiktokSession),
     },
   };
 }

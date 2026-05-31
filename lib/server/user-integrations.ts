@@ -5,7 +5,8 @@ export type IntegrationProvider =
   | "tiendanube"
   | "mercadolibre"
   | "meta"
-  | "google_ads";
+  | "google_ads"
+  | "tiktok";
 
 export async function saveUserIntegration(
   userId: string,

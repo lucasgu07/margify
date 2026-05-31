@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/evaluate-alerts",
       "schedule": "0 * * * *"
+    },
+    {
+      "path": "/api/cron/sync-data",
+      "schedule": "0 */6 * * *"
     }
   ]
 }

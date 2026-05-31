@@ -1,17 +1,14 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { TN_SESSION_COOKIE, TN_STATE_COOKIE } from "@/lib/tiendanube-auth";
+import { TIKTOK_COOKIE, TIKTOK_STATE_COOKIE } from "@/lib/tiktok-auth";
 import { getAuthUser } from "@/lib/server/auth-user";
 import { deleteUserIntegration } from "@/lib/server/user-integrations";
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-
 export async function POST() {
   const user = await getAuthUser();
-  if (user) await deleteUserIntegration(user.id, "tiendanube");
+  if (user) await deleteUserIntegration(user.id, "tiktok");
   const cookieStore = cookies();
-  cookieStore.delete(TN_SESSION_COOKIE);
-  cookieStore.delete(TN_STATE_COOKIE);
+  cookieStore.delete(TIKTOK_COOKIE);
+  cookieStore.delete(TIKTOK_STATE_COOKIE);
   return NextResponse.json({ ok: true });
 }

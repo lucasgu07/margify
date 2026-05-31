@@ -1,13 +1,19 @@
 import type { ReadonlyRequestCookies } from "next/dist/server/web/spec-extension/adapters/request-cookies";
-import { GOOGLE_ADS_COOKIE, parseGoogleAdsSession } from "@/lib/google-ads";
-import { META_COOKIE, parseMetaSession } from "@/lib/meta-auth";
-import { ML_TOKEN_COOKIE, parseMlSession } from "@/lib/mercadolibre-auth";
-import { getUserIntegration } from "@/lib/server/user-integrations";
+import { GOOGLE_ADS_COOKIE, parseGoogleAdsSession, type GoogleAdsSession } from "@/lib/google-ads";
+import { META_COOKIE, parseMetaSession, type MetaSession } from "@/lib/meta-auth";
+import { ML_TOKEN_COOKIE, parseMlSession, type MlSession } from "@/lib/mercadolibre-auth";
 import {
   SHOPIFY_SESSION_COOKIE,
   parseShopifySession,
+  type ShopifySession,
 } from "@/lib/shopify-auth";
-import { TN_SESSION_COOKIE, parseTiendanubeSession } from "@/lib/tiendanube-auth";
+import {
+  TN_SESSION_COOKIE,
+  parseTiendanubeSession,
+  type TiendanubeSession,
+} from "@/lib/tiendanube-auth";
+import { TIKTOK_COOKIE, parseTikTokSession, type TikTokSession } from "@/lib/tiktok-auth";
+import { getUserIntegration } from "@/lib/server/user-integrations";
 
 function payloadToJson(payload: Record<string, unknown> | null): string | undefined {
   if (!payload) return undefined;
@@ -37,28 +43,32 @@ async function resolve<T>(
 export async function resolveShopifySession(
   userId: string,
   cookieStore: ReadonlyRequestCookies
-) {
-  return resolve(userId, "shopify", cookieStore, SHOPIFY_SESSION_COOKIE, parseShopifySession);
+): Promise<ShopifySession | null> {
+  return resolve<ShopifySession>(userId, "shopify", cookieStore, SHOPIFY_SESSION_COOKIE, parseShopifySession);
 }
 
 export async function resolveTiendanubeSession(
   userId: string,
   cookieStore: ReadonlyRequestCookies
-) {
-  return resolve(userId, "tiendanube", cookieStore, TN_SESSION_COOKIE, parseTiendanubeSession);
+): Promise<TiendanubeSession | null> {
+  return resolve<TiendanubeSession>(userId, "tiendanube", cookieStore, TN_SESSION_COOKIE, parseTiendanubeSession);
 }
 
-export async function resolveMetaSession(userId: string, cookieStore: ReadonlyRequestCookies) {
-  return resolve(userId, "meta", cookieStore, META_COOKIE, parseMetaSession);
+export async function resolveMetaSession(userId: string, cookieStore: ReadonlyRequestCookies): Promise<MetaSession | null> {
+  return resolve<MetaSession>(userId, "meta", cookieStore, META_COOKIE, parseMetaSession);
 }
 
 export async function resolveGoogleAdsSession(
   userId: string,
   cookieStore: ReadonlyRequestCookies
-) {
-  return resolve(userId, "google_ads", cookieStore, GOOGLE_ADS_COOKIE, parseGoogleAdsSession);
+): Promise<GoogleAdsSession | null> {
+  return resolve<GoogleAdsSession>(userId, "google_ads", cookieStore, GOOGLE_ADS_COOKIE, parseGoogleAdsSession);
 }
 
-export async function resolveMlSession(userId: string, cookieStore: ReadonlyRequestCookies) {
-  return resolve(userId, "mercadolibre", cookieStore, ML_TOKEN_COOKIE, parseMlSession);
+export async function resolveMlSession(userId: string, cookieStore: ReadonlyRequestCookies): Promise<MlSession | null> {
+  return resolve<MlSession>(userId, "mercadolibre", cookieStore, ML_TOKEN_COOKIE, parseMlSession);
+}
+
+export async function resolveTikTokSession(userId: string, cookieStore: ReadonlyRequestCookies): Promise<TikTokSession | null> {
+  return resolve<TikTokSession>(userId, "tiktok", cookieStore, TIKTOK_COOKIE, parseTikTokSession);
 }

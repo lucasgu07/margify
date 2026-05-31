@@ -11,7 +11,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { buildCashflowAdvisorInsights } from "@/lib/ai-advisor-insights";
-import { AIAdvisor } from "@/components/dashboard/AIAdvisor";
+import { AIAdvisorPanel } from "@/components/dashboard/AIAdvisorPanel";
 import { CashflowPendingDonutSection } from "@/components/dashboard/CashflowDashboardCharts";
 import { CashflowPredictor } from "@/components/dashboard/CashflowPredictor";
 import { useDashboardIdentity } from "@/components/dashboard/DemoModeContext";
@@ -90,7 +90,8 @@ function StatusBadge({ status }: { status: CashflowTableRow["status"] }) {
 
 export default function CashflowPage() {
   const { full_name } = useDashboardIdentity();
-  const { filteredOrders, rangeDisplayLabel, storeScope, connectedStores } = useDashboard();
+  const { filteredOrders, rangeDisplayLabel, storeScope, connectedStores, dateRange, customRange } =
+    useDashboard();
   const [filterOrderId, setFilterOrderId] = useState("");
   const [filterOrigin, setFilterOrigin] = useState("");
   const [filterGateway, setFilterGateway] = useState("");
@@ -355,7 +356,13 @@ export default function CashflowPage() {
       </div>
 
       <div className="mt-10">
-        <AIAdvisor insights={advisorInsights} />
+        <AIAdvisorPanel
+          page="cashflow"
+          fallbackInsights={advisorInsights}
+          storeScope={storeScope}
+          dateRange={dateRange}
+          customRange={customRange}
+        />
       </div>
     </>
   );

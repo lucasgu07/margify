@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { buildRentabilidadAdvisorInsights } from "@/lib/ai-advisor-insights";
 import { Pie, PieChart, Cell } from "recharts";
-import { AIAdvisor } from "@/components/dashboard/AIAdvisor";
+import { AIAdvisorPanel } from "@/components/dashboard/AIAdvisorPanel";
 import {
   ComparativaDiariaChart,
   type ComparativaDiariaRow,
@@ -31,7 +31,7 @@ const PIE_COLORS = ["#64DFDF", "#ffffff", "#888888", "#444444", "#64DFDF99"];
 
 export default function RentabilidadPage() {
   const { full_name } = useDashboardIdentity();
-  const { dateRange, setDateRange, filteredOrders, chartSeries, storeScope, allCampaigns } =
+  const { dateRange, setDateRange, filteredOrders, chartSeries, storeScope, allCampaigns, customRange } =
     useDashboard();
   const m = getDashboardMetrics(
     filteredOrders,
@@ -338,7 +338,13 @@ export default function RentabilidadPage() {
       </div>
 
       <div className="mt-10">
-        <AIAdvisor insights={advisorInsights} />
+        <AIAdvisorPanel
+          page="rentabilidad"
+          fallbackInsights={advisorInsights}
+          storeScope={storeScope}
+          dateRange={dateRange}
+          customRange={customRange}
+        />
       </div>
     </>
   );

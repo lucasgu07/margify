@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { buildCampanasAdvisorInsights } from "@/lib/ai-advisor-insights";
 import { Megaphone, MousePointerClick, Target, Wallet } from "lucide-react";
-import { AIAdvisor } from "@/components/dashboard/AIAdvisor";
+import { AIAdvisorPanel } from "@/components/dashboard/AIAdvisorPanel";
 import { CampaignsDataTable } from "@/components/dashboard/CampaignsDataTable";
 import { GoogleAdsCampaignsTable } from "@/components/dashboard/GoogleAdsCampaignsTable";
 import { MetaAdsCampaignsTable } from "@/components/dashboard/MetaAdsCampaignsTable";
@@ -187,7 +187,12 @@ export function CampanasPageClient({ hideHeader = false }: { hideHeader?: boolea
       </div>
 
       <div className="mt-10">
-        <AIAdvisor insights={advisorInsights} />
+        <AIAdvisorPanel
+          page="campanas"
+          fallbackInsights={advisorInsights}
+          storeScope={storeScope}
+          adsPlatform={adsPlatform}
+        />
       </div>
     </>
   );

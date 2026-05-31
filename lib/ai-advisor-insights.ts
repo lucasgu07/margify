@@ -848,11 +848,13 @@ export function buildCashflowAdvisorInsights(orders: Order[] = mockOrders): Advi
 
 
 
-export function buildAlertasAdvisorInsights(): AdvisorInsights {
+export function buildAlertasAdvisorInsights(
+  historySource: { message: string; alert_type: string; read: boolean; triggered_at?: string }[] = mockAlertsHistory
+): AdvisorInsights {
 
-  const unread = mockAlertsHistory.filter((h) => !h.read).length;
+  const unread = historySource.filter((h) => !h.read).length;
 
-  const recent = mockAlertsHistory[0];
+  const recent = historySource[0];
 
 
 
@@ -862,7 +864,7 @@ export function buildAlertasAdvisorInsights(): AdvisorInsights {
 
 
 
-  const positiveRecent = mockAlertsHistory.find(
+  const positiveRecent = historySource.find(
 
     (h) =>
 
@@ -904,7 +906,7 @@ export function buildAlertasAdvisorInsights(): AdvisorInsights {
 
     attention.push(
 
-      `La más reciente (${new Date(recent.triggered_at).toLocaleDateString("es-AR")}): ${recent.message}`
+      `La más reciente${recent.triggered_at ? ` (${new Date(recent.triggered_at).toLocaleDateString("es-AR")})` : ""}: ${recent.message}`
 
     );
 

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ListFilter } from "lucide-react";
 import { buildProductosAdvisorInsights } from "@/lib/ai-advisor-insights";
-import { AIAdvisor } from "@/components/dashboard/AIAdvisor";
+import { AIAdvisorPanel } from "@/components/dashboard/AIAdvisorPanel";
 import { ProductFiltersFields } from "@/components/dashboard/ProductFiltersFields";
 import { ShopifyProductsTable } from "@/components/dashboard/ShopifyProductsTable";
 import { TiendanubeProductsTable } from "@/components/dashboard/TiendanubeProductsTable";
@@ -33,7 +33,7 @@ type ProductRow = ProductProfit & { costo_edit: number; precio_edit: number };
 
 export default function ProductosPage() {
   const { full_name } = useDashboardIdentity();
-  const { filteredOrders } = useDashboard();
+  const { filteredOrders, storeScope, dateRange, customRange } = useDashboard();
   const [products, setProducts] = useState<ProductProfit[]>(() =>
     buildProductProfits(filteredOrders)
   );
@@ -359,7 +359,13 @@ export default function ProductosPage() {
       </Card>
 
       <div className="mt-10">
-        <AIAdvisor insights={advisorInsights} />
+        <AIAdvisorPanel
+          page="productos"
+          fallbackInsights={advisorInsights}
+          storeScope={storeScope}
+          dateRange={dateRange}
+          customRange={customRange}
+        />
       </div>
     </>
   );

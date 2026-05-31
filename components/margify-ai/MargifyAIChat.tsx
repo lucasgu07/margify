@@ -14,6 +14,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { useDemoMode } from "@/components/dashboard/DemoModeContext";
+import { useDashboard } from "@/components/dashboard/DashboardContext";
 import { buttonClassName } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/textarea";
 import { multiTouchClusterClasses } from "@/lib/multi-touch-cluster";
@@ -89,6 +90,7 @@ type MargifyAIChatProps = {
 
 export function MargifyAIChat({ storageKey }: MargifyAIChatProps) {
   const isDemo = useDemoMode();
+  const { aiUsage } = useDashboard();
   const [messages, setMessages] = useState<MargifyAIChatMessage[]>([createWelcomeMessage()]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -257,7 +259,13 @@ export function MargifyAIChat({ storageKey }: MargifyAIChatProps) {
             </div>
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-white">Margify AI</p>
-              <p className="truncate text-xs text-margify-muted">Asistente de campañas y rentabilidad</p>
+              <p className="truncate text-xs text-margify-muted">
+                {aiUsage?.limit != null
+                  ? `Consultas este mes: ${aiUsage.used}/${aiUsage.limit}`
+                  : aiUsage?.limit === null
+                    ? "Consultas ilimitadas (Scale)"
+                    : "Asistente de campañas y rentabilidad"}
+              </p>
             </div>
           </div>
           <button
