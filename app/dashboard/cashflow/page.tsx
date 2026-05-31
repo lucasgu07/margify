@@ -356,13 +356,7 @@ export default function CashflowPage() {
       </div>
 
       <div className="mt-10">
-        <AIAdvisorPanel
-          page="cashflow"
-          fallbackInsights={advisorInsights}
-          storeScope={storeScope}
-          dateRange={dateRange}
-          customRange={customRange}
-        />
+        <AIAdvisorPanel page="cashflow" fallbackInsights={advisorInsights} />
       </div>
     </>
   );

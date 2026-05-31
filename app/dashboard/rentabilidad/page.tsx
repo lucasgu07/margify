@@ -338,13 +338,7 @@ export default function RentabilidadPage() {
       </div>
 
       <div className="mt-10">
-        <AIAdvisorPanel
-          page="rentabilidad"
-          fallbackInsights={advisorInsights}
-          storeScope={storeScope}
-          dateRange={dateRange}
-          customRange={customRange}
-        />
+        <AIAdvisorPanel page="rentabilidad" fallbackInsights={advisorInsights} />
       </div>
     </>
   );

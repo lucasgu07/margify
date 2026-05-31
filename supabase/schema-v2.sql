@@ -58,4 +58,14 @@ create table if not exists public.user_alerts_history (
   read boolean not null default false
 );
 
-create index if not exists idx_user_alerts_history_user on public.user_alerts_history (user_id, triggered_at desc);
+-- Historial de recomendaciones IA Advisor (Claude)
+create table if not exists public.ai_recommendations (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid not null,
+  recommendations jsonb not null default '[]',
+  motivational_close text,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists idx_ai_recommendations_user_created
+  on public.ai_recommendations (user_id, created_at desc);

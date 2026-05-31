@@ -359,13 +359,7 @@ export default function ProductosPage() {
       </Card>
 
       <div className="mt-10">
-        <AIAdvisorPanel
-          page="productos"
-          fallbackInsights={advisorInsights}
-          storeScope={storeScope}
-          dateRange={dateRange}
-          customRange={customRange}
-        />
+        <AIAdvisorPanel page="productos" fallbackInsights={advisorInsights} />
       </div>
     </>
   );

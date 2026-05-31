@@ -187,12 +187,7 @@ export function CampanasPageClient({ hideHeader = false }: { hideHeader?: boolea
       </div>
 
       <div className="mt-10">
-        <AIAdvisorPanel
-          page="campanas"
-          fallbackInsights={advisorInsights}
-          storeScope={storeScope}
-          adsPlatform={adsPlatform}
-        />
+        <AIAdvisorPanel page="campanas" fallbackInsights={advisorInsights} />
       </div>
     </>
   );

@@ -1,10 +1,8 @@
 "use client";
 
-import { useMemo } from "react";
 import { BarChart3, DollarSign, Package, Percent, Receipt, ShoppingBag, Target, Wallet } from "lucide-react";
-import { AIAdvisorPanel } from "@/components/dashboard/AIAdvisorPanel";
+import { AIAdvisor } from "@/components/dashboard/AIAdvisor";
 import { useDashboard } from "@/components/dashboard/DashboardContext";
-import { buildDashboardAdvisorInsights } from "@/lib/ai-advisor-insights";
 import { OrdersTable } from "@/components/dashboard/OrdersTable";
 import { RevenueChart } from "@/components/dashboard/RevenueChart";
 import { MetricCard } from "@/components/ui/MetricCard";
@@ -20,14 +18,9 @@ export function DashboardHomeBody({ variant = "default" }: { variant?: "default"
     storeScope,
     rangeDisplayLabel,
     allCampaigns,
-    customRange,
   } = useDashboard();
   const roasScope = storeScope === "all" ? null : storeScope;
   const m = getDashboardMetrics(filteredOrders, roasScope, allCampaigns);
-  const advisorInsights = useMemo(
-    () => buildDashboardAdvisorInsights(filteredOrders, storeScope, allCampaigns),
-    [filteredOrders, storeScope, allCampaigns]
-  );
 
   const hero = variant === "landingHero";
   const cardCls = hero ? "gap-2 p-3 [&_svg]:h-4 [&_svg]:w-4 [&_p:first-of-type]:text-xs" : undefined;
@@ -126,6 +119,7 @@ export function DashboardHomeBody({ variant = "default" }: { variant?: "default"
         />
       </div>
       <div className={hero ? "mt-4 space-y-4" : "mt-8 space-y-8"}>
+        {!hero ? <AIAdvisor /> : null}
         <RevenueChart
           data={chartSeries}
           dateRange={dateRange}
@@ -138,13 +132,6 @@ export function DashboardHomeBody({ variant = "default" }: { variant?: "default"
               <h2 className="mb-4 text-lg font-semibold text-white">Órdenes recientes</h2>
               <OrdersTable orders={filteredOrders} />
             </div>
-            <AIAdvisorPanel
-              page="dashboard"
-              fallbackInsights={advisorInsights}
-              storeScope={storeScope}
-              dateRange={dateRange}
-              customRange={customRange}
-            />
           </>
         ) : null}
       </div>
