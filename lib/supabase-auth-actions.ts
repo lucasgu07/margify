@@ -8,6 +8,11 @@ export function getAuthEmailRedirectUrl(next = "/onboarding"): string {
   return `${origin}/auth/callback?next=${encodeURIComponent(path)}`;
 }
 
+/** Link del email de recuperación de contraseña → callback → pantalla nueva contraseña. */
+export function getPasswordResetRedirectUrl(): string {
+  return getAuthEmailRedirectUrl("/auth/update-password");
+}
+
 /** Tras signUp: hay usuario pero no sesión → Supabase pide confirmar email. */
 export function signupNeedsEmailConfirmation(session: unknown, user: unknown): boolean {
   return Boolean(user && !session);

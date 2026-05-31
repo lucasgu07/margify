@@ -6,7 +6,13 @@ export const dynamic = "force-dynamic";
 
 function safeNextPath(raw: string | null): string {
   if (!raw || !raw.startsWith("/")) return "/onboarding";
-  if (raw.startsWith("/dashboard") || raw.startsWith("/onboarding")) return raw;
+  if (
+    raw.startsWith("/dashboard") ||
+    raw.startsWith("/onboarding") ||
+    raw.startsWith("/auth/update-password")
+  ) {
+    return raw;
+  }
   return "/onboarding";
 }
 

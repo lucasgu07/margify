@@ -8,6 +8,7 @@ import { ConfirmEmailPanel } from "@/components/auth/ConfirmEmailPanel";
 import { Button } from "@/components/ui/Button";
 import { Input, Label } from "@/components/ui/Input";
 import { createClient } from "@/lib/supabase";
+import { DEMO_DASHBOARD_ENTRY } from "@/lib/demo-entry";
 import { isEmailNotConfirmedError, translateSupabaseAuthError } from "@/lib/supabase-auth-errors";
 
 function safeAuthRedirect(next: string | null): string {
@@ -111,7 +112,15 @@ function LoginForm() {
             />
           </div>
           <div>
-            <Label htmlFor="password">Contraseña</Label>
+            <div className="mb-1.5 flex items-center justify-between gap-2">
+              <Label htmlFor="password">Contraseña</Label>
+              <Link
+                href="/auth/forgot-password"
+                className="text-xs font-medium text-margify-cyan transition-colors duration-margify hover:underline"
+              >
+                ¿Olvidaste tu contraseña?
+              </Link>
+            </div>
             <Input
               id="password"
               type="password"
@@ -131,6 +140,14 @@ function LoginForm() {
           </Button>
         </form>
         <p className="mt-6 text-center text-sm text-margify-muted">
+          <Link
+            href={DEMO_DASHBOARD_ENTRY}
+            className="font-medium text-margify-cyan transition-colors duration-margify hover:underline"
+          >
+            Explorar demo sin cuenta
+          </Link>
+        </p>
+        <p className="mt-4 text-center text-sm text-margify-muted">
           ¿No tenés cuenta?{" "}
           <Link
             href="/auth/register"

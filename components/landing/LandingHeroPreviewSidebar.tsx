@@ -15,18 +15,19 @@ import {
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { cn } from "@/lib/utils";
+import { DEMO_DASHBOARD_ENTRY, demoDashboardHref } from "@/lib/demo-entry";
 import { DEMO_USER_LABEL } from "@/lib/demo-user";
 
 const previewNav = [
-  { href: "/dashboard", label: "Dashboard", icon: Home },
-  { href: "/dashboard/rentabilidad", label: "Rentabilidad", icon: BarChart3 },
-  { href: "/dashboard/campanas", label: "Campañas", icon: Megaphone },
-  { href: "/dashboard/productos", label: "Productos", icon: Box },
-  { href: "/dashboard/pedidos", label: "Pedidos", icon: ShoppingBag },
-  { href: "/dashboard/cashflow", label: "Cashflow", icon: Wallet },
-  { href: "/dashboard/alertas", label: "Alertas", icon: Bell },
-  { href: "/dashboard/margify-ai", label: "Margify AI", icon: Sparkles },
-  { href: "/dashboard/configuracion", label: "Configuración", icon: Settings },
+  { href: demoDashboardHref("/dashboard"), label: "Dashboard", icon: Home },
+  { href: demoDashboardHref("/dashboard/rentabilidad"), label: "Rentabilidad", icon: BarChart3 },
+  { href: demoDashboardHref("/dashboard/campanas"), label: "Campañas", icon: Megaphone },
+  { href: demoDashboardHref("/dashboard/productos"), label: "Productos", icon: Box },
+  { href: demoDashboardHref("/dashboard/pedidos"), label: "Pedidos", icon: ShoppingBag },
+  { href: demoDashboardHref("/dashboard/cashflow"), label: "Cashflow", icon: Wallet },
+  { href: demoDashboardHref("/dashboard/alertas"), label: "Alertas", icon: Bell },
+  { href: demoDashboardHref("/dashboard/margify-ai"), label: "Margify AI", icon: Sparkles },
+  { href: demoDashboardHref("/dashboard/configuracion"), label: "Configuración", icon: Settings },
 ] as const;
 
 export function LandingHeroPreviewSidebar({
@@ -92,10 +93,10 @@ export function LandingHeroPreviewSidebar({
       </nav>
       <div className="border-t border-margify-border p-4">
         <Link
-          href="/auth/register"
+          href={DEMO_DASHBOARD_ENTRY}
           className="flex w-full items-center justify-center rounded-control border border-margify-cyan/40 px-3 py-2.5 text-center text-sm font-medium text-margify-cyan outline-none transition-all duration-200 ease-out motion-safe:hover:scale-[1.02] motion-safe:hover:border-margify-cyan motion-safe:hover:bg-margify-cyan/15 motion-safe:hover:shadow-[0_0_24px_rgba(100,223,223,0.22)] motion-safe:active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-margify-cyan/50 focus-visible:ring-offset-2 focus-visible:ring-offset-margify-black touch-manipulation"
         >
-          Empezar gratis
+          Explorar demo completa
         </Link>
       </div>
     </aside>

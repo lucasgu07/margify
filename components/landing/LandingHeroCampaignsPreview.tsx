@@ -7,6 +7,7 @@ import { DemoModeProvider } from "@/components/dashboard/DemoModeContext";
 import { Header } from "@/components/ui/Header";
 import { LandingHeroPreviewSidebar } from "@/components/landing/LandingHeroPreviewSidebar";
 import { LandingPreviewStarfield } from "@/components/landing/LandingPreviewStarfield";
+import { demoDashboardHref } from "@/lib/demo-entry";
 import { DEMO_USER_LABEL } from "@/lib/demo-user";
 import { mockAlertsHistory } from "@/lib/mock-data";
 
@@ -65,7 +66,7 @@ export function LandingHeroCampaignsPreview() {
             <div className="flex min-h-0 w-full">
               <LandingHeroPreviewSidebar
                 alertCount={alertCount}
-                activeHref="/dashboard/campanas"
+                activeHref={demoDashboardHref("/dashboard/campanas")}
               />
               <div className="min-h-0 w-[784px] shrink-0 bg-transparent px-6 pb-4 pt-5">
                 <Header

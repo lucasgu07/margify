@@ -20,6 +20,7 @@ const LandingParticleBackground = dynamic(
 import { LandingFaq } from "@/components/landing/LandingFaq";
 import { LandingTestimonials } from "@/components/landing/LandingTestimonials";
 import { LandingComparisonSection } from "@/components/landing/LandingComparisonSection";
+import { DEMO_DASHBOARD_ENTRY } from "@/lib/demo-entry";
 import { LandingDemoVideoButton } from "@/components/landing/LandingDemoVideoButton";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { LandingHeroCampaignsPreview } from "@/components/landing/LandingHeroCampaignsPreview";
@@ -299,7 +300,7 @@ export default function LandingPage() {
           <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-4 text-sm text-neutral-400 md:flex-row md:px-6">
             <Logo size="sm" />
             <div className="flex flex-wrap justify-center gap-4">
-              <Link href="/dashboard?demo=1" className="transition-colors duration-margify hover:text-white text-neutral-300">
+              <Link href={DEMO_DASHBOARD_ENTRY} className="transition-colors duration-margify hover:text-white text-neutral-300">
                 Producto
               </Link>
               <Link href="/auth/login" className="transition-colors duration-margify hover:text-white text-neutral-300">
