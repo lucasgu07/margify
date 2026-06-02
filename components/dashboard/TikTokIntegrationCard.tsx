@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Button, buttonClassName } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
+import { IntegrationCardRoot } from "@/components/dashboard/integrations/integration-card-root";
 import { DemoIntegrationPlaceholder } from "@/components/dashboard/DemoIntegrationPlaceholder";
 import { useDemoMode } from "@/components/dashboard/DemoModeContext";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
@@ -16,12 +16,13 @@ type StatusResponse =
   | { configured: true; connected: false }
   | { configured: true; connected: true; advertiserId: string; lastSyncedAt: number | null };
 
-export function TikTokIntegrationCard() {
+export function TikTokIntegrationCard({ embedded }: { embedded?: boolean } = {}) {
   const isDemo = useDemoMode();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<StatusResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [disconnecting, setDisconnecting] = useState(false);
+  const [connecting, setConnecting] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -43,7 +44,7 @@ export function TikTokIntegrationCard() {
   const reason = searchParams.get("reason");
 
   if (isDemo) {
-    return <DemoIntegrationPlaceholder brand="tiktok" name="TikTok Ads" />;
+    return <DemoIntegrationPlaceholder brand="tiktok" name="TikTok Ads" embedded={embedded} />;
   }
 
   async function disconnect() {
@@ -60,12 +61,17 @@ export function TikTokIntegrationCard() {
   const notConfigured = Boolean(status && !status.configured);
 
   return (
-    <Card glass className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <IntegrationCardRoot
+      embedded={embedded}
+      className={embedded ? undefined : "sm:flex-row sm:items-center sm:justify-between"}
+    >
       <div className="min-w-0 flex-1">
-        <p className="flex items-center gap-2 text-lg font-semibold text-white">
-          <IntegrationBrandIcon brand="tiktok" size="sm" />
-          TikTok Ads
-        </p>
+        {!embedded ? (
+          <p className="flex items-center gap-2 text-lg font-semibold text-white">
+            <IntegrationBrandIcon brand="tiktok" size="sm" />
+            TikTok Ads
+          </p>
+        ) : null}
         {notice === "connected" ? (
           <p className="mt-1 text-sm text-margify-cyan">Cuenta vinculada correctamente.</p>
         ) : null}
@@ -108,11 +114,12 @@ export function TikTokIntegrationCard() {
               (loading || notConfigured) && "pointer-events-none opacity-50"
             )}
             aria-disabled={loading || notConfigured}
+            onClick={() => setConnecting(true)}
           >
-            Conectar TikTok Ads
+            {connecting ? "Conectando…" : "Conectar TikTok Ads"}
           </Link>
         )}
       </div>
-    </Card>
+    </IntegrationCardRoot>
   );
 }

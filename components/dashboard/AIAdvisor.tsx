@@ -81,6 +81,8 @@ export function AIAdvisor() {
   const [motivationalClose, setMotivationalClose] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [source, setSource] = useState<"claude" | "fallback" | "cache" | null>(null);
+  const [claudeConfigured, setClaudeConfigured] = useState<boolean | null>(null);
 
   const applyResponse = useCallback((data: AdvisorApiResponse & { stale?: boolean }) => {
     if ("status" in data) {
@@ -101,6 +103,8 @@ export function AIAdvisor() {
     setRecommendations(data.recommendations);
     setGeneratedAt(data.generatedAt);
     setMotivationalClose(data.motivationalClose ?? null);
+    setSource(data.source);
+    setClaudeConfigured(data.claudeConfigured);
     setState("ready");
     setMessage(null);
   }, []);
@@ -166,6 +170,16 @@ export function AIAdvisor() {
               </span>
             </div>
             <p className="mt-0.5 text-sm text-margify-muted">Basado en tus últimos 30 días</p>
+            {state === "ready" && source === "claude" ? (
+              <p className="mt-1 text-xs text-[#64DFDF]/80">Análisis generado con Claude</p>
+            ) : null}
+            {state === "ready" && source === "fallback" ? (
+              <p className="mt-1 text-xs text-amber-200/80">
+                {claudeConfigured === false
+                  ? "Modo estimado — configurá ANTHROPIC_API_KEY en el servidor para análisis con IA"
+                  : "Modo estimado — Claude no respondió; mostramos reglas locales"}
+              </p>
+            ) : null}
           </div>
         </div>
         <button
@@ -191,7 +205,7 @@ export function AIAdvisor() {
         <div className="mt-4 space-y-3">
           <p className="text-sm text-margify-muted">{message}</p>
           <Link
-            href="/dashboard/configuracion"
+            href="/dashboard/integraciones"
             className="inline-block text-sm font-medium text-[#64DFDF] hover:underline"
           >
             Ir a conectar tienda →

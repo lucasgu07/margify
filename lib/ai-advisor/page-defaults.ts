@@ -23,7 +23,7 @@ const PAGE_CTA: Record<AdvisorPage, Pick<AdvisorInsights, "ctaHref" | "ctaLabel"
     ctaLabel: "Configurar alertas de liquidez",
   },
   alertas: {
-    ctaHref: "/dashboard/configuracion",
+    ctaHref: "/dashboard/integraciones",
     ctaLabel: "WhatsApp e integraciones",
   },
 };

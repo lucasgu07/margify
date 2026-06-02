@@ -1,57 +1,18 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDashboard } from "@/components/dashboard/DashboardContext";
 import { useDashboardIdentity, useDemoMode } from "@/components/dashboard/DemoModeContext";
 import { Button } from "@/components/ui/Button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
 import { Header } from "@/components/ui/Header";
 import { Input, Label } from "@/components/ui/Input";
-import { GoogleAdsIntegrationCard } from "@/components/dashboard/GoogleAdsIntegrationCard";
-import { MercadoLibreIntegrationCard } from "@/components/dashboard/MercadoLibreIntegrationCard";
-import { MetaIntegrationCard } from "@/components/dashboard/MetaIntegrationCard";
-import { ShopifyIntegrationCard } from "@/components/dashboard/ShopifyIntegrationCard";
-import { TiendanubeIntegrationCard } from "@/components/dashboard/TiendanubeIntegrationCard";
-import { TikTokIntegrationCard } from "@/components/dashboard/TikTokIntegrationCard";
-import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
-import type { IntegrationBrandId } from "@/lib/integration-brands";
+import { DASHBOARD_INTEGRATIONS_PATH } from "@/lib/dashboard-integrations-path";
 import { daysUntil } from "@/lib/dodo-billing";
 import { canUseApiAccess, planDisplayName } from "@/lib/plan-features";
 import { mockCostsConfig } from "@/lib/mock-data";
 import { createClient } from "@/lib/supabase";
 import Link from "next/link";
-
-function IntegrationCard({
-  brand,
-  name,
-  status,
-  soon,
-}: {
-  brand: IntegrationBrandId;
-  name: string;
-  status: "Conectada" | "Desconectada";
-  soon?: boolean;
-}) {
-  return (
-    <Card glass className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <p className="flex items-center gap-2 text-lg font-semibold text-white">
-          <IntegrationBrandIcon brand={brand} size="sm" />
-          {name}
-        </p>
-        <p className="text-sm text-margify-muted">
-          Estado:{" "}
-          <span className={status === "Conectada" ? "text-margify-cyan" : "text-margify-muted"}>
-            {soon ? "Próximamente" : status}
-          </span>
-        </p>
-      </div>
-      <Button type="button" variant="secondary" disabled={soon}>
-        {soon ? "Disponible pronto" : "Reconectar"}
-      </Button>
-    </Card>
-  );
-}
 
 export default function ConfiguracionPage() {
   const identity = useDashboardIdentity();
@@ -208,57 +169,12 @@ export default function ConfiguracionPage() {
         </Card>
       </section>
 
-      <section className="mt-10 space-y-4">
-        <h2 className="text-lg font-semibold text-margify-cyan">Integraciones conectadas</h2>
-        <Suspense
-          fallback={
-            <Card glass className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-sm text-margify-muted">Cargando TiendaNube…</p>
-            </Card>
-          }
-        >
-          <TiendanubeIntegrationCard />
-        </Suspense>
-        <Suspense
-          fallback={
-            <Card glass className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-sm text-margify-muted">Cargando Mercado Libre…</p>
-            </Card>
-          }
-        >
-          <MercadoLibreIntegrationCard />
-        </Suspense>
-        <Suspense
-          fallback={
-            <Card glass className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-sm text-margify-muted">Cargando Shopify…</p>
-            </Card>
-          }
-        >
-          <ShopifyIntegrationCard />
-        </Suspense>
-        <Suspense
-          fallback={
-            <Card glass className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-sm text-margify-muted">Cargando Meta Ads…</p>
-            </Card>
-          }
-        >
-          <MetaIntegrationCard />
-        </Suspense>
-        <Suspense
-          fallback={
-            <Card glass className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-sm text-margify-muted">Cargando Google Ads…</p>
-            </Card>
-          }
-        >
-          <GoogleAdsIntegrationCard />
-        </Suspense>
-        <Suspense fallback={<Card glass className="p-4 text-sm text-margify-muted">Cargando TikTok…</Card>}>
-          <TikTokIntegrationCard />
-        </Suspense>
-      </section>
+      <p className="mt-8 text-sm text-margify-muted">
+        Para gestionar tus integraciones{" "}
+        <Link href={DASHBOARD_INTEGRATIONS_PATH} className="font-medium text-[#64DFDF] hover:underline">
+          → Ir a Integraciones
+        </Link>
+      </p>
 
       <section className="mt-10 space-y-4">
         <h2 className="text-lg font-semibold text-margify-cyan">Mis costos</h2>

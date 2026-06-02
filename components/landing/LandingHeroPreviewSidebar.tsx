@@ -8,6 +8,7 @@ import {
   Box,
   Home,
   Megaphone,
+  Plug,
   Settings,
   ShoppingBag,
   Sparkles,
@@ -27,6 +28,7 @@ const previewNav = [
   { href: demoDashboardHref("/dashboard/cashflow"), label: "Cashflow", icon: Wallet },
   { href: demoDashboardHref("/dashboard/alertas"), label: "Alertas", icon: Bell },
   { href: demoDashboardHref("/dashboard/margify-ai"), label: "Margify AI", icon: Sparkles },
+  { href: demoDashboardHref("/dashboard/integraciones"), label: "Integraciones", icon: Plug },
   { href: demoDashboardHref("/dashboard/configuracion"), label: "Configuración", icon: Settings },
 ] as const;
 

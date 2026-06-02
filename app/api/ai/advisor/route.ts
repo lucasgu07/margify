@@ -48,6 +48,7 @@ export async function GET(request: Request) {
       dataFromDays: ADVISOR_DATA_DAYS,
       motivationalClose: cached.motivational_close ?? undefined,
       source: "cache",
+      claudeConfigured: Boolean(process.env.ANTHROPIC_API_KEY?.trim()),
     };
     if (!stale) return successPayload(payload, false);
     return successPayload(payload, true);

@@ -307,7 +307,7 @@ export function GoogleAdsCampaignsTable() {
           <p className="text-sm text-margify-muted">
             Conectá tu cuenta de Google Ads en Configuración para ver tus campañas acá.
           </p>
-          <Link href="/dashboard/configuracion" className={buttonClassName("primary")}>
+          <Link href="/dashboard/integraciones" className={buttonClassName("primary")}>
             Ir a Configuración
           </Link>
         </Card>

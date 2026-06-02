@@ -15,6 +15,7 @@
  */
 
 import crypto from "node:crypto";
+import { DASHBOARD_INTEGRATIONS_PATH } from "@/lib/dashboard-integrations-path";
 
 const DEFAULT_CALLBACK_PATH = "/api/auth/shopify/callback";
 
@@ -146,16 +147,16 @@ export type ShopifyStateCookie = {
   returnTo?: string;
 };
 
-const ALLOWED_SHOPIFY_OAUTH_RETURN_PATHS = new Set(["/onboarding", "/dashboard/configuracion"]);
+const ALLOWED_SHOPIFY_OAUTH_RETURN_PATHS = new Set(["/onboarding", DASHBOARD_INTEGRATIONS_PATH]);
 
 export function sanitizeShopifyOAuthReturnTo(raw: string | null | undefined): string {
-  if (!raw || typeof raw !== "string") return "/dashboard/configuracion";
+  if (!raw || typeof raw !== "string") return DASHBOARD_INTEGRATIONS_PATH;
   const path = raw.split("?")[0].trim();
-  if (!path.startsWith("/") || path.startsWith("//")) return "/dashboard/configuracion";
+  if (!path.startsWith("/") || path.startsWith("//")) return DASHBOARD_INTEGRATIONS_PATH;
   if (ALLOWED_SHOPIFY_OAUTH_RETURN_PATHS.has(path)) {
     return path;
   }
-  return "/dashboard/configuracion";
+  return DASHBOARD_INTEGRATIONS_PATH;
 }
 
 export function parseShopifyState(

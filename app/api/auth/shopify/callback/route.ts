@@ -39,7 +39,7 @@ export async function GET(request: Request) {
   const savedPreview = parseShopifyState(savedRaw);
   const returnPath = savedPreview
     ? sanitizeShopifyOAuthReturnTo(savedPreview.returnTo)
-    : "/dashboard/configuracion";
+    : "/dashboard/integraciones";
 
   const back = (params: Record<string, string>) => {
     const u = new URL(`${origin}${returnPath}`);

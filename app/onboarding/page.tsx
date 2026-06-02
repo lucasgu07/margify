@@ -15,6 +15,7 @@ import {
 import { multiTouchClusterClasses, multiTouchClusterChildButtonClasses } from "@/lib/multi-touch-cluster";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase";
+import { DASHBOARD_INTEGRATIONS_PATH } from "@/lib/dashboard-integrations-path";
 import {
   buildShopifyOAuthUrl,
   shopifyShopInputErrorMessage,
@@ -54,8 +55,6 @@ function OnboardingPageContent() {
   const shopifyOAuthOk = searchParams.get("shopify") === "connected";
   const [step, setStep] = useState(1);
   const [selected, setSelected] = useState<Platform[]>([]);
-  const [storeUrl, setStoreUrl] = useState("");
-  const [apiToken, setApiToken] = useState("");
   const [shopifyShopInput, setShopifyShopInput] = useState("");
   const [shopifyConnectError, setShopifyConnectError] = useState<string | null>(null);
   const [productCost, setProductCost] = useState(40);
@@ -90,7 +89,7 @@ function OnboardingPageContent() {
 
   useEffect(() => {
     if (step !== 5) return;
-    const t = setTimeout(() => router.push("/dashboard"), 3000);
+    const t = setTimeout(() => router.push(DASHBOARD_INTEGRATIONS_PATH), 3000);
     return () => clearTimeout(t);
   }, [router, step]);
 
@@ -188,25 +187,20 @@ function OnboardingPageContent() {
               {selected.includes("tiendanube") ? (
                 <div className="space-y-3 rounded-card border border-margify-border bg-margify-cardAlt p-4">
                   <p className="text-sm font-semibold text-margify-cyan">TiendaNube</p>
-                  <div>
-                    <Label>URL de tu tienda</Label>
-                    <Input
-                      placeholder="https://tu-tienda.mitiendanube.com"
-                      value={storeUrl}
-                      onChange={(e) => setStoreUrl(e.target.value)}
-                    />
-                  </div>
-                  <div>
-                    <Label>API Token</Label>
-                    <Input
-                      placeholder="Token privado de la API"
-                      value={apiToken}
-                      onChange={(e) => setApiToken(e.target.value)}
-                    />
-                    <p className="mt-1 text-xs text-margify-muted">
-                      En TiendaNube: Configuración → API y webhooks → Generar token de acceso.
-                    </p>
-                  </div>
+                  <p className="text-xs text-margify-muted">
+                    Conectá con OAuth: te redirigimos a TiendaNube, autorizás a Margify y volvés acá.
+                    Necesitás la app creada en el Partner Portal con las credenciales en el servidor.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="primary"
+                    className="w-full sm:w-auto"
+                    onClick={() => {
+                      window.location.href = "/api/auth/tiendanube";
+                    }}
+                  >
+                    Conectar con TiendaNube
+                  </Button>
                 </div>
               ) : null}
               {selected.includes("shopify") ? (

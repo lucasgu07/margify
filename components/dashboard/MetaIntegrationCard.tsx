@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Button, buttonClassName } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
+import { IntegrationCardRoot } from "@/components/dashboard/integrations/integration-card-root";
 import { DemoIntegrationPlaceholder } from "@/components/dashboard/DemoIntegrationPlaceholder";
 import { useDemoMode } from "@/components/dashboard/DemoModeContext";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
@@ -37,7 +37,7 @@ function formatLastSync(ts: number | null): string {
   }
 }
 
-export function MetaIntegrationCard() {
+export function MetaIntegrationCard({ embedded }: { embedded?: boolean } = {}) {
   const isDemo = useDemoMode();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<StatusResponse | null>(null);
@@ -45,6 +45,7 @@ export function MetaIntegrationCard() {
   const [busy, setBusy] = useState<"disconnect" | "sync" | "switch" | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [syncInfo, setSyncInfo] = useState<{ count: number; syncedAt: number } | null>(null);
+  const [connecting, setConnecting] = useState(false);
   const [selectedAccount, setSelectedAccount] = useState<string | null>(null);
 
   const load = useCallback(async () => {
@@ -122,7 +123,7 @@ export function MetaIntegrationCard() {
   );
 
   if (isDemo) {
-    return <DemoIntegrationPlaceholder brand="meta" name="Meta Ads" />;
+    return <DemoIntegrationPlaceholder brand="meta" name="Meta Ads" embedded={embedded} />;
   }
 
   async function onSwitchAccount(next: string) {
@@ -133,12 +134,17 @@ export function MetaIntegrationCard() {
   }
 
   return (
-    <Card glass className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <IntegrationCardRoot
+      embedded={embedded}
+      className={embedded ? undefined : "sm:flex-row sm:items-start sm:justify-between"}
+    >
       <div className="min-w-0 flex-1">
-        <p className="flex items-center gap-2 text-lg font-semibold text-white">
-          <IntegrationBrandIcon brand="meta" size="sm" />
-          Meta Ads
-        </p>
+        {!embedded ? (
+          <p className="flex items-center gap-2 text-lg font-semibold text-white">
+            <IntegrationBrandIcon brand="meta" size="sm" />
+            Meta Ads
+          </p>
+        ) : null}
 
         {metaNotice === "connected" ? (
           <p className="mt-1 text-sm text-margify-cyan">Cuenta vinculada correctamente.</p>
@@ -219,7 +225,7 @@ export function MetaIntegrationCard() {
               className={multiTouchClusterChildButtonClasses}
               onClick={() => void sync()}
             >
-              {busy === "sync" || busy === "switch" ? "Sincronizando…" : "Sincronizar ahora"}
+              {busy === "sync" || busy === "switch" ? "Sincronizando…" : "Sincronizar"}
             </Button>
             <Button
               type="button"
@@ -234,17 +240,18 @@ export function MetaIntegrationCard() {
         ) : (
           <Link
             href="/api/auth/meta"
-            className={buttonClassName("secondary")}
+            className={buttonClassName("primary")}
             aria-disabled={connectDisabled}
             tabIndex={connectDisabled ? -1 : undefined}
             onClick={(e) => {
               if (connectDisabled) e.preventDefault();
+              else setConnecting(true);
             }}
           >
-            Conectar con Meta Ads
+            {connecting ? "Conectando…" : "Conectar Meta Ads"}
           </Link>
         )}
       </div>
-    </Card>
+    </IntegrationCardRoot>
   );
 }

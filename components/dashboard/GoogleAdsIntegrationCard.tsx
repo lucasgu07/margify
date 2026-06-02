@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Button, buttonClassName } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
+import { IntegrationCardRoot } from "@/components/dashboard/integrations/integration-card-root";
 import { DemoIntegrationPlaceholder } from "@/components/dashboard/DemoIntegrationPlaceholder";
 import { useDemoMode } from "@/components/dashboard/DemoModeContext";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
@@ -39,7 +39,7 @@ function formatCustomerId(id: string | null): string {
   return `${id.slice(0, 3)}-${id.slice(3, 6)}-${id.slice(6)}`;
 }
 
-export function GoogleAdsIntegrationCard() {
+export function GoogleAdsIntegrationCard({ embedded }: { embedded?: boolean } = {}) {
   const isDemo = useDemoMode();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<StatusResponse | null>(null);
@@ -47,6 +47,7 @@ export function GoogleAdsIntegrationCard() {
   const [busy, setBusy] = useState<"disconnect" | "sync" | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [syncInfo, setSyncInfo] = useState<{ count: number; syncedAt: number } | null>(null);
+  const [connecting, setConnecting] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -73,7 +74,7 @@ export function GoogleAdsIntegrationCard() {
   const gaReason = searchParams.get("reason");
 
   if (isDemo) {
-    return <DemoIntegrationPlaceholder brand="googleAds" name="Google Ads" />;
+    return <DemoIntegrationPlaceholder brand="googleAds" name="Google Ads" embedded={embedded} />;
   }
 
   async function disconnect() {
@@ -114,12 +115,17 @@ export function GoogleAdsIntegrationCard() {
   const connectDisabled = loading || notConfigured;
 
   return (
-    <Card glass className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <IntegrationCardRoot
+      embedded={embedded}
+      className={embedded ? undefined : "sm:flex-row sm:items-start sm:justify-between"}
+    >
       <div className="min-w-0 flex-1">
-        <p className="flex items-center gap-2 text-lg font-semibold text-white">
-          <IntegrationBrandIcon brand="googleAds" size="sm" />
-          Google Ads
-        </p>
+        {!embedded ? (
+          <p className="flex items-center gap-2 text-lg font-semibold text-white">
+            <IntegrationBrandIcon brand="googleAds" size="sm" />
+            Google Ads
+          </p>
+        ) : null}
 
         {gaNotice === "connected" ? (
           <p className="mt-1 text-sm text-margify-cyan">Cuenta vinculada correctamente.</p>
@@ -182,7 +188,7 @@ export function GoogleAdsIntegrationCard() {
               className={multiTouchClusterChildButtonClasses}
               onClick={() => void sync()}
             >
-              {busy === "sync" ? "Sincronizando…" : "Sincronizar ahora"}
+              {busy === "sync" ? "Sincronizando…" : "Sincronizar"}
             </Button>
             <Button
               type="button"
@@ -197,17 +203,18 @@ export function GoogleAdsIntegrationCard() {
         ) : (
           <Link
             href="/api/auth/google"
-            className={buttonClassName("secondary")}
+            className={buttonClassName("primary")}
             aria-disabled={connectDisabled}
             tabIndex={connectDisabled ? -1 : undefined}
             onClick={(e) => {
               if (connectDisabled) e.preventDefault();
+              else setConnecting(true);
             }}
           >
-            Conectar Google Ads
+            {connecting ? "Conectando…" : "Conectar Google Ads"}
           </Link>
         )}
       </div>
-    </Card>
+    </IntegrationCardRoot>
   );
 }

@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
+import { IntegrationCardRoot } from "@/components/dashboard/integrations/integration-card-root";
+import { DASHBOARD_INTEGRATIONS_PATH } from "@/lib/dashboard-integrations-path";
 import { DemoIntegrationPlaceholder } from "@/components/dashboard/DemoIntegrationPlaceholder";
 import { useDemoMode } from "@/components/dashboard/DemoModeContext";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
@@ -39,7 +40,7 @@ function formatLastSync(ts: number | null): string {
   }
 }
 
-export function ShopifyIntegrationCard() {
+export function ShopifyIntegrationCard({ embedded }: { embedded?: boolean } = {}) {
   const isDemo = useDemoMode();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<StatusResponse | null>(null);
@@ -51,6 +52,7 @@ export function ShopifyIntegrationCard() {
   );
   const [shopInput, setShopInput] = useState("");
   const [inputError, setInputError] = useState<string | null>(null);
+  const [connecting, setConnecting] = useState(false);
 
   const load = useCallback(async () => {
     if (isDemo) return;
@@ -79,7 +81,7 @@ export function ShopifyIntegrationCard() {
   const reason = searchParams.get("reason");
 
   if (isDemo) {
-    return <DemoIntegrationPlaceholder brand="shopify" name="Shopify" />;
+    return <DemoIntegrationPlaceholder brand="shopify" name="Shopify" embedded={embedded} />;
   }
 
   async function disconnect() {
@@ -135,7 +137,8 @@ export function ShopifyIntegrationCard() {
       setInputError(err);
       return;
     }
-    window.location.href = buildShopifyOAuthUrl(shop);
+    setConnecting(true);
+    window.location.href = buildShopifyOAuthUrl(shop, DASHBOARD_INTEGRATIONS_PATH);
   }
 
   const connected = status?.configured && status.connected;
@@ -169,12 +172,17 @@ export function ShopifyIntegrationCard() {
   const noticeEntry = notice ? noticeMap[notice] : null;
 
   return (
-    <Card glass className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <IntegrationCardRoot
+      embedded={embedded}
+      className={embedded ? undefined : "sm:flex-row sm:items-start sm:justify-between"}
+    >
       <div className="min-w-0 flex-1">
-        <p className="flex items-center gap-2 text-lg font-semibold text-white">
-          <IntegrationBrandIcon brand="shopify" size="sm" />
-          Shopify
-        </p>
+        {!embedded ? (
+          <p className="flex items-center gap-2 text-lg font-semibold text-white">
+            <IntegrationBrandIcon brand="shopify" size="sm" />
+            Shopify
+          </p>
+        ) : null}
 
         {noticeEntry ? (
           <p
@@ -231,8 +239,8 @@ export function ShopifyIntegrationCard() {
                 autoComplete="off"
                 spellCheck={false}
               />
-              <Button type="submit" variant="primary" disabled={!shopInput.trim()}>
-                Conectar con Shopify
+              <Button type="submit" variant="primary" disabled={!shopInput.trim() || connecting}>
+                {connecting ? "Conectando…" : "Conectar Shopify"}
               </Button>
             </div>
             {inputError ? (
@@ -279,6 +287,6 @@ export function ShopifyIntegrationCard() {
           </Button>
         </div>
       ) : null}
-    </Card>
+    </IntegrationCardRoot>
   );
 }

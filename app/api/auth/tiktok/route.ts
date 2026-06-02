@@ -21,7 +21,7 @@ export async function GET() {
     return NextResponse.redirect(url);
   } catch {
     return NextResponse.redirect(
-      `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/dashboard/configuracion?tiktok=error&reason=missing_app_id`
+      `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/dashboard/integraciones?tiktok=error&reason=missing_app_id`
     );
   }
 }

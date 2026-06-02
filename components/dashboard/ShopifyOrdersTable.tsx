@@ -278,7 +278,7 @@ export function ShopifyOrdersTable() {
             Conectá tu tienda de Shopify en Configuración para ver tus pedidos acá.
           </p>
           <Link
-            href="/dashboard/configuracion"
+            href="/dashboard/integraciones"
             className={buttonClassName("primary")}
           >
             Ir a Configuración

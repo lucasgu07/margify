@@ -285,7 +285,7 @@ export function TiendanubeOrdersTable() {
           <p className="text-sm text-margify-muted">
             Conectá tu tienda de TiendaNube en Configuración para ver tus pedidos acá.
           </p>
-          <Link href="/dashboard/configuracion" className={buttonClassName("primary")}>
+          <Link href="/dashboard/integraciones" className={buttonClassName("primary")}>
             Ir a Configuración
           </Link>
         </Card>

@@ -936,7 +936,7 @@ export function buildAlertasAdvisorInsights(
 
     ),
 
-    ctaHref: "/dashboard/configuracion",
+    ctaHref: "/dashboard/integraciones",
 
     ctaLabel: "WhatsApp e integraciones",
 

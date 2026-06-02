@@ -40,7 +40,7 @@ export async function GET(request: Request) {
       });
     }
 
-    const res = NextResponse.redirect(`${getAppOrigin()}/dashboard/configuracion?tiktok=connected`);
+    const res = NextResponse.redirect(`${getAppOrigin()}/dashboard/integraciones?tiktok=connected`);
     res.cookies.set("tiktok_token", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -52,7 +52,7 @@ export async function GET(request: Request) {
     return res;
   } catch {
     return NextResponse.redirect(
-      `${getAppOrigin()}/dashboard/configuracion?tiktok=error`
+      `${getAppOrigin()}/dashboard/integraciones?tiktok=error`
     );
   }
 }

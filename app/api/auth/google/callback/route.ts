@@ -12,7 +12,7 @@ import { GoogleAdsApi } from "google-ads-api";
 import { persistOAuthSession } from "@/lib/server/persist-oauth";
 
 function redirectToConfig(query: Record<string, string>) {
-  const u = new URL(`${getAppOrigin()}/dashboard/configuracion`);
+  const u = new URL(`${getAppOrigin()}/dashboard/integraciones`);
   for (const [k, v] of Object.entries(query)) u.searchParams.set(k, v);
   return NextResponse.redirect(u.toString());
 }

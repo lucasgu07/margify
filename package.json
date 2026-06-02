@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "node --max-old-space-size=8192 ./node_modules/next/dist/bin/next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "check:env": "node scripts/check-env.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.100.1",

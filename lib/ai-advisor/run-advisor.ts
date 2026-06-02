@@ -9,6 +9,8 @@ import {
   ADVISOR_REFRESH_MS,
   type AdvisorApiResponse,
   type AdvisorApiSuccess,
+  type AdvisorRecommendation,
+  type AdvisorSource,
 } from "@/lib/ai-advisor/recommendation-types";
 import {
   getLatestRecommendations,
@@ -26,6 +28,34 @@ import { readCostsForUserAsync } from "@/lib/server/user-costs";
 import type { Plan } from "@/types";
 
 const MIN_ORDERS = 10;
+
+function isClaudeConfigured(): boolean {
+  return Boolean(process.env.ANTHROPIC_API_KEY?.trim());
+}
+
+async function resolveRecommendations(metrics: ReturnType<typeof computeAdvisorMetrics>): Promise<{
+  recommendations: AdvisorRecommendation[];
+  motivationalClose?: string;
+  source: AdvisorSource;
+}> {
+  const fallback = buildFallbackRecommendations(metrics);
+
+  if (!isClaudeConfigured()) {
+    return { recommendations: fallback, source: "fallback" };
+  }
+
+  try {
+    const claude = await generateClaudeRecommendations(metrics);
+    return {
+      recommendations: claude.recommendations,
+      motivationalClose: claude.motivationalClose,
+      source: "claude",
+    };
+  } catch (err) {
+    console.error("[ai-advisor] Claude falló, usando fallback:", err);
+    return { recommendations: fallback, source: "fallback" };
+  }
+}
 
 function isStale(createdAt: string): boolean {
   return Date.now() - new Date(createdAt).getTime() >= ADVISOR_REFRESH_MS;
@@ -47,6 +77,7 @@ export async function runAdvisorForUser(
         dataFromDays: ADVISOR_DATA_DAYS,
         motivationalClose: cached.motivational_close ?? undefined,
         source: "cache",
+        claudeConfigured: isClaudeConfigured(),
       };
     }
   }
@@ -80,20 +111,7 @@ export async function runAdvisorForUser(
     };
   }
 
-  let recommendations = buildFallbackRecommendations(metrics);
-  let motivationalClose: string | undefined;
-  let source: AdvisorApiSuccess["source"] = "cache";
-
-  if (process.env.ANTHROPIC_API_KEY?.trim()) {
-    try {
-      const claude = await generateClaudeRecommendations(metrics);
-      recommendations = claude.recommendations;
-      motivationalClose = claude.motivationalClose;
-      source = "claude";
-    } catch {
-      /* fallback ya armado */
-    }
-  }
+  const { recommendations, motivationalClose, source } = await resolveRecommendations(metrics);
 
   const generatedAt =
     (await saveRecommendations(userId, recommendations, motivationalClose)) ??
@@ -105,6 +123,7 @@ export async function runAdvisorForUser(
     dataFromDays: ADVISOR_DATA_DAYS,
     motivationalClose,
     source,
+    claudeConfigured: isClaudeConfigured(),
   };
 }
 
@@ -123,20 +142,7 @@ export async function runAdvisorDemo(): Promise<AdvisorApiSuccess> {
     { shopify: true, tiendanube: true, mercadolibre: false, meta: true, google: true, tiktok: false }
   );
 
-  let recommendations = buildFallbackRecommendations(metrics);
-  let motivationalClose: string | undefined;
-  let source: AdvisorApiSuccess["source"] = "cache";
-
-  if (process.env.ANTHROPIC_API_KEY?.trim()) {
-    try {
-      const claude = await generateClaudeRecommendations(metrics);
-      recommendations = claude.recommendations;
-      motivationalClose = claude.motivationalClose;
-      source = "claude";
-    } catch {
-      /* fallback */
-    }
-  }
+  const { recommendations, motivationalClose, source } = await resolveRecommendations(metrics);
 
   return {
     recommendations,
@@ -144,6 +150,7 @@ export async function runAdvisorDemo(): Promise<AdvisorApiSuccess> {
     dataFromDays: ADVISOR_DATA_DAYS,
     motivationalClose,
     source,
+    claudeConfigured: isClaudeConfigured(),
   };
 }
 

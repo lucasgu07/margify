@@ -11,18 +11,14 @@ import type { IntegrationBrandId } from "@/lib/integration-brands";
 export function DemoIntegrationPlaceholder({
   brand,
   name,
+  embedded,
 }: {
   brand: IntegrationBrandId;
   name: string;
+  embedded?: boolean;
 }) {
-  return (
-    <Card glass className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-      <div className="min-w-0 flex-1">
-        <p className="flex items-center gap-2 text-lg font-semibold text-white">
-          <IntegrationBrandIcon brand={brand} size="sm" />
-          {name}
-        </p>
-        <p className="mt-2 text-sm text-margify-muted">
+  const body = (
+    <p className="text-sm text-margify-muted">
           Estás en <span className="text-margify-text">modo demo</span>: no podés conectar cuentas ni sincronizar datos.{" "}
           <Link
             href="/auth/register"
@@ -38,7 +34,19 @@ export function DemoIntegrationPlaceholder({
             iniciá sesión
           </Link>{" "}
           para vincular tiendas y publicidad.
+    </p>
+  );
+
+  if (embedded) return body;
+
+  return (
+    <Card glass className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div className="min-w-0 flex-1">
+        <p className="flex items-center gap-2 text-lg font-semibold text-white">
+          <IntegrationBrandIcon brand={brand} size="sm" />
+          {name}
         </p>
+        <div className="mt-2">{body}</div>
       </div>
     </Card>
   );

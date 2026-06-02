@@ -13,7 +13,7 @@ export function DashboardPageClient() {
         userName={full_name}
         showConnect
         onConnect={() => {
-          window.location.href = "/dashboard/configuracion";
+          window.location.href = "/dashboard/integraciones";
         }}
       />
       <DashboardHomeBody />

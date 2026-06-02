@@ -24,7 +24,7 @@ export async function GET(request: Request) {
 
   const origin = getAppOrigin();
   const back = (params: Record<string, string>) => {
-    const u = new URL(`${origin}/dashboard/configuracion`);
+    const u = new URL(`${origin}/dashboard/integraciones`);
     for (const [k, v] of Object.entries(params)) u.searchParams.set(k, v);
     return NextResponse.redirect(u.toString());
   };

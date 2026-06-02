@@ -10,7 +10,7 @@ import { getAppOrigin } from "@/lib/meta-auth";
 import { persistOAuthSession } from "@/lib/server/persist-oauth";
 
 function redirectToConfig(query: Record<string, string>) {
-  const u = new URL(`${getAppOrigin()}/dashboard/configuracion`);
+  const u = new URL(`${getAppOrigin()}/dashboard/integraciones`);
   Object.entries(query).forEach(([k, v]) => u.searchParams.set(k, v));
   return NextResponse.redirect(u.toString());
 }

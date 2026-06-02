@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Button, buttonClassName } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
+import { IntegrationCardRoot } from "@/components/dashboard/integrations/integration-card-root";
 import { DemoIntegrationPlaceholder } from "@/components/dashboard/DemoIntegrationPlaceholder";
 import { useDemoMode } from "@/components/dashboard/DemoModeContext";
 import { IntegrationBrandIcon } from "@/components/ui/IntegrationBrandIcon";
@@ -37,12 +37,13 @@ function formatLastSync(ts: number | null): string {
   }
 }
 
-export function TiendanubeIntegrationCard() {
+export function TiendanubeIntegrationCard({ embedded }: { embedded?: boolean } = {}) {
   const isDemo = useDemoMode();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<StatusResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<"disconnect" | "sync" | null>(null);
+  const [connecting, setConnecting] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [syncInfo, setSyncInfo] = useState<{ count: number; syncedAt: number } | null>(
     null
@@ -73,7 +74,7 @@ export function TiendanubeIntegrationCard() {
   const reason = searchParams.get("reason");
 
   if (isDemo) {
-    return <DemoIntegrationPlaceholder brand="tiendanube" name="TiendaNube" />;
+    return <DemoIntegrationPlaceholder brand="tiendanube" name="TiendaNube" embedded={embedded} />;
   }
 
   async function disconnect() {
@@ -147,12 +148,17 @@ export function TiendanubeIntegrationCard() {
   const noticeEntry = notice ? noticeMap[notice] : null;
 
   return (
-    <Card glass className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <IntegrationCardRoot
+      embedded={embedded}
+      className={embedded ? undefined : "sm:flex-row sm:items-start sm:justify-between"}
+    >
       <div className="min-w-0 flex-1">
-        <p className="flex items-center gap-2 text-lg font-semibold text-white">
-          <IntegrationBrandIcon brand="tiendanube" size="sm" />
-          TiendaNube
-        </p>
+        {!embedded ? (
+          <p className="flex items-center gap-2 text-lg font-semibold text-white">
+            <IntegrationBrandIcon brand="tiendanube" size="sm" />
+            TiendaNube
+          </p>
+        ) : null}
 
         {noticeEntry ? (
           <p
@@ -249,11 +255,15 @@ export function TiendanubeIntegrationCard() {
         </div>
       ) : !loading && !notConfigured ? (
         <div className={cn("flex shrink-0 flex-wrap gap-2", multiTouchClusterClasses)}>
-          <Link href="/api/auth/tiendanube" className={buttonClassName("primary")}>
-            Conectar con TiendaNube
+          <Link
+            href="/api/auth/tiendanube"
+            className={buttonClassName("primary")}
+            onClick={() => setConnecting(true)}
+          >
+            {connecting ? "Conectando…" : "Conectar"}
           </Link>
         </div>
       ) : null}
-    </Card>
+    </IntegrationCardRoot>
   );
 }

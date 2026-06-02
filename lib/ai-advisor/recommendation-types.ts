@@ -8,12 +8,17 @@ export type AdvisorRecommendation = {
   type: RecommendationType;
 };
 
+export type AdvisorSource = "claude" | "fallback" | "cache";
+
 export type AdvisorApiSuccess = {
   recommendations: AdvisorRecommendation[];
   generatedAt: string;
   dataFromDays: number;
   motivationalClose?: string;
-  source: "claude" | "cache";
+  /** Origen de las recomendaciones: Claude, reglas locales o cache Supabase */
+  source: AdvisorSource;
+  /** true si ANTHROPIC_API_KEY está configurada en el servidor */
+  claudeConfigured: boolean;
 };
 
 export type AdvisorApiEmpty = {

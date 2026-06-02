@@ -226,7 +226,7 @@ export function ShopifyProductsTable({
             Conectá tu tienda de Shopify en Configuración para ver tus productos acá.
           </p>
           <Link
-            href="/dashboard/configuracion"
+            href="/dashboard/integraciones"
             className={buttonClassName("primary")}
           >
             Ir a Configuración

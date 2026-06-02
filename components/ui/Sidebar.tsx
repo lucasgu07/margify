@@ -11,6 +11,7 @@ import {
   LogOut,
   Megaphone,
   Menu,
+  Plug,
   Settings,
   ShoppingBag,
   Sparkles,
@@ -31,6 +32,7 @@ const nav = [
   { href: "/dashboard/cashflow", label: "Cashflow", icon: Wallet },
   { href: "/dashboard/alertas", label: "Alertas", icon: Bell },
   { href: "/dashboard/margify-ai", label: "Margify AI", icon: Sparkles },
+  { href: "/dashboard/integraciones", label: "Integraciones", icon: Plug },
   { href: "/dashboard/configuracion", label: "Configuración", icon: Settings },
 ];
 
