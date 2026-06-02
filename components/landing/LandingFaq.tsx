@@ -36,6 +36,11 @@ const faqs = [
     q: "¿Qué hace el asistente con IA?",
     a: "Te orienta sobre qué revisar cuando el margen se mueve, qué priorizar entre productos o canales y cómo interpretar señales del panel, sin reemplazar tu criterio de negocio.",
   },
+  {
+    id: "agencias",
+    q: "¿Tienen portal para agencias?",
+    a: "Sí. El plan Scale incluye acceso multi-cliente para que tu agencia o equipo vea los números de cada tienda por separado, sin mezclar datos entre clientes. Cada acceso tiene permisos acotados según lo que necesite ver cada persona.",
+  },
 ] as const;
 
 export function LandingFaq() {

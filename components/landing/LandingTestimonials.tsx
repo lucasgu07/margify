@@ -11,14 +11,9 @@ import { TestimonialsMarqueeRow } from "@/components/landing/TestimonialsMarquee
 import { landingGlassBadge, landingGlassBodyText } from "@/lib/landing-glass-styles";
 import { cn } from "@/lib/utils";
 
-/** Fotos naturales (stock) — rostro recortado, tono emprendedora LATAM. */
-const testimonialPhoto = (id: string) =>
-  `https://images.unsplash.com/${id}?w=80&h=80&fit=crop&crop=faces`;
-
 const testimonials: TestimonialItem[] = [
   {
     text: "posta que antes mirábamos el roas de meta y después nos dabamos cuenta que no nos quedaba nada 😅 con margify por fin vemos lo que queda después de comisiones, envío y ads",
-    image: testimonialPhoto("photo-1573496359142-b8d87734a5a2"),
     name: "Vale R.",
     role: "ropa online · montevideo",
   },
@@ -29,7 +24,6 @@ const testimonials: TestimonialItem[] = [
   },
   {
     text: "me llegó un whatsapp tipo 'che el margen de esta campaña se fue al piso' y pudimos frenar a tiempo. sin cruzar cuatro excels distintos, gracias a dios",
-    image: testimonialPhoto("photo-1580489944761-15a19d654956"),
     name: "Lu Ferreyra",
     role: "skincare por ig · rosario",
   },
@@ -40,7 +34,6 @@ const testimonials: TestimonialItem[] = [
   },
   {
     text: "la ia no te reemplaza el criterio obvio pero cuando algo se desvía te dice por dónde mirar primero y no perdés media tarde en reportes",
-    image: testimonialPhoto("photo-1534528741775-53994a69daeb"),
     name: "Carla M.",
     role: "ecommerce · cordoba",
   },
@@ -51,7 +44,6 @@ const testimonials: TestimonialItem[] = [
   },
   {
     text: "temporada alta siempre era nervios. con el cashflow proyectado por lo que ya pasó en el año respiramos un poco más tranquis",
-    image: testimonialPhoto("photo-1544005313-94ddf0286df2"),
     name: "Marina C.",
     role: "multicanal · punta del este",
   },
@@ -62,7 +54,6 @@ const testimonials: TestimonialItem[] = [
   },
   {
     text: "arranqué en el plan gratis con pedidos reales, cuando vi que cerraba subí de plan sin drama. el onboarding fue re directo",
-    image: testimonialPhoto("photo-1438761681033-6461ffad8d80"),
     name: "Juli S.",
     role: "bebidas · colonia",
   },

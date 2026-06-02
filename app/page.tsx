@@ -2,7 +2,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import type { SimpleIcon } from "simple-icons";
 import { siGmail, siInstagram, siX } from "simple-icons";
-import { Check, LayoutDashboard, Link2, Receipt, Sparkles } from "lucide-react";
+import { Check, LayoutDashboard, Link2, Receipt, Sparkles, Zap } from "lucide-react";
 import { buttonClassName } from "@/components/ui/Button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
 import { Logo } from "@/components/ui/Logo";
@@ -17,7 +17,10 @@ const LandingParticleBackground = dynamic(
     ),
   { ssr: false }
 );
+import { LandingCostComparison } from "@/components/landing/LandingCostComparison";
 import { LandingFaq } from "@/components/landing/LandingFaq";
+import { LandingGuarantee } from "@/components/landing/LandingGuarantee";
+import { LandingLossCalculator } from "@/components/landing/LandingLossCalculator";
 import { LandingTestimonials } from "@/components/landing/LandingTestimonials";
 import { LandingComparisonSection } from "@/components/landing/LandingComparisonSection";
 import { DEMO_DASHBOARD_ENTRY } from "@/lib/demo-entry";
@@ -34,10 +37,9 @@ import {
 } from "@/lib/landing-glass-styles";
 import { cn } from "@/lib/utils";
 
-/** Reemplazá por tu perfil de Instagram, X y el correo de contacto cuando estén listos. */
-const LANDING_FOOTER_INSTAGRAM = "https://www.instagram.com/";
-const LANDING_FOOTER_X = "https://x.com/";
-const LANDING_FOOTER_MAIL = "mailto:hola@margify.com";
+const LANDING_FOOTER_INSTAGRAM = "https://www.instagram.com/margifyapp";
+const LANDING_FOOTER_X = "https://x.com/margifyapp";
+const LANDING_FOOTER_MAIL = "mailto:hola@margify.app";
 
 function FooterSocialLink({
   href,
@@ -110,8 +112,8 @@ export default function LandingPage() {
                   <div className="mb-1">
                     <Badge
                       type="success"
-                      label="+700 tiendas en LATAM ya lo usan"
-                      className="w-fit"
+                      label="Probá 14 días gratis · Sin tarjeta · Cancelás cuando querés"
+                      className="w-fit border-[#64DFDF]/30 bg-[#64DFDF20] text-[#64DFDF]"
                     />
                   </div>
                   <h1 className="text-3xl font-bold leading-[1.15] tracking-tight text-white sm:text-4xl lg:text-[2.35rem] lg:leading-tight xl:text-5xl">
@@ -142,6 +144,10 @@ export default function LandingPage() {
                     <li className="inline-flex items-center gap-1.5">
                       <Check className="h-3.5 w-3.5 shrink-0 text-margify-cyan" aria-hidden />
                       Cancelás cuando querés
+                    </li>
+                    <li className="inline-flex items-center gap-1.5 text-[#888888]">
+                      <Zap className="h-3.5 w-3.5 shrink-0 text-margify-cyan" aria-hidden />
+                      La mayoría conecta su tienda y ve su rentabilidad real en menos de 10 minutos.
                     </li>
                   </ul>
                 </div>
@@ -229,63 +235,17 @@ export default function LandingPage() {
             </div>
           </section>
 
-          <section id="funciones" className="relative z-10 scroll-mt-32 py-16 md:py-24">
-            <div className="mx-auto max-w-6xl px-4 md:px-6">
-              <h2 className="text-center text-3xl font-bold text-white md:text-4xl">
-                Todo lo que necesitás para decidir con dinero de verdad
-              </h2>
-              <div className="mt-12 grid grid-cols-2 gap-4 md:gap-6 lg:grid-cols-3">
-                {[
-                  {
-                    title: "Dashboard de rentabilidad en tiempo real",
-                    description:
-                      "Ingresos, costos y margen en un solo lugar, actualizados para que decidas con números de hoy, no con exportaciones viejas.",
-                  },
-                  {
-                    title: "IA Advisor que te dice exactamente qué hacer",
-                    description:
-                      "Te propone prioridades concretas: qué revisar, qué pausar o qué escalar, sin perderte en tablas interminables.",
-                  },
-                  {
-                    title: "Alertas por WhatsApp si algo falla o si algo va muy bien",
-                    description:
-                      "Te avisamos si el margen cae, un canal se desvía o hay algo raro en las órdenes, y también cuando rindió mejor de lo esperado para que lo aproveches o lo escales.",
-                  },
-                  {
-                    title: "Rentabilidad real por producto/SKU",
-                    description:
-                      "Ves qué productos te dejan ganancia de verdad y cuáles te la comen, por SKU o categoría, con todos los costos metidos.",
-                  },
-                  {
-                    title: "Predictor de cashflow",
-                    description:
-                      "Proyectá entradas y salidas con lo que ya pasó y lo que tenés comprometido, para no quedarte corto entre campañas y reposición.",
-                  },
-                  {
-                    title: "Portal para agencias",
-                    description:
-                      "Tu equipo o agencia entra a los mismos números que vos, con accesos acotados y sin mezclar datos entre clientes.",
-                  },
-                ].map(({ title, description }) => (
-                  <Card
-                    key={title}
-                    className={cn("max-md:p-4", landingGlassPanel, landingGlassPanelHover)}
-                  >
-                    <CardTitle className="text-sm md:text-base">{title}</CardTitle>
-                    <CardDescription className={cn("max-md:text-xs", landingGlassBodyText)}>
-                      {description}
-                    </CardDescription>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </section>
+          <LandingLossCalculator />
+
+          <LandingCostComparison />
 
           <LandingTestimonials />
 
           <section id="planes" className="relative z-10 scroll-mt-32 py-16 md:py-24">
             <LandingPricing />
           </section>
+
+          <LandingGuarantee />
 
           <section
             id="faq"

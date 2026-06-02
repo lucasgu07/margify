@@ -7,31 +7,25 @@ const FEATURES = [
   "Rentabilidad por producto individual",
   "Alertas cuando el margen cae",
   "Cashflow proyectado",
+  "Recomendaciones de IA sobre qué hacer hoy",
+  "Alertas por WhatsApp en tiempo real",
 ] as const;
 
 const COMPETITOR_COLUMNS = [
-  {
-    key: "stores",
-    label: "TiendaNube / Shopify / MercadoLibre",
-    minW: "min-w-[9.5rem]",
-  },
-  { key: "ads", label: "Meta / TikTok / Google Ads", minW: "min-w-[8.5rem]" },
+  { key: "stores", label: "TiendaNube / Shopify / ML", minW: "min-w-[9.5rem]" },
+  { key: "ads", label: "Meta / TikTok / Google", minW: "min-w-[8.5rem]" },
   { key: "excel", label: "Excel", minW: "min-w-[4.5rem]" },
 ] as const;
 
-const MARGIFY_COL =
-  "bg-margify-cyan/12 text-margify-cyan border-margify-cyan/25";
-
-const thCenter = "px-3 py-3.5 text-center font-semibold text-neutral-300 md:px-4";
+const thBase =
+  "px-3 py-3.5 text-center text-[11px] font-semibold uppercase tracking-wide text-[#888888] md:px-4";
 const tdCenter = "px-3 py-3.5 text-center md:px-4";
 
 function CellMark({ ok }: { ok: boolean }) {
   return (
     <span
-      className={cn(
-        "text-base font-semibold tabular-nums",
-        ok ? "text-emerald-400" : "text-margify-negative/75"
-      )}
+      className="text-[18px] font-semibold leading-none tabular-nums"
+      style={{ color: ok ? "#64DFDF" : "#ff4444" }}
       aria-hidden
     >
       {ok ? "✓" : "✗"}
@@ -53,24 +47,18 @@ export function LandingComparisonSection() {
           Tu tienda te dice cuánto vendiste. Margify te dice cuánto ganaste.
         </h2>
 
-        <div
-          className={cn(
-            "mt-8 -mx-4 overflow-x-auto px-4 md:mx-0 md:px-0",
-            "[scrollbar-width:thin] [scrollbar-color:rgba(100,223,223,0.35)_transparent]"
-          )}
-        >
+        <div className="mt-8 -mx-4 overflow-x-auto px-4 md:mx-0 md:px-0 [scrollbar-width:thin] [scrollbar-color:rgba(100,223,223,0.35)_transparent]">
           <table
             className={cn(
-              "w-full min-w-[52rem] border-collapse text-left text-sm md:text-[15px]",
-              landingGlassPanel,
-              "overflow-hidden rounded-card"
+              "w-full min-w-[52rem] overflow-hidden rounded-xl border border-white/10 text-left text-sm md:text-[15px]",
+              landingGlassPanel
             )}
           >
             <thead>
-              <tr className="border-b border-white/10">
+              <tr className="bg-white/[0.04]">
                 <th
                   scope="col"
-                  className="min-w-[10.5rem] px-4 py-3.5 font-semibold text-white md:px-5"
+                  className="min-w-[10.5rem] border-b border-white/10 px-4 py-3.5 text-left text-[11px] font-semibold uppercase tracking-wide text-[#888888] md:px-5"
                 >
                   Funcionalidad
                 </th>
@@ -78,7 +66,7 @@ export function LandingComparisonSection() {
                   <th
                     key={col.key}
                     scope="col"
-                    className={cn(thCenter, col.minW)}
+                    className={cn(thBase, col.minW, "border-b border-l border-white/10")}
                   >
                     <span className="inline-block max-w-[9rem] leading-snug md:max-w-none">
                       {col.label}
@@ -87,7 +75,7 @@ export function LandingComparisonSection() {
                 ))}
                 <th
                   scope="col"
-                  className={cn(thCenter, "min-w-[5.5rem]", MARGIFY_COL, "border-x")}
+                  className="min-w-[5.5rem] border-b border-l border-margify-cyan/25 bg-margify-cyan/[0.10] px-3 py-3.5 text-center text-[11px] font-semibold uppercase tracking-wide text-[#64DFDF] md:px-4"
                 >
                   Margify
                 </th>
@@ -97,21 +85,26 @@ export function LandingComparisonSection() {
               {FEATURES.map((label, i) => (
                 <tr
                   key={label}
-                  className={cn(
-                    "border-b border-white/8 last:border-b-0",
-                    i % 2 === 1 && "bg-black/20"
-                  )}
+                  className={cn(i % 2 === 1 ? "bg-white/[0.025]" : "bg-transparent")}
                 >
-                  <td className="px-4 py-3.5 font-medium text-margify-text/95 md:px-5">
+                  <td className="border-b border-white/8 px-4 py-3.5 text-left font-medium text-margify-text/95 md:px-5">
                     {label}
                   </td>
                   {COMPETITOR_COLUMNS.map((col) => (
-                    <td key={col.key} className={tdCenter}>
+                    <td
+                      key={col.key}
+                      className={cn(tdCenter, "border-b border-l border-white/8")}
+                    >
                       <CellMark ok={false} />
                       <span className="sr-only">No disponible en {col.label}</span>
                     </td>
                   ))}
-                  <td className={cn(tdCenter, MARGIFY_COL, "border-x")}>
+                  <td
+                    className={cn(
+                      tdCenter,
+                      "border-b border-l border-margify-cyan/25 bg-margify-cyan/[0.10]"
+                    )}
+                  >
                     <CellMark ok />
                     <span className="sr-only">Disponible en Margify</span>
                   </td>

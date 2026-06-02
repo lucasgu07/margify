@@ -6,11 +6,17 @@ import { landingGlassPanel, landingGlassPanelHover } from "@/lib/landing-glass-s
 
 export type TestimonialItem = {
   text: string;
-  /** Si no hay URL, la tarjeta muestra solo nombre y rol (sin avatar). */
-  image?: string;
   name: string;
   role: string;
 };
+
+function initialsFromName(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length >= 2) {
+    return `${parts[0]![0] ?? ""}${parts[parts.length - 1]![0] ?? ""}`.toUpperCase();
+  }
+  return name.slice(0, 2).toUpperCase();
+}
 
 /** Mismo tamaño en grilla, carrusel y columna móvil. */
 export const testimonialCardDimensions =
@@ -21,20 +27,15 @@ const testimonialCardGrid =
   "grid grid-rows-[8rem_2.875rem] gap-1.5 content-start";
 
 function TestimonialCardFooter({ item }: { item: TestimonialItem }) {
+  const initials = initialsFromName(item.name);
   return (
-    <div className={cn("flex shrink-0 items-center", item.image ? "gap-2.5" : "")}>
-      {item.image ? (
-        /* eslint-disable-next-line @next/next/no-img-element -- fotos de testimonio en landing */
-        <img
-          width={40}
-          height={40}
-          src={item.image}
-          alt=""
-          loading="lazy"
-          decoding="async"
-          className="h-10 w-10 shrink-0 rounded-full border border-white/15 object-cover"
-        />
-      ) : null}
+    <div className="flex shrink-0 items-center gap-2.5">
+      <span
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#64DFDF] text-sm font-bold text-black"
+        aria-hidden
+      >
+        {initials}
+      </span>
       <div className="min-w-0 flex flex-col">
         <span className="text-sm font-semibold leading-tight tracking-tight text-white">{item.name}</span>
         <span className="text-xs leading-tight tracking-tight text-neutral-400">{item.role}</span>
