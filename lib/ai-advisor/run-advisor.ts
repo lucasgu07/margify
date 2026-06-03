@@ -16,6 +16,7 @@ import {
   getLatestRecommendations,
   saveRecommendations,
 } from "@/lib/ai-advisor/recommendations-store";
+import type { AdvisorWeeklyReview } from "@/lib/ai-advisor/recommendation-types";
 import { loadLiveDashboardData } from "@/lib/integrations/load-live-data";
 import {
   applyStarterMonthlyOrderCap,
@@ -36,6 +37,7 @@ function isClaudeConfigured(): boolean {
 async function resolveRecommendations(metrics: ReturnType<typeof computeAdvisorMetrics>): Promise<{
   recommendations: AdvisorRecommendation[];
   motivationalClose?: string;
+  weeklyReview?: AdvisorWeeklyReview;
   source: AdvisorSource;
 }> {
   const fallback = buildFallbackRecommendations(metrics);
@@ -49,6 +51,7 @@ async function resolveRecommendations(metrics: ReturnType<typeof computeAdvisorM
     return {
       recommendations: claude.recommendations,
       motivationalClose: claude.motivationalClose,
+      weeklyReview: claude.weeklyReview,
       source: "claude",
     };
   } catch (err) {
@@ -111,10 +114,11 @@ export async function runAdvisorForUser(
     };
   }
 
-  const { recommendations, motivationalClose, source } = await resolveRecommendations(metrics);
+  const { recommendations, motivationalClose, weeklyReview, source } =
+    await resolveRecommendations(metrics);
 
   const generatedAt =
-    (await saveRecommendations(userId, recommendations, motivationalClose)) ??
+    (await saveRecommendations(userId, recommendations, motivationalClose, weeklyReview)) ??
     new Date().toISOString();
 
   return {
@@ -122,6 +126,7 @@ export async function runAdvisorForUser(
     generatedAt,
     dataFromDays: ADVISOR_DATA_DAYS,
     motivationalClose,
+    weeklyReview,
     source,
     claudeConfigured: isClaudeConfigured(),
   };
@@ -142,13 +147,15 @@ export async function runAdvisorDemo(): Promise<AdvisorApiSuccess> {
     { shopify: true, tiendanube: true, mercadolibre: false, meta: true, google: true, tiktok: false }
   );
 
-  const { recommendations, motivationalClose, source } = await resolveRecommendations(metrics);
+  const { recommendations, motivationalClose, weeklyReview, source } =
+    await resolveRecommendations(metrics);
 
   return {
     recommendations,
     generatedAt: new Date().toISOString(),
     dataFromDays: ADVISOR_DATA_DAYS,
     motivationalClose,
+    weeklyReview,
     source,
     claudeConfigured: isClaudeConfigured(),
   };

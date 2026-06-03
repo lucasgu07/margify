@@ -47,6 +47,7 @@ export async function GET(request: Request) {
       generatedAt: cached.created_at,
       dataFromDays: ADVISOR_DATA_DAYS,
       motivationalClose: cached.motivational_close ?? undefined,
+      weeklyReview: cached.weekly_review ?? undefined,
       source: "cache",
       claudeConfigured: Boolean(process.env.ANTHROPIC_API_KEY?.trim()),
     };
