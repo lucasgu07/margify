@@ -1,8 +1,6 @@
 "use client";
 
-import Link from "next/link";
 import { motion, useReducedMotion } from "motion/react";
-import { buttonClassName } from "@/components/ui/Button";
 
 type CostCard = {
   emoji: string;
@@ -87,17 +85,6 @@ export function LandingCostComparison() {
           que una cena.
         </p>
 
-        <div className="mt-6 flex justify-center">
-          <Link
-            href="/auth/register"
-            className={buttonClassName(
-              "primary",
-              "border-0 bg-[#64DFDF] px-8 py-3 font-bold text-black hover:bg-[#64DFDF]/90"
-            )}
-          >
-            Empezar gratis ahora
-          </Link>
-        </div>
       </div>
     </section>
   );
