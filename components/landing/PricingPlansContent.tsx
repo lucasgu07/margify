@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Check } from "lucide-react";
+import { Brain, Check, X, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonClassName } from "@/components/ui/Button";
-import { Card, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import {
   landingGlassPanel,
@@ -17,192 +16,146 @@ import { startDodoCheckout } from "@/lib/dodo-checkout";
 import { getProDodoProductId, getScaleDodoProductId } from "@/lib/dodo-products";
 import { getWhatsAppChatUrl } from "@/lib/whatsapp";
 
-/** Pro: anual USD/mes (principal) vs mensual de referencia. */
+// ─── Prices ───────────────────────────────────────────────────────────────────
+
 const PRO_ANNUAL_USD = 26;
 const PRO_MONTHLY_REF_USD = 39;
 const SCALE_ANNUAL_USD = 67;
 const SCALE_MONTHLY_REF_USD = Math.round((SCALE_ANNUAL_USD * PRO_MONTHLY_REF_USD) / PRO_ANNUAL_USD);
 
-/** Precio según facturación anual (efectivo/mes) o mensual. */
-function PaidPlanPrice({
+// ─── Feature line ─────────────────────────────────────────────────────────────
+
+type FeatureLineProps = {
+  text: string;
+  included?: boolean;
+  highlight?: boolean;
+  isAI?: boolean;
+};
+
+function FeatureLine({ text, included = true, highlight = false, isAI = false }: FeatureLineProps) {
+  return (
+    <li className="flex items-start gap-2.5 text-sm leading-snug">
+      {included ? (
+        isAI ? (
+          <Brain
+            className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#64DFDF]"
+            aria-hidden
+            strokeWidth={2}
+          />
+        ) : (
+          <Check
+            className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#64DFDF]"
+            aria-hidden
+            strokeWidth={2.5}
+          />
+        )
+      ) : (
+        <X className="mt-0.5 h-3.5 w-3.5 shrink-0 text-white/20" aria-hidden strokeWidth={2} />
+      )}
+      <span
+        className={cn(
+          included ? (highlight ? "font-semibold text-white" : "text-white/70") : "text-white/25"
+        )}
+      >
+        {text}
+      </span>
+    </li>
+  );
+}
+
+// ─── Price display ────────────────────────────────────────────────────────────
+
+function PriceBlock({
   annualUsd,
   monthlyUsd,
   billingAnnual,
-  featured,
+  cyan,
 }: {
   annualUsd: number;
   monthlyUsd: number;
   billingAnnual: boolean;
-  featured?: boolean;
+  cyan?: boolean;
 }) {
-  const priceColor = featured ? "text-margify-cyan" : "text-white";
   const displayUsd = billingAnnual ? annualUsd : monthlyUsd;
-
   return (
-    <div className="mt-2 space-y-1.5">
-      <p className="text-[0.625rem] font-semibold uppercase tracking-wider text-margify-cyan/85">
+    <div className="mt-4 space-y-1">
+      <p className="text-[10px] font-semibold uppercase tracking-wider text-white/35">
         {billingAnnual ? "Facturación anual" : "Facturación mensual"}
       </p>
-      <p className={cn("text-3xl font-bold tabular-nums leading-none max-md:text-2xl", priceColor)}>
+      <p className={cn("text-3xl font-bold tabular-nums leading-none", cyan ? "text-[#64DFDF]" : "text-white")}>
         USD {displayUsd}
-        <span className="ml-1 text-base font-normal text-margify-muted">/ mes</span>
+        <span className="ml-1 text-sm font-normal text-white/40">/ mes</span>
       </p>
-      {/* Misma altura en anual/mensual: ambos bloques ocupan la grilla (el oculto sigue midiendo). */}
       <div className="grid [&>*]:col-start-1 [&>*]:row-start-1">
-        <div className={cn("space-y-1.5", !billingAnnual && "invisible")} aria-hidden={!billingAnnual}>
-          <p className="text-xs leading-snug text-margify-muted">10 meses al año · 2 sin cargo</p>
-          <p className="border-t border-margify-border/50 pt-1.5 text-xs leading-snug text-margify-muted">
-            Ref. mes a mes:{" "}
-            <span className="text-neutral-400">USD {monthlyUsd} / mes</span>
-          </p>
-        </div>
-        <div className={cn("space-y-1.5", billingAnnual && "invisible")} aria-hidden={billingAnnual}>
-          <p className="text-xs leading-snug text-margify-muted">
-            Con facturación anual:{" "}
-            <span className="text-neutral-300">USD {annualUsd} / mes</span>
-            <span className="text-margify-muted"> (2 meses sin cargo)</span>
-          </p>
-          <p
-            className="border-t border-margify-border/50 pt-1.5 text-xs leading-snug text-margify-muted opacity-0"
-            aria-hidden
-          >
-            &nbsp;
-          </p>
-        </div>
+        <p className={cn("text-xs text-white/35", !billingAnnual && "invisible")} aria-hidden={!billingAnnual}>
+          Equivale a USD {annualUsd * 10}/año · 2 meses sin cargo
+        </p>
+        <p className={cn("text-xs text-white/35", billingAnnual && "invisible")} aria-hidden={billingAnnual}>
+          Con facturación anual: USD {annualUsd}/mes
+        </p>
       </div>
     </div>
   );
 }
 
-const planCardClass =
-  "flex h-full min-h-0 w-full min-w-0 flex-col max-md:p-4 max-md:[&_h3]:text-base";
+// ─── ROI anchor card ──────────────────────────────────────────────────────────
 
-/** Separador fino antes de features (sin agrandar la tarjeta). */
-const paidFeaturesClass = "mt-3 border-t border-margify-border/40 pt-3";
-
-const freeFeatures = [
-  "Dashboard y ganancia neta en tiempo real",
-  "Integración completa con tu tienda (TiendaNube, Shopify o Mercado Libre)",
-  "Historial de datos (1 mes)",
-  "Alertas por email",
-  "Control total de anuncios (Meta, TikTok y Google)",
-] as const;
-
-const proFeatures = [
-  "Todo lo del plan Gratis +",
-  "Historial de datos ilimitado",
-  "ROAS real",
-  "Rentabilidad por producto",
-  "Automatización de campañas",
-  "Alertas por email y WhatsApp",
-  "Margify AI con recomendaciones + Asistente con AI (15 consultas/mes)",
-  "API access",
-  "Soporte prioritario",
-] as const;
-
-const scaleFeatures = [
-  "Todo lo del plan Pro +",
-  "Asistente con AI en tiempo real (consultas ilimitadas)",
-  "Detección automática de oportunidades para escalar",
-  "Métricas avanzadas (LTV, cohortes, retención)",
-  "Alertas inteligentes y reglas ilimitadas",
-  "Multi-cliente y gestión de equipos",
-  "Reportes profesionales con tu marca",
-  "Integraciones completas y sin límites",
-] as const;
-
-function FeatureList({
-  items,
-  emphasisFirst,
-  className,
-}: {
-  items: readonly string[];
-  emphasisFirst?: boolean;
-  className?: string;
-}) {
+function RoiAnchor({ text, highlight }: { text: string; highlight?: string }) {
+  const parts = highlight ? text.split(highlight) : [text];
   return (
-    <ul className={cn("mt-4 flex flex-1 flex-col gap-2.5", className)}>
-      {items.map((text, i) => (
-        <li key={`${text}-${i}`} className="flex gap-2 text-sm leading-snug text-neutral-300">
-          <Check
-            className="mt-0.5 h-4 w-4 shrink-0 text-margify-cyan"
-            aria-hidden
-            strokeWidth={2.5}
-          />
-          <span
-            className={cn(
-              emphasisFirst && i === 0 && "font-semibold text-margify-text"
-            )}
-          >
-            {text}
-          </span>
-        </li>
-      ))}
-    </ul>
+    <div className="mt-4 rounded-lg border border-[#64DFDF]/15 bg-[#64DFDF]/5 px-3 py-2.5">
+      <div className="flex items-start gap-2">
+        <Zap className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#64DFDF]/70" />
+        <p className="text-[12px] leading-snug text-white/55">
+          {parts.length > 1 ? (
+            <>
+              {parts[0]}
+              <span className="font-bold text-[#64DFDF]">{highlight}</span>
+              {parts[1]}
+            </>
+          ) : (
+            text
+          )}
+        </p>
+      </div>
+    </div>
   );
 }
+
+// ─── Plan card types ──────────────────────────────────────────────────────────
 
 export type SelectedPlanId = "free" | "pro" | "scale";
 
 export type SelectedPlanChoice = {
   plan: SelectedPlanId;
-  /** Si aplica a Pro/Scale; en Gratis o “probar 7 días” no cambia el cobro todavía (demo). */
   annual: boolean;
 };
 
 type PricingPlansContentProps = {
   variant: "landing" | "onboarding";
-  /** En onboarding, se llama al elegir un plan (misma UI que la landing; los botones reemplazan los links a registro). */
   onSelectPlan?: (choice: SelectedPlanChoice) => void;
 };
 
-/**
- * Misma sección de planes que la home (`variant="landing"`) o flujo post-registro (`variant="onboarding"`).
- */
-export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansContentProps) {
-  const [annual, setAnnual] = useState(true);
-  const [checkoutLoading, setCheckoutLoading] = useState(false);
-  const [checkoutError, setCheckoutError] = useState<string | null>(null);
-  const isOnboarding = variant === "onboarding";
-  const glassCard = !isOnboarding ? cn(landingGlassPanel, landingGlassPanelHover) : undefined;
+// ─── CTA helper ───────────────────────────────────────────────────────────────
 
-  async function handleProCheckout() {
-    setCheckoutError(null);
-    setCheckoutLoading(true);
-    try {
-      await startDodoCheckout(getProDodoProductId(annual));
-    } catch {
-      setCheckoutError("No pudimos abrir el checkout. Intentá de nuevo en un momento.");
-      setCheckoutLoading(false);
-    }
-  }
-
-  async function handleScaleCheckout() {
-    setCheckoutError(null);
-    setCheckoutLoading(true);
-    try {
-      await startDodoCheckout(getScaleDodoProductId(annual));
-    } catch {
-      setCheckoutError("No pudimos abrir el checkout. Intentá de nuevo en un momento.");
-      setCheckoutLoading(false);
-    }
-  }
-
-  function cta(
+function useCta(
+  variant: "landing" | "onboarding",
+  annual: boolean,
+  onSelectPlan?: PricingPlansContentProps["onSelectPlan"]
+) {
+  function renderCta(
     plan: SelectedPlanId,
     label: string,
     style: "primary" | "secondary",
     href = "/auth/register",
-    featured = false
+    fullWidth = false
   ) {
     const classes = buttonClassName(
       style,
-      featured
-        ? "mt-auto w-full px-4 py-2.5 text-sm font-semibold max-md:mt-3"
-        : "mt-auto w-fit self-center px-4 py-2 text-sm font-semibold max-md:mt-3"
+      cn("text-sm font-semibold", fullWidth ? "w-full px-4 py-2.5" : "w-fit self-center px-4 py-2")
     );
     const external = href.startsWith("http");
-    if (isOnboarding && onSelectPlan && !external) {
+    if (variant === "onboarding" && onSelectPlan && !external) {
       return (
         <button type="button" className={classes} onClick={() => onSelectPlan({ plan, annual })}>
           {label}
@@ -222,75 +175,50 @@ export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansConte
       </Link>
     );
   }
+  return { renderCta };
+}
 
-  function proCheckoutCta() {
-    const classes = buttonClassName(
-      "primary",
-      "mt-auto w-full px-4 py-2.5 text-sm font-semibold max-md:mt-3 disabled:cursor-not-allowed disabled:opacity-60"
-    );
+// ─── Main component ───────────────────────────────────────────────────────────
 
-    if (isOnboarding) {
-      return (
-        <button
-          type="button"
-          className={classes}
-          disabled={checkoutLoading}
-          onClick={() => void handleProCheckout()}
-        >
-          {checkoutLoading ? "Abriendo checkout…" : "Probar gratis 7 días"}
-        </button>
-      );
+export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansContentProps) {
+  const [annual, setAnnual] = useState(true);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const isOnboarding = variant === "onboarding";
+  const glassCard = !isOnboarding ? cn(landingGlassPanel, landingGlassPanelHover) : undefined;
+  const { renderCta } = useCta(variant, annual, onSelectPlan);
+
+  async function handleProCheckout() {
+    setCheckoutError(null);
+    setCheckoutLoading(true);
+    try {
+      await startDodoCheckout(getProDodoProductId(annual));
+    } catch {
+      setCheckoutError("No pudimos abrir el checkout. Intentá de nuevo.");
+      setCheckoutLoading(false);
     }
-
-    return (
-      <button
-        type="button"
-        className={classes}
-        disabled={checkoutLoading}
-        onClick={() => void handleProCheckout()}
-      >
-        {checkoutLoading ? "Abriendo checkout…" : "Probar gratis 7 días"}
-      </button>
-    );
   }
 
-  function scaleCheckoutCta() {
-    const waUrl = getWhatsAppChatUrl();
-    const primaryClasses = buttonClassName(
-      "primary",
-      "mt-auto w-full px-4 py-2.5 text-sm font-semibold max-md:mt-3 disabled:cursor-not-allowed disabled:opacity-60"
-    );
-    const secondaryClasses = buttonClassName(
-      "secondary",
-      "mt-2 w-full px-4 py-2 text-sm font-semibold max-md:mt-2"
-    );
-
-    return (
-      <div className="mt-auto flex w-full flex-col">
-        <button
-          type="button"
-          className={primaryClasses}
-          disabled={checkoutLoading}
-          onClick={() => void handleScaleCheckout()}
-        >
-          {checkoutLoading ? "Abriendo checkout…" : "Probar Scale 7 días"}
-        </button>
-        {waUrl ? (
-          <a href={waUrl} target="_blank" rel="noopener noreferrer" className={secondaryClasses}>
-            Hablar con ventas
-          </a>
-        ) : null}
-      </div>
-    );
+  async function handleScaleCheckout() {
+    setCheckoutError(null);
+    setCheckoutLoading(true);
+    try {
+      await startDodoCheckout(getScaleDodoProductId(annual));
+    } catch {
+      setCheckoutError("No pudimos abrir el checkout. Intentá de nuevo.");
+      setCheckoutLoading(false);
+    }
   }
+
+  const waUrl = getWhatsAppChatUrl();
+  const btnBase = "text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60";
 
   return (
     <div className="mx-auto max-w-6xl px-4 md:px-6">
-      <h2 className="text-center text-3xl font-bold text-white md:text-4xl">Planes</h2>
-
+      {/* ── Billing toggle ── */}
       <div
         className={cn(
-          "mx-auto mt-8 flex max-w-md justify-center rounded-full border p-1",
+          "mx-auto flex max-w-sm justify-center rounded-full border p-1",
           multiTouchClusterClasses,
           isOnboarding ? "border-margify-border bg-margify-black" : landingGlassPricingToggle
         )}
@@ -301,92 +229,200 @@ export function PricingPlansContent({ variant, onSelectPlan }: PricingPlansConte
           type="button"
           onClick={() => setAnnual(true)}
           className={cn(
-            "min-h-[2.5rem] flex-1 rounded-full px-4 py-2 text-sm font-medium transition-all duration-margify",
-            annual ? "bg-margify-cyan text-black" : "text-margify-muted hover:text-white"
+            "flex min-h-[2.5rem] flex-1 items-center justify-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-all duration-margify",
+            annual ? "bg-[#64DFDF] text-black" : "text-white/50 hover:text-white"
           )}
         >
           Anual
+          {annual && (
+            <span className="rounded-full bg-black/20 px-1.5 py-0.5 text-[10px] font-bold">
+              Ahorrás 33%
+            </span>
+          )}
         </button>
         <button
           type="button"
           onClick={() => setAnnual(false)}
           className={cn(
             "min-h-[2.5rem] flex-1 rounded-full px-4 py-2 text-sm font-medium transition-all duration-margify",
-            !annual ? "bg-margify-cyan text-black" : "text-margify-muted hover:text-white"
+            !annual ? "bg-[#64DFDF] text-black" : "text-white/50 hover:text-white"
           )}
         >
           Mensual
         </button>
       </div>
-      <div className="mx-auto mt-2 max-w-md grid [&>*]:col-start-1 [&>*]:row-start-1 text-center text-xs text-neutral-400">
-        <p className={cn(!annual && "invisible")} aria-hidden={!annual}>
-          Plan anual: cobrás 10 meses por año (2 meses sin cargo).
-        </p>
-        <p className={cn(annual && "invisible")} aria-hidden={annual}>
-          Facturación mes a mes, sin compromiso anual.
-        </p>
-      </div>
 
-      <div className="mx-auto mt-10 grid max-w-6xl max-md:grid-cols-2 max-md:gap-3 items-stretch gap-6 md:grid-cols-3 md:gap-6 lg:gap-8">
-        <Card className={cn(planCardClass, glassCard)}>
-          <CardTitle>Gratis</CardTitle>
-          <p className="mt-1 text-sm font-bold text-white">Hasta 30 órdenes por mes</p>
-          <p className="mt-2 text-3xl font-bold text-white max-md:text-2xl">Gratis</p>
-          <FeatureList items={freeFeatures} />
-          {cta("free", "Empezar gratis", "secondary")}
-        </Card>
+      {/* ── Plan grid ── */}
+      <div className="mx-auto mt-8 grid max-w-6xl items-stretch gap-4 max-md:grid-cols-2 max-md:gap-3 md:grid-cols-3 md:gap-6">
 
-        <Card
+        {/* ────── FREE ────── */}
+        <div
           className={cn(
-            planCardClass,
-            glassCard,
-            "border-2 border-margify-cyan shadow-[0_0_0_1px_rgba(100,223,223,0.35)]"
+            "flex flex-col rounded-2xl border border-white/10 p-6 max-md:p-4",
+            glassCard
           )}
         >
-          <div className="mb-2 flex flex-wrap gap-1.5">
-            <Badge type="success" label="Más popular" className="w-fit" />
-            <Badge
-              type="success"
-              label="Mejor precio · anual"
-              className={cn("w-fit", !annual && "invisible")}
-              aria-hidden={!annual}
-            />
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-white/35">Para empezar</p>
+          <h3 className="mt-1.5 text-xl font-bold text-white max-md:text-lg">Gratis</h3>
+          <p className="mt-1 text-sm text-white/40">Descubrí cuánto ganás realmente</p>
+
+          <div className="mt-4 space-y-1">
+            <p className="text-3xl font-bold text-white max-md:text-2xl">$0</p>
+            <p className="text-xs text-white/35">Sin tarjeta. Sin límite de tiempo.</p>
           </div>
-          <CardTitle>Pro</CardTitle>
-          <p className="mt-1 text-sm font-bold text-white">Órdenes ilimitadas</p>
-          <PaidPlanPrice
+
+          <p className="mt-4 text-[10px] font-semibold uppercase tracking-widest text-white/25">Hasta 30 órdenes/mes</p>
+
+          <ul className="mt-4 flex flex-1 flex-col gap-2.5">
+            <FeatureLine text="Dashboard de rentabilidad en tiempo real" />
+            <FeatureLine text="Conectá TiendaNube, Shopify o Mercado Libre" />
+            <FeatureLine text="Analizá Meta, TikTok y Google Ads" />
+            <FeatureLine text="Historial de 30 días" />
+            <FeatureLine text="Alertas básicas por email" />
+            <FeatureLine text="Margify AI Advisor" included={false} />
+            <FeatureLine text="Alertas por WhatsApp" included={false} />
+            <FeatureLine text="Historial ilimitado" included={false} />
+          </ul>
+
+          <div className="mt-6">
+            {renderCta("free", "Empezar gratis", "secondary", "/auth/register", true)}
+          </div>
+        </div>
+
+        {/* ────── PRO (featured) ────── */}
+        <div
+          className={cn(
+            "relative flex flex-col rounded-2xl border-2 border-[#64DFDF] p-6 shadow-[0_0_32px_rgba(100,223,223,0.12)] max-md:p-4",
+            glassCard
+          )}
+        >
+          {/* Popular badge */}
+          <div className="mb-3 flex flex-wrap items-center gap-1.5">
+            <Badge type="success" label="Más popular" className="w-fit" />
+            {annual && (
+              <Badge type="success" label="Mejor precio" className="w-fit" />
+            )}
+          </div>
+
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-[#64DFDF]/70">Para operadores</p>
+          <h3 className="mt-1.5 text-xl font-bold text-white max-md:text-lg">Pro</h3>
+          <p className="mt-1 text-sm text-white/50">Tomá decisiones que te ahorran dinero</p>
+
+          <PriceBlock
             annualUsd={PRO_ANNUAL_USD}
             monthlyUsd={PRO_MONTHLY_REF_USD}
             billingAnnual={annual}
-            featured
+            cyan
           />
-          <FeatureList items={proFeatures} emphasisFirst className={paidFeaturesClass} />
-          {proCheckoutCta()}
-          {checkoutError ? (
+
+          {/* ROI anchor */}
+          <RoiAnchor
+            text="Si Margify te ayuda a pausar 1 campaña perdiendo $500/mes, el plan se pagó 19 veces."
+            highlight="se pagó 19 veces."
+          />
+
+          <p className="mt-4 text-[10px] font-semibold uppercase tracking-widest text-white/25">
+            Órdenes ilimitadas · Todo Gratis +
+          </p>
+
+          <ul className="mt-3 flex flex-1 flex-col gap-2.5">
+            <FeatureLine text="Margify AI — 5 a 7 insights semanales con impacto en $" highlight isAI />
+            <FeatureLine text="Historial de datos ilimitado" highlight />
+            <FeatureLine text="ROAS real por campaña y producto" />
+            <FeatureLine text="Rentabilidad por producto + inteligencia de inventario" />
+            <FeatureLine text="Automatización de campañas" />
+            <FeatureLine text="Alertas en tiempo real por WhatsApp" />
+            <FeatureLine text="API access" />
+            <FeatureLine text="Soporte prioritario" />
+          </ul>
+
+          <div className="mt-6">
+            <button
+              type={isOnboarding ? "button" : "button"}
+              disabled={checkoutLoading}
+              onClick={isOnboarding && onSelectPlan
+                ? () => onSelectPlan({ plan: "pro", annual })
+                : () => void handleProCheckout()
+              }
+              className={buttonClassName("primary", cn("w-full px-4 py-2.5", btnBase))}
+            >
+              {checkoutLoading ? "Abriendo checkout…" : "Probar gratis 7 días"}
+            </button>
+          </div>
+          {checkoutError && (
             <p className="mt-2 text-center text-xs text-red-400" role="alert">
               {checkoutError}
             </p>
-          ) : null}
-        </Card>
+          )}
+        </div>
 
-        <Card
+        {/* ────── SCALE ────── */}
+        <div
           className={cn(
-            planCardClass,
-            glassCard,
-            "max-md:col-span-2 max-md:w-full max-md:max-w-[22rem] max-md:justify-self-center"
+            "flex flex-col rounded-2xl border border-white/10 p-6 max-md:col-span-2 max-md:w-full max-md:max-w-[22rem] max-md:justify-self-center max-md:p-4",
+            glassCard
           )}
         >
-          <CardTitle>Scale</CardTitle>
-          <p className="mt-1 text-sm font-bold text-white">Órdenes ilimitadas</p>
-          <PaidPlanPrice
+          <p className="text-[10px] font-semibold uppercase tracking-widest text-white/35">Para marcas en crecimiento</p>
+          <h3 className="mt-1.5 text-xl font-bold text-white max-md:text-lg">Scale</h3>
+          <p className="mt-1 text-sm text-white/40">Tu operador de crecimiento con IA ilimitada</p>
+
+          <PriceBlock
             annualUsd={SCALE_ANNUAL_USD}
             monthlyUsd={SCALE_MONTHLY_REF_USD}
             billingAnnual={annual}
           />
-          <FeatureList items={scaleFeatures} emphasisFirst className={paidFeaturesClass} />
-          {scaleCheckoutCta()}
-        </Card>
+
+          {/* ROI anchor */}
+          <RoiAnchor
+            text="IA ilimitada + simulaciones de escenarios. Sabés exactamente qué pasa si tomás cada decisión antes de tomarla."
+            highlight="antes de tomarla."
+          />
+
+          <p className="mt-4 text-[10px] font-semibold uppercase tracking-widest text-white/25">
+            Órdenes ilimitadas · Todo Pro +
+          </p>
+
+          <ul className="mt-3 flex flex-1 flex-col gap-2.5">
+            <FeatureLine text="Margify AI — consultas ilimitadas, sin restricciones" highlight isAI />
+            <FeatureLine text="Revisión semanal automática con IA" isAI />
+            <FeatureLine text='Simulaciones: "¿Qué pasa si bajo el presupuesto 20%?"' />
+            <FeatureLine text="LTV, cohortes y métricas de retención" />
+            <FeatureLine text="Alertas inteligentes ilimitadas" />
+            <FeatureLine text="Multi-cliente y gestión de equipos" />
+            <FeatureLine text="Reportes profesionales con tu marca" />
+          </ul>
+
+          <div className="mt-6 flex flex-col gap-2">
+            <button
+              type="button"
+              disabled={checkoutLoading}
+              onClick={isOnboarding && onSelectPlan
+                ? () => onSelectPlan({ plan: "scale", annual })
+                : () => void handleScaleCheckout()
+              }
+              className={buttonClassName("primary", cn("w-full px-4 py-2.5", btnBase))}
+            >
+              {checkoutLoading ? "Abriendo checkout…" : "Probar Scale 7 días"}
+            </button>
+            {waUrl && (
+              <a
+                href={waUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={buttonClassName("secondary", "w-full px-4 py-2 text-sm font-semibold")}
+              >
+                Hablar con ventas
+              </a>
+            )}
+          </div>
+        </div>
       </div>
+
+      {/* ── Positioning footnote ── */}
+      <p className="mt-6 text-center text-xs text-white/25">
+        Margify no es un dashboard más. Es la capa de inteligencia que convierte datos en decisiones con impacto en dinero.
+      </p>
     </div>
   );
 }
