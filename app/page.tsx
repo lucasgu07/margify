@@ -1,7 +1,8 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import type { SimpleIcon } from "simple-icons";
-import { siGmail, siInstagram, siX } from "simple-icons";
+import { siGmail, siWhatsapp } from "simple-icons";
+import { getWhatsAppChatUrl } from "@/lib/whatsapp";
 import { Check, LayoutDashboard, Link2, Receipt, Sparkles, Zap } from "lucide-react";
 import { buttonClassName } from "@/components/ui/Button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/Card";
@@ -37,8 +38,6 @@ import {
 } from "@/lib/landing-glass-styles";
 import { cn } from "@/lib/utils";
 
-const LANDING_FOOTER_INSTAGRAM = "https://www.instagram.com/margifyapp";
-const LANDING_FOOTER_X = "https://x.com/margifyapp";
 const LANDING_FOOTER_MAIL = "mailto:hola@margify.app";
 
 function FooterSocialLink({
@@ -139,7 +138,7 @@ export default function LandingPage() {
                     </li>
                     <li className="inline-flex items-center gap-1.5">
                       <Check className="h-3.5 w-3.5 shrink-0 text-margify-cyan" aria-hidden />
-                      7 días gratis
+                      14 días gratis
                     </li>
                     <li className="inline-flex items-center gap-1.5">
                       <Check className="h-3.5 w-3.5 shrink-0 text-margify-cyan" aria-hidden />
@@ -275,19 +274,20 @@ export default function LandingPage() {
             </div>
             <nav
               className="flex items-center justify-center gap-1 sm:gap-2"
-              aria-label="Redes sociales y contacto"
+              aria-label="Contacto"
             >
-              <FooterSocialLink
-                href={LANDING_FOOTER_INSTAGRAM}
-                icon={siInstagram}
-                label="Instagram de Margify"
-              />
-              <FooterSocialLink href={LANDING_FOOTER_X} icon={siX} label="X de Margify" />
               <FooterSocialLink
                 href={LANDING_FOOTER_MAIL}
                 icon={siGmail}
                 label="Correo electrónico"
               />
+              {getWhatsAppChatUrl() && (
+                <FooterSocialLink
+                  href={getWhatsAppChatUrl()!}
+                  icon={siWhatsapp}
+                  label="WhatsApp de Margify"
+                />
+              )}
             </nav>
             <p className="text-neutral-400">© Margify 2026</p>
           </div>

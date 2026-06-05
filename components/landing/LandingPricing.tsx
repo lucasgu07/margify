@@ -9,7 +9,7 @@ function GuaranteeStrip() {
   return (
     <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
       {[
-        { icon: <Zap className="h-3.5 w-3.5" />, text: "7 días gratis en planes pagos" },
+        { icon: <Zap className="h-3.5 w-3.5" />, text: "14 días gratis en planes pagos" },
         { icon: <Shield className="h-3.5 w-3.5" />, text: "Sin tarjeta de crédito" },
         { icon: <TrendingUp className="h-3.5 w-3.5" />, text: "Cancelás cuando querés" },
       ].map(({ icon, text }) => (

@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { Logo } from "@/components/ui/Logo";
 import { cn } from "@/lib/utils";
-import { DEMO_DASHBOARD_ENTRY, demoDashboardHref } from "@/lib/demo-entry";
+import { demoDashboardHref } from "@/lib/demo-entry";
 import { DEMO_USER_LABEL } from "@/lib/demo-user";
 
 const previewNav = [
@@ -93,14 +93,6 @@ export function LandingHeroPreviewSidebar({
           );
         })}
       </nav>
-      <div className="border-t border-margify-border p-4">
-        <Link
-          href={DEMO_DASHBOARD_ENTRY}
-          className="flex w-full items-center justify-center rounded-control border border-margify-cyan/40 px-3 py-2.5 text-center text-sm font-medium text-margify-cyan outline-none transition-all duration-200 ease-out motion-safe:hover:scale-[1.02] motion-safe:hover:border-margify-cyan motion-safe:hover:bg-margify-cyan/15 motion-safe:hover:shadow-[0_0_24px_rgba(100,223,223,0.22)] motion-safe:active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-margify-cyan/50 focus-visible:ring-offset-2 focus-visible:ring-offset-margify-black touch-manipulation"
-        >
-          Explorar demo completa
-        </Link>
-      </div>
     </aside>
   );
 }

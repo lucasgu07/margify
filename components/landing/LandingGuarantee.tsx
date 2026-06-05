@@ -16,11 +16,11 @@ export function LandingGuarantee() {
             Sin ningún riesgo
           </h2>
           <p className="mt-3 text-sm leading-relaxed text-neutral-400 md:text-base">
-            Si en 7 días no ves el valor de Margify, te devolvemos el dinero sin preguntas. No
+            Si en 14 días no ves el valor de Margify, te devolvemos el dinero sin preguntas. No
             necesitamos que nos expliques nada.
           </p>
           <span className="mt-5 inline-flex rounded-full border border-[#64DFDF] px-4 py-1.5 text-sm font-medium text-[#64DFDF]">
-            Garantía de 7 días
+            Garantía de 14 días
           </span>
         </div>
       </div>

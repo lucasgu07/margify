@@ -77,11 +77,16 @@ function formatLastSync(ts: number | null): string {
 export function MetaAdsCampaignsTable() {
   const isDemo = useDemoMode();
   const { refreshBootstrap } = useDashboard();
-  const [rows, setRows] = useState<Row[] | null>(null);
-  const [currency, setCurrency] = useState<string | null>(null);
-  const [meta, setMeta] = useState<CampaignsResponse | null>(null);
+  // Initialize with demo data immediately to avoid loading flash in landing preview
+  const [rows, setRows] = useState<Row[] | null>(() => isDemo ? demoMetaAdsCampaignRows : null);
+  const [currency, setCurrency] = useState<string | null>(() => isDemo ? "ARS" : null);
+  const [meta, setMeta] = useState<CampaignsResponse | null>(() =>
+    isDemo
+      ? { connected: true, adAccountId: "act_demo", adAccounts: [], lastSyncedAt: Date.now() - 1000 * 60 * 12 }
+      : null
+  );
   const [syncing, setSyncing] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !isDemo);
   const [error, setError] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
 
